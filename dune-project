@@ -32,6 +32,4 @@
   dune
   cppo
   menhir
-  csexp
-  (ocaml-lsp-server :dev)
-  (ocamlformat :dev)))
+  csexp))
