@@ -46,6 +46,8 @@
  (action
   (run %{bin:cppo} -V OCAML:%{ocaml_version} %{deps} -o %{targets})))
 
+(copy_files# ../mlx/jsx_helper.ml)
+
 (copy_files# ../merlin-extend/*[!extend_helper].{ml,mli})
 
 (copy_files# ../merlin/src/kernel/extension.{ml,mli})

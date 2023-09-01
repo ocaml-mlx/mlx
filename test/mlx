@@ -1,0 +1,3 @@
+#!/bin/bash
+
+mlx-pp -print-ml | ocamlformat - --impl --enable-outside-detected-project

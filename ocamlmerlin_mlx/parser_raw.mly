@@ -2533,6 +2533,7 @@ let_pattern [@recovery default_pattern ()]:
   | simple_expr_attrs
     { let desc, attrs = $1 in
       mkexp_attrs ~loc:$sloc desc attrs }
+  | e = jsx_element { Jsx_helper.mkjsxexp ~loc:$loc(e) e }
   | mkexp(simple_expr_)
       { $1 }
 ;
@@ -2672,35 +2673,22 @@ let_pattern [@recovery default_pattern ()]:
     LPAREN MODULE ext_attributes module_expr COLON error
       { unclosed "(" $loc($3) ")" $loc($8) }
   *)
-  | e = jsx_element { e }
 ;
 jsx_element:
     tag=mkrhs(jsx_longident) props=llist(jsx_prop) SLASHGREATER {
-      let tag = mkexp ~loc:$loc(tag) (Pexp_ident tag) in
-      let head = mkexp ~loc:$loc(tag) (Pexp_apply (tag, props)) in
-      Pexp_extension (mkloc "jsx" (make_loc $sloc), PStr [mkstrexp head []])
-    }
+      Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children:None }
   | tag=mkrhs(jsx_longident) props=llist(jsx_prop) 
-    GREATER children=llist(jsx_content) LESSSLASH mkrhs(val_longident) GREATER {
-      let tag = mkexp ~loc:$loc(tag) (Pexp_ident tag) in
-      let head = mkexp ~loc:$loc(tag) (Pexp_apply (tag, props)) in
-      let children = List.map (fun e -> mkstrexp e []) children in
-      Pexp_extension (mkloc "jsx_with_children" (make_loc $sloc), PStr ((mkstrexp head [])::children))
+    GREATER children=llist(simple_expr) LESSSLASH mkrhs(val_longident) GREATER {
+      let children = 
+        let children, loc = mktailexp $loc(children) children in
+        mkexp ~loc children
+      in
+      Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children:(Some children)
     }
-;
-jsx_content:
-    LPAREN seq_expr RPAREN
-      { reloc_exp ~loc:$sloc $2 }
-  | mkexp(simple_expr_)
-      { $1 }
 ;
 jsx_prop:
-   id=LIDENT
-    { let id = mkloc (Lident id) (make_loc $loc(id)) in
-      let e = mkexp ~loc:$loc(id) (Pexp_ident id) in
-      (Nolabel, e) }
-  | k=LIDENT EQUAL e=simple_expr
-      { (Labelled k, e) }
+    name=LIDENT { $loc(name), `Prop_punned name }
+  | name=LIDENT EQUAL expr=simple_expr { $loc(name), `Prop (name, expr) }
 ;
 labeled_simple_expr:
     simple_expr %prec below_HASH
