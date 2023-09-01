@@ -22,7 +22,14 @@ let mkjsxexp ~loc e =
   { e with pexp_attributes = [ attr ] }
 
 let make_jsx_element ~loc ~tag ~props ~children () =
-  let tag = mkexp ~loc (Pexp_ident tag) in
+  let tag =
+    match tag with
+    | `Value (loc, txt) ->
+        mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
+    | `Module (loc, txt) ->
+        let txt = Longident.Ldot (txt, "createElement") in
+        mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
+  in
   let props =
     List.map
       (function

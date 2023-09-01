@@ -2,6 +2,13 @@
  (name ocamlmerlin_mlx)
  (package mlx)
  (public_name ocamlmerlin-mlx)
+ (modules ocamlmerlin_mlx)
+ (libraries ocamlmerlin_mlx_lib))
+
+(library
+ (name ocamlmerlin_mlx_lib)
+ (package mlx)
+ (modules :standard \ ocamlmerlin_mlx)
  (flags
   :standard
   -w=-9-67-69

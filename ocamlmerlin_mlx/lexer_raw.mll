@@ -445,6 +445,8 @@ rule token state = parse
       { warn_latin1 lexbuf; return (LIDENT name) }
   | "<" (lowercase identchar * as name)
       { return (JSX_LIDENT name) }
+  | "<" "/" (lowercase identchar * as name)
+      { return (JSX_LIDENT_E name) }
   | uppercase identchar * as name
     { (* Capitalized keywords for OUnit *)
       return (try Hashtbl.find state.keywords name
@@ -456,6 +458,8 @@ rule token state = parse
     { warn_latin1 lexbuf; return (UIDENT name) }
   | "<" (uppercase identchar * as name)
       { return (JSX_UIDENT name) }
+  | "<" "/" (uppercase identchar * as name)
+      { return (JSX_UIDENT_E name) }
   | int_literal as lit { return (INT (lit, None)) }
   | (int_literal as lit) (literal_modifier as modif)
     { return (INT (lit, Some modif)) }

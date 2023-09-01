@@ -1,3 +1,9 @@
 #!/bin/bash
 
-mlx-pp -print-ml | ocamlformat - --impl --enable-outside-detected-project
+STDIN=$(cat)
+
+echo "BATCH"
+echo "$STDIN" | mlx-pp -print-ml | ocamlformat - --impl --enable-outside-detected-project
+
+echo "MERLIN"
+echo "$STDIN" | ./mlx_merlin.exe | ocamlformat - --impl --enable-outside-detected-project

@@ -801,6 +801,7 @@ let expr_of_lwt_bindings ~loc lbs body =
 %token LET [@symbol "let"]
 %token <string> LIDENT [@cost 2] [@recovery "_"][@printer Printf.sprintf "LIDENT(%S)"]
 %token <string> JSX_LIDENT [@cost 2] [@recovery "_"][@printing Printf.specific "JSX_LIDENT(%S)"]
+%token <string> JSX_LIDENT_E [@cost 2] [@recovery "_"][@printing Printf.specific "JSX_LIDENT_E(%S)"]
 %token LPAREN [@symbol ")"]
 %token LBRACKETAT [@symbol "[@"]
 %token LBRACKETATAT [@symbol "[@@"]
@@ -854,6 +855,7 @@ let expr_of_lwt_bindings ~loc lbs body =
 %token TYPE [@symbol "type"]
 %token <string> UIDENT [@cost 2][@recovery "_"][@printer Printf.sprintf "UIDENT(%S)"]
 %token <string> JSX_UIDENT [@cost 2][@recovery "_"][@printer Printf.sprintf "JSX_UIDENT(%S)"]
+%token <string> JSX_UIDENT_E [@cost 2][@recovery "_"][@printer Printf.sprintf "JSX_UIDENT_E(%S)"]
 %token UNDERSCORE [@symbol "_"]
 %token VAL [@symbol "val"]
 %token VIRTUAL [@symbol "virtual"]
@@ -2675,10 +2677,10 @@ let_pattern [@recovery default_pattern ()]:
   *)
 ;
 jsx_element:
-    tag=mkrhs(jsx_longident) props=llist(jsx_prop) SLASHGREATER {
+    tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop) SLASHGREATER {
       Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children:None }
-  | tag=mkrhs(jsx_longident) props=llist(jsx_prop) 
-    GREATER children=llist(simple_expr) LESSSLASH mkrhs(val_longident) GREATER {
+  | tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop) 
+    GREATER children=llist(simple_expr) jsx_longident(JSX_UIDENT_E, JSX_LIDENT_E) GREATER {
       let children = 
         let children, loc = mktailexp $loc(children) children in
         mkexp ~loc children
@@ -3834,15 +3836,16 @@ mk_longident(prefix,final):
 val_longident:
     mk_longident(mod_longident, val_ident) { $1 }
 ;
-jsx_longident:
-   | id = JSX_LIDENT                            { Lident id }
-   | prefix = JSX_UIDENT DOT id = val_longident { 
+jsx_longident(uident, lident):
+   | id = uident { `Module ($sloc, Lident id) }
+   | id = lident { `Value ($sloc, Lident id) }
+   | prefix = uident DOT id = val_longident { 
      let rec rebase = function
        | Lident id -> Ldot (Lident prefix, id)
        | Ldot (prefix', id) -> Ldot (rebase prefix', id)
        | Lapply _ -> assert false
      in
-     rebase id }
+     `Value ($sloc, rebase id) }
 ;
 label_longident:
     mk_longident(mod_longident, LIDENT) { $1 }

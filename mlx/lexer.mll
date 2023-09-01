@@ -415,12 +415,16 @@ rule token = parse
       { warn_latin1 lexbuf; LIDENT name }
   | "<" (lowercase identchar * as name)
       { JSX_LIDENT name }
+  | "<" "/" (lowercase identchar * as name)
+      { JSX_LIDENT_E name }
   | uppercase identchar * as name
       { UIDENT name } (* No capitalized keywords *)
   | uppercase_latin1 identchar_latin1 * as name
       { warn_latin1 lexbuf; UIDENT name }
   | "<" (uppercase identchar * as name)
       { JSX_UIDENT name }
+  | "<" "/" (uppercase identchar * as name)
+      { JSX_UIDENT_E name }
   | int_literal as lit { INT (lit, None) }
   | (int_literal as lit) (literal_modifier as modif)
       { INT (lit, Some modif) }

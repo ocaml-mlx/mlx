@@ -1,3 +1,10 @@
 (cram
- (deps (package mlx) ./mlx))
+ (deps
+  (package mlx)
+  ./mlx
+  ./mlx_merlin.exe))
+
+(executable
+ (name mlx_merlin)
+ (libraries ocamlmerlin_mlx_lib))
 

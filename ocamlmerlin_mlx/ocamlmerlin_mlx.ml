@@ -1,4 +1,7 @@
+open Merlin_kernel
+open Merlin_extend
 open Merlin_extend.Extend_protocol.Reader
+open Ocamlmerlin_mlx_lib
 
 let parse_string filename str =
   let src = Msource.make str in
@@ -18,7 +21,7 @@ module Mlx_reader = struct
 
   let load buffer = buffer
 
-  let parse { text; path } =
+  let parse { text; path; _ } =
     let res = parse_string path text in
     match res.parsetree with
     | `Interface intf -> Signature intf
