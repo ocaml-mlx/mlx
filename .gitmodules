@@ -1,0 +1,6 @@
+[submodule "merlin-extend"]
+	path = merlin-extend
+	url = https://github.com/let-def/merlin-extend
+[submodule "merlin"]
+	path = merlin
+	url = https://github.com/voodoos/merlin.git
