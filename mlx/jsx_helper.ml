@@ -43,9 +43,5 @@ let make_jsx_element ~loc ~tag ~props ~children () =
     mkexp ~loc
       (Pexp_construct ({ txt = Lident "()"; loc = make_loc loc }, None))
   in
-  let props =
-    match children with
-    | None -> props
-    | Some children -> (Labelled "children", children) :: props
-  in
+  let props = (Labelled "children", children) :: props in
   Pexp_apply (tag, (Nolabel, unit) :: props)

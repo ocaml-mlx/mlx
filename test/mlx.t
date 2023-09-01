@@ -1,9 +1,9 @@
 
   $ echo 'let _ = <div />' | ./mlx
   BATCH
-  let _ = div () [@JSX]
+  let _ = div () ~children:[] [@JSX]
   MERLIN
-  let _ = div () [@JSX]
+  let _ = div () ~children:[] [@JSX]
 
   $ echo 'let _ = <div>hello world</div>' | ./mlx
   BATCH
@@ -13,15 +13,15 @@
 
   $ echo 'let _ = <div attr with_value=1 />' | ./mlx
   BATCH
-  let _ = div () ~attr ~with_value:1 [@JSX]
+  let _ = div () ~children:[] ~attr ~with_value:1 [@JSX]
   MERLIN
-  let _ = div () ~attr ~with_value:1 [@JSX]
+  let _ = div () ~children:[] ~attr ~with_value:1 [@JSX]
 
   $ echo 'let _ = <Hello attr with_value=1 />' | ./mlx
   BATCH
-  let _ = Hello.createElement () ~attr ~with_value:1 [@JSX]
+  let _ = Hello.createElement () ~children:[] ~attr ~with_value:1 [@JSX]
   MERLIN
-  let _ = Hello.createElement () ~attr ~with_value:1 [@JSX]
+  let _ = Hello.createElement () ~children:[] ~attr ~with_value:1 [@JSX]
 
   $ echo 'let _ = <Hello>world</Hello>' | ./mlx
   BATCH

@@ -2678,14 +2678,19 @@ let_pattern [@recovery default_pattern ()]:
 ;
 jsx_element:
     tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop) SLASHGREATER {
-      Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children:None }
+      let children =
+        let children, loc = mktailexp $loc(tag) [] in
+        mkexp ~loc children
+      in
+      Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children
+    }
   | tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop) 
     GREATER children=llist(simple_expr) jsx_longident(JSX_UIDENT_E, JSX_LIDENT_E) GREATER {
       let children = 
         let children, loc = mktailexp $loc(children) children in
         mkexp ~loc children
       in
-      Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children:(Some children)
+      Jsx_helper.make_jsx_element () ~loc:$loc(tag) ~tag ~props ~children
     }
 ;
 jsx_prop:
