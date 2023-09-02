@@ -1,0 +1,32 @@
+(library
+ (name mlx_kernel)
+ (package ocamlmerlin-mlx)
+ (flags
+  :standard
+  -w=-9-67-69
+  -open=Ocaml_parsing
+  -open=Mlx_preprocess
+  -open=Ocaml_utils
+  -open=Ocaml_typing
+  -open=Merlin_utils
+  -open=Merlin_extend
+  -open=Merlin_specific
+  -open=Merlin_kernel
+  )
+ (libraries
+  compiler-libs.common
+  mlx_preprocess
+  merlin-lib.ocaml_parsing
+  merlin-lib.extend
+  merlin-lib.kernel))
+
+(copy_files# ../../merlin/src/kernel/extension.{ml,mli})
+
+(copy_files# ../../merlin/src/kernel/mreader.{ml,mli})
+
+(copy_files# ../../merlin/src/kernel/mreader_explain.{ml,mli})
+
+(copy_files# ../../merlin/src/kernel/mreader_lexer.{ml,mli})
+
+(copy_files# ../../merlin/src/kernel/mreader_parser.{ml,mli})
+

@@ -3,49 +3,7 @@
  (package ocamlmerlin-mlx)
  (public_name ocamlmerlin-mlx)
  (modules ocamlmerlin_mlx)
- (libraries ocamlmerlin_mlx_lib))
-
-(library
- (name ocamlmerlin_mlx_lib)
- (package ocamlmerlin-mlx)
- (modules :standard \ ocamlmerlin_mlx)
- (flags
-  :standard
-  -w=-9-67-69
-  -open=Ocaml_utils
-  -open=Merlin_utils
-  -open=Merlin_extend
-  -open=Ocaml_parsing
-  -open=Ocaml_preprocess
-  -open=Ocaml_typing
-  -open=Merlin_specific
-  -open=Merlin_kernel)
- (libraries
-  menhirLib
-  compiler-libs.common
-  merlin-lib.ocaml_parsing
-  merlin-lib.extend
-  merlin-lib.kernel))
-
-(rule
- (targets parser_recover.ml)
- (deps parser_raw.cmly)
- (action
-  (with-stdout-to
-   %{targets}
-   (run
-    %{exe:../merlin/src/ocaml/preprocess/recover/gen_recover.exe}
-    %{deps}))))
-
-(rule
- (targets parser_printer.ml)
- (deps parser_raw.cmly)
- (action
-  (with-stdout-to
-   %{targets}
-   (run
-    %{exe:../merlin/src/ocaml/preprocess/printer/gen_printer.exe}
-    %{deps}))))
+ (libraries mlx_preprocess mlx_kernel))
 
 (rule
  (targets extend_helper.ml)
@@ -53,26 +11,4 @@
  (action
   (run %{bin:cppo} -V OCAML:%{ocaml_version} %{deps} -o %{targets})))
 
-(copy_files# ../mlx/jsx_helper.ml)
-
 (copy_files# ../merlin-extend/*[!extend_helper].{ml,mli})
-
-(copy_files# ../merlin/src/kernel/extension.{ml,mli})
-
-(copy_files# ../merlin/src/kernel/mreader.{ml,mli})
-
-(copy_files# ../merlin/src/kernel/mreader_explain.{ml,mli})
-
-(copy_files# ../merlin/src/kernel/mreader_lexer.{ml,mli})
-
-(copy_files# ../merlin/src/kernel/mreader_parser.{ml,mli})
-
-(copy_files# ../merlin/src/ocaml/preprocess/parser_explain.ml)
-
-(copy_files# ../merlin/src/ocaml/preprocess/lexer_ident.{mll,mli})
-
-(ocamllex lexer_ident lexer_raw)
-
-(menhir
- (modules parser_raw)
- (flags :standard --inspection --table --cmly))
