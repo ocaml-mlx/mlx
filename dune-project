@@ -4,7 +4,7 @@
 
 (name mlx)
 
-(generate_opam_files true)
+(generate_opam_files false)
 
 (dialect
  (name mlx)
@@ -25,11 +25,8 @@
 (documentation https://url/to/documentation)
 
 (package
- (name mlx)
- (synopsis "OCaml syntax dialect which adds JSX syntax expressions")
- (depends
-  ocaml
-  dune
-  cppo
-  menhir
-  csexp))
+ (name mlx))
+
+(package
+ (name ocamlmerlin-mlx)
+ )

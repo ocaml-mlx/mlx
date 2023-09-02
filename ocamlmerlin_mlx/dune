@@ -1,6 +1,6 @@
 (executable
  (name ocamlmerlin_mlx)
- (package mlx)
+ (package ocamlmerlin-mlx)
  (public_name ocamlmerlin-mlx)
  (modules ocamlmerlin_mlx)
  (libraries ocamlmerlin_mlx_lib))

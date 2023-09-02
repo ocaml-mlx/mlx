@@ -4,3 +4,6 @@
 [submodule "merlin"]
 	path = merlin
 	url = https://github.com/voodoos/merlin.git
+[submodule "ocaml"]
+	path = ocaml
+	url = https://github.com/ocaml/ocaml.git
