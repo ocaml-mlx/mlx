@@ -28,3 +28,11 @@
   let _ = Hello.createElement () ~children:[ world ] [@JSX]
   MERLIN
   let _ = Hello.createElement () ~children:[ world ] [@JSX]
+
+  $ echo 'let _ = <one>world</two>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 18-23:
+  Error: Syntax error: JSX closing tag </one> expected.
+  
+  MERLIN
+  Fatal error: exception Ocaml_parsing.Syntaxerr.Error(_)

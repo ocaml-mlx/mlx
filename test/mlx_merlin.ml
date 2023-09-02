@@ -1,3 +1,4 @@
+open Ocaml_parsing
 open Mlx_kernel
 
 let parse_string filename str =
@@ -13,11 +14,20 @@ let parse_string filename str =
   in
   Mreader.parse cfg (src, None)
 
+let report_error exn =
+  let () =
+    match Location.error_of_exn exn with
+    | Some `Ok error -> Format.printf "%a@." Location.print_report error
+    | Some `Already_displayed -> ()
+    | None -> raise exn
+  in
+  exit 1
+
 let () =
   let str = In_channel.input_all stdin in
   let res = parse_string "*stdin*" str in
-  let () = List.iter (fun exn -> raise exn) res.lexer_errors in
-  let () = List.iter (fun exn -> raise exn) res.parser_errors in
+  let () = List.iter report_error res.lexer_errors in
+  let () = List.iter report_error res.parser_errors in
   match res.parsetree with
   | `Implementation str ->
       Format.printf "%a@." Ocaml_parsing.Pprintast.structure str
