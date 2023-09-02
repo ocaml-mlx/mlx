@@ -10,7 +10,7 @@ bug-reports: "https://github.com/andreypopp/mlx/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.9"}
-  "merlin-lib" {!with-dev-setup}
+  "merlin-lib" {!dev}
   "csexp" {with-dev-setup}
   "cppo" {with-dev-setup}
   "menhir" {= "20210419" & with-dev-setup}
