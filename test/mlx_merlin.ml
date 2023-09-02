@@ -1,5 +1,4 @@
-open Merlin_kernel
-open Ocamlmerlin_mlx_lib
+open Mlx_kernel
 
 let parse_string filename str =
   let src = Msource.make str in

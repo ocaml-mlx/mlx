@@ -6,4 +6,4 @@
 
 (executable
  (name mlx_merlin)
- (libraries ocamlmerlin_mlx_lib))
+ (libraries mlx_kernel))

@@ -11,8 +11,7 @@
   -open=Merlin_utils
   -open=Merlin_extend
   -open=Merlin_specific
-  -open=Merlin_kernel
-  )
+  -open=Merlin_kernel)
  (libraries
   compiler-libs.common
   mlx_preprocess
@@ -20,13 +19,38 @@
   merlin-lib.extend
   merlin-lib.kernel))
 
-(copy_files# ../../merlin/src/kernel/extension.{ml,mli})
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files ../../merlin/src/kernel/extension.{ml,mli}))
 
-(copy_files# ../../merlin/src/kernel/mreader.{ml,mli})
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files ../../merlin/src/kernel/mreader.{ml,mli}))
 
-(copy_files# ../../merlin/src/kernel/mreader_explain.{ml,mli})
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files ../../merlin/src/kernel/mreader_explain.{ml,mli}))
 
-(copy_files# ../../merlin/src/kernel/mreader_lexer.{ml,mli})
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files ../../merlin/src/kernel/mreader_lexer.{ml,mli}))
 
-(copy_files# ../../merlin/src/kernel/mreader_parser.{ml,mli})
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files ../../merlin/src/kernel/mreader_parser.{ml,mli}))
 
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files ../../merlin/src/kernel/mreader_recover.{ml,mli}))
