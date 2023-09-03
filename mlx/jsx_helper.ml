@@ -32,7 +32,7 @@ let make_jsx_element ~raise ~loc ~tag ~end_tag ~props ~children () =
   let () =
     match end_tag with
     | None -> ()
-    | Some end_tag ->
+    | Some (end_tag, (_, end_loc_e)) ->
         let eq =
           match tag, end_tag with
           | (`Module, _, s), (`Module, _, e) -> equal_longindent s e
@@ -40,7 +40,8 @@ let make_jsx_element ~raise ~loc ~tag ~end_tag ~props ~children () =
           | _ -> false
         in
         if not eq then
-          let _, end_loc, _ = end_tag in
+          let _, (end_loc_s, _), _ = end_tag in
+          let end_loc = end_loc_s, end_loc_e in
           let _, start_loc, tag = tag in
           let tag = Longident.flatten tag |> String.concat "." in
           raise
