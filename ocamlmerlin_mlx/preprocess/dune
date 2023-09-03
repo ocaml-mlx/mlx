@@ -31,9 +31,6 @@
  (files ../../merlin/src/ocaml/preprocess/menhirLib.{ml,mli}))
 
 (copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
  (files ../../mlx/jsx_helper.ml))
 
 (ocamllex lexer_ident lexer_raw)

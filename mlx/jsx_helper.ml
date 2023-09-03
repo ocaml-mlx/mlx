@@ -1,3 +1,4 @@
+open Printf
 open Asttypes
 open Longident
 open Parsetree
@@ -13,13 +14,11 @@ let make_loc (startpos, endpos) =
 let mkloc = Location.mkloc
 let mkexp ~loc d = Exp.mk ~loc:(make_loc loc) d
 
-let mkjsxexp ~loc e =
-  let e = mkexp ~loc e in
-  let attr =
-    let loc = make_loc loc in
-    Attr.mk ~loc { txt = "JSX"; loc } (PStr [])
-  in
-  { e with pexp_attributes = [ attr ] }
+let mkjsxexp ~loc:loc' e =
+  let e = mkexp ~loc:loc' e in
+  let loc = make_loc loc' in
+  let pexp_attributes = [ Attr.mk ~loc { txt = "JSX"; loc } (PStr []) ] in
+  { e with pexp_attributes }
 
 let rec equal_longindent a b =
   match a, b with
@@ -29,7 +28,7 @@ let rec equal_longindent a b =
   | Lapply _, _ | _, Lapply _ -> assert false
   | _ -> false
 
-let make_jsx_element ~raise:_ ~loc ~tag ~end_tag ~props ~children () =
+let make_jsx_element ~raise ~loc ~tag ~end_tag ~props ~children () =
   let () =
     match end_tag with
     | None -> ()
@@ -41,11 +40,17 @@ let make_jsx_element ~raise:_ ~loc ~tag ~end_tag ~props ~children () =
           | _ -> false
         in
         if not eq then
-          let _, loc, _ = end_tag in
-          let _, _, tag = tag in
+          let _, end_loc, _ = end_tag in
+          let _, start_loc, tag = tag in
           let tag = Longident.flatten tag |> String.concat "." in
-          let msg = Printf.sprintf "JSX closing tag </%s>" tag in
-          raise Syntaxerr.(Error(Expecting(make_loc loc, msg)))
+          raise
+            Syntaxerr.(
+              Error
+                (Unclosed
+                   ( make_loc start_loc,
+                     sprintf "<%s>" tag,
+                     make_loc end_loc,
+                     sprintf "</%s>" tag )))
   in
   let tag =
     match tag with

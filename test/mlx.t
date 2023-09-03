@@ -32,7 +32,11 @@
   $ echo 'let _ = <one>world</two>' | ./mlx
   BATCH
   File "*stdin*", line 1, characters 18-23:
-  Error: Syntax error: JSX closing tag </one> expected.
+  Error: Syntax error: '</one>' expected
+  File "*stdin*", line 1, characters 8-12:
+    This '<one>' might be unmatched
   
   MERLIN
-  Fatal error: exception Ocaml_parsing.Syntaxerr.Error(_)
+  Error: Syntax error: '</one>' expected
+    This '<one>' might be unmatched
+  
