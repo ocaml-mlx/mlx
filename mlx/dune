@@ -21,21 +21,25 @@
   --table
   --strategy
   simplified)
- (enabled_if (<> %{profile} "release"))
+ (enabled_if
+  (<> %{profile} "release"))
  (mode promote)
  (modules parser))
 
 (copy_files
  (mode promote)
- (enabled_if (<> %{profile} "release"))
+ (enabled_if
+  (<> %{profile} "release"))
  (files ../ocaml/parsing/parse.{ml,mli}))
 
 (copy_files
  (mode promote)
- (enabled_if (<> %{profile} "release"))
+ (enabled_if
+  (<> %{profile} "release"))
  (files ../ocaml/parsing/lexer.mli))
 
 (copy_files
  (mode promote)
- (enabled_if (<> %{profile} "release"))
+ (enabled_if
+  (<> %{profile} "release"))
  (files ../ocaml/boot/menhir/menhirLib.{ml,mli}))
