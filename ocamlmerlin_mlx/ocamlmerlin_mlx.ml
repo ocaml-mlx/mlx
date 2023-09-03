@@ -1,7 +1,6 @@
 open Merlin_extend
 open Merlin_extend.Extend_protocol.Reader
 open Ocaml_parsing
-open Mlx_preprocess
 open Mlx_kernel
 
 let parse_string filename str =
