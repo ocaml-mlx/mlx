@@ -17,7 +17,12 @@ let parse_string filename str =
 let report_error exn =
   let () =
     match Location.error_of_exn exn with
-    | Some `Ok error -> Format.eprintf "%a@." Location.print_report error
+    | Some (`Ok error) ->
+        let ppf = Format.err_formatter in
+        Location.print_loc ppf (Location.loc_of_report error);
+        Format.pp_force_newline ppf ();
+        Location.print_report ppf error;
+        Format.pp_force_newline ppf ()
     | Some `Already_displayed -> ()
     | None -> raise exn
   in

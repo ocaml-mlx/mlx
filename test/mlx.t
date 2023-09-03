@@ -37,6 +37,7 @@
     This '<one>' might be unmatched
   
   MERLIN
+  File "*stdin*", line 1, characters 18-23
   Error: Syntax error: '</one>' expected
     This '<one>' might be unmatched
   
