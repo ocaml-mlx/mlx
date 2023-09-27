@@ -31,13 +31,13 @@
 
   $ echo 'let _ = <one>world</two>' | ./mlx
   BATCH
-  File "*stdin*", line 1, characters 18-23:
+  File "*stdin*", line 1, characters 18-24:
   Error: Syntax error: '</one>' expected
   File "*stdin*", line 1, characters 8-12:
     This '<one>' might be unmatched
   
   MERLIN
-  File "*stdin*", line 1, characters 18-23
+  File "*stdin*", line 1, characters 18-24
   Error: Syntax error: '</one>' expected
     This '<one>' might be unmatched
   
