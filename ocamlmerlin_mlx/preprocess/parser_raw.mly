@@ -2697,7 +2697,9 @@ jsx_element:
 ;
 jsx_prop:
     name=LIDENT { $loc(name), `Prop_punned name }
+  | QUESTION name=LIDENT { $loc(name), `Prop_opt_punned name }
   | name=LIDENT EQUAL expr=simple_expr { $loc(name), `Prop (name, expr) }
+  | QUESTION name=LIDENT EQUAL expr=simple_expr { $loc(name), `Prop_opt (name, expr) }
 ;
 labeled_simple_expr:
     simple_expr %prec below_HASH

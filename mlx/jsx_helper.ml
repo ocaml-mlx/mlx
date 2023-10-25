@@ -62,12 +62,16 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
         mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
   in
   let props =
+    let prop_exp ~loc name =
+      let id = mkloc (Lident name) (make_loc loc) in
+      mkexp ~loc (Pexp_ident id)
+    in
     List.map
       (function
-        | loc, `Prop_punned name ->
-            let id = mkloc (Lident name) (make_loc loc) in
-            Labelled name, mkexp ~loc (Pexp_ident id)
-        | _loc, `Prop (name, expr) -> Labelled name, expr)
+        | loc, `Prop_punned name -> Labelled name, prop_exp ~loc name
+        | loc, `Prop_opt_punned name -> Optional name, prop_exp ~loc name
+        | _loc, `Prop (name, expr) -> Labelled name, expr
+        | _loc, `Prop_opt (name, expr) -> Optional name, expr)
       props
   in
   let unit =

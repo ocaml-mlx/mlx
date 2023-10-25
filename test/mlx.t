@@ -17,6 +17,12 @@
   MERLIN
   let _ = div () ~children:[] ~attr ~with_value:1 [@JSX]
 
+  $ echo 'let _ = <div ?opt ?opt_value=some />' | ./mlx
+  BATCH
+  let _ = div () ~children:[] ?opt ?opt_value:some [@JSX]
+  MERLIN
+  let _ = div () ~children:[] ?opt ?opt_value:some [@JSX]
+
   $ echo 'let _ = <Hello attr with_value=1 />' | ./mlx
   BATCH
   let _ = Hello.createElement () ~children:[] ~attr ~with_value:1 [@JSX]

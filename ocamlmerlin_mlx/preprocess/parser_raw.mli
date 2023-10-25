@@ -390,7 +390,10 @@ module MenhirInterpreter : sig
     | N_reversed_llist_simple_expr_ : (Parsetree.expression list) nonterminal
     | N_reversed_llist_preceded_CONSTRAINT_constrain__ : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) nonterminal
     | N_reversed_llist_jsx_prop_ : (((Lexing.position * Lexing.position) *
-   [ `Prop of string * Parsetree.expression | `Prop_punned of string ])
+   [ `Prop of string * Parsetree.expression
+   | `Prop_opt of string * Parsetree.expression
+   | `Prop_opt_punned of string
+   | `Prop_punned of string ])
   list) nonterminal
     | N_reversed_bar_llist_extension_constructor_declaration_ : (Parsetree.extension_constructor list) nonterminal
     | N_reversed_bar_llist_extension_constructor_ : (Parsetree.extension_constructor list) nonterminal
@@ -500,7 +503,10 @@ module MenhirInterpreter : sig
     | N_label_declaration_semi : (Parsetree.label_declaration) nonterminal
     | N_label_declaration : (Parsetree.label_declaration) nonterminal
     | N_jsx_prop : ((Lexing.position * Lexing.position) *
-  [ `Prop of string * Parsetree.expression | `Prop_punned of string ]) nonterminal
+  [ `Prop of string * Parsetree.expression
+  | `Prop_opt of string * Parsetree.expression
+  | `Prop_opt_punned of string
+  | `Prop_punned of string ]) nonterminal
     | N_jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_ : ([> `Module | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
     | N_jsx_longident_JSX_UIDENT_JSX_LIDENT_ : ([ `Module | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
     | N_jsx_element : (Parsetree.expression_desc) nonterminal
