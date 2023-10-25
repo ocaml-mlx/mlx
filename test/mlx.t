@@ -23,11 +23,35 @@
   MERLIN
   let _ = Hello.createElement () ~children:[] ~attr ~with_value:1 [@JSX]
 
+  $ echo 'let _ = <Hello.ok attr with_value=1 />' | ./mlx
+  BATCH
+  let _ = Hello.ok () ~children:[] ~attr ~with_value:1 [@JSX]
+  MERLIN
+  let _ = Hello.ok () ~children:[] ~attr ~with_value:1 [@JSX]
+
+  $ echo 'let _ = <Hello.Ok attr with_value=1 />' | ./mlx
+  BATCH
+  let _ = Hello.Ok.createElement () ~children:[] ~attr ~with_value:1 [@JSX]
+  MERLIN
+  let _ = Hello.Ok.createElement () ~children:[] ~attr ~with_value:1 [@JSX]
+
   $ echo 'let _ = <Hello>world</Hello>' | ./mlx
   BATCH
   let _ = Hello.createElement () ~children:[ world ] [@JSX]
   MERLIN
   let _ = Hello.createElement () ~children:[ world ] [@JSX]
+
+  $ echo 'let _ = <Hello.ok>world</Hello.ok>' | ./mlx
+  BATCH
+  let _ = Hello.ok () ~children:[ world ] [@JSX]
+  MERLIN
+  let _ = Hello.ok () ~children:[ world ] [@JSX]
+
+  $ echo 'let _ = <Hello.Ok>world</Hello.Ok>' | ./mlx
+  BATCH
+  let _ = Hello.Ok.createElement () ~children:[ world ] [@JSX]
+  MERLIN
+  let _ = Hello.Ok.createElement () ~children:[ world ] [@JSX]
 
   $ echo 'let _ = <one>world</two>' | ./mlx
   BATCH

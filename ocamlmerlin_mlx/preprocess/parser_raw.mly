@@ -3846,6 +3846,13 @@ val_longident:
 jsx_longident(uident, lident):
    | id = uident { `Module, $sloc, Lident id }
    | id = lident { `Value, $sloc, Lident id }
+   | prefix = uident DOT id = mod_longident { 
+     let rec rebase = function
+       | Lident id -> Ldot (Lident prefix, id)
+       | Ldot (prefix', id) -> Ldot (rebase prefix', id)
+       | Lapply _ -> assert false
+     in
+     `Module, $sloc, rebase id }
    | prefix = uident DOT id = val_longident { 
      let rec rebase = function
        | Lident id -> Ldot (Lident prefix, id)
