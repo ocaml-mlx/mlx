@@ -59,6 +59,8 @@
   MERLIN
   let _ = Hello.Ok.createElement () ~children:[ world ] [@JSX]
 
+Expected error (tag mismatch):
+
   $ echo 'let _ = <one>world</two>' | ./mlx
   BATCH
   File "*stdin*", line 1, characters 18-24:
@@ -71,3 +73,45 @@
   Error: Syntax error: '</one>' expected
     This '<one>' might be unmatched
   
+Some tests for prop expressions:
+
+  $ echo 'let _ = <element prop=`Some />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:`Some [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:`Some [@JSX]
+  $ echo 'let _ = <element prop=Some.value />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:Some.value [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:Some.value [@JSX]
+  $ echo 'let _ = <element prop=() />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:() [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:() [@JSX]
+  $ echo 'let _ = <element prop=(1+2) />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:(1 + 2) [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:(1 + 2) [@JSX]
+  $ echo 'let _ = <element prop=[] />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:[] [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:[] [@JSX]
+  $ echo 'let _ = <element prop=name#obj />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:name#obj [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:name#obj [@JSX]
+  $ echo 'let _ = <element prop=!ref />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:!ref [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:!ref [@JSX]
+  $ echo 'let _ = <element prop=!?ref />' | ./mlx
+  BATCH
+  let _ = element () ~children:[] ~prop:!?ref [@JSX]
+  MERLIN
+  let _ = element () ~children:[] ~prop:!?ref [@JSX]

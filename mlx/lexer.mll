@@ -340,6 +340,8 @@ let identchar_latin1 =
 
 let symbolchar =
   ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
+let symbolchar_no_prefix =
+  ['$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
 let symbolchar_no_greater =
   ['!' '$' '%' '&' '*' '+' '-' '.' '/' ':' '<' '=' '?' '@' '^' '|' '~']
 let symbolchar_no_less =
@@ -576,7 +578,9 @@ rule token = parse
             { PREFIXOP op }
   | ['~' '?'] symbolchar_or_hash + as op
             { PREFIXOP op }
-  | ['=' '<' '|' '&' '$'] symbolchar * as op
+  | ['<' '|' '&' '$'] symbolchar * as op
+            { INFIXOP0 op }
+  | '=' symbolchar_no_prefix * as op
             { INFIXOP0 op }
   | ">" symbolchar_no_less * as op
             { INFIXOP0 op }
