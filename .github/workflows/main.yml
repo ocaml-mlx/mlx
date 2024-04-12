@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: checkout tree
         uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: set-up OCaml ${{ matrix.ocaml-compiler }}
         uses: ocaml/setup-ocaml@v2
