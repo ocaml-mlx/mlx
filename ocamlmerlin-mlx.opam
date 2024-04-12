@@ -12,7 +12,7 @@ depends: [
   "dune" {>= "3.9"}
   "merlin-lib"
   "csexp" {with-dev-setup}
-  "cppo" {with-dev-setup}
+  "cppo"
   "menhir" {= "20210419" & with-dev-setup}
   "odoc" {with-doc}
 ]
