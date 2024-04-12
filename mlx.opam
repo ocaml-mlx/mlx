@@ -11,6 +11,7 @@ depends: [
   "ocaml"
   "dune" {>= "3.9"}
   "menhir" {= "20210419" & with-dev-setup}
+  "ocamlformat" {with-dev-setup}
   "odoc" {with-doc}
 ]
 build: [
