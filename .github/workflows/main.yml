@@ -1,0 +1,39 @@
+name: main
+
+on:
+  pull_request:
+  push:
+  schedule:
+    - cron: 0 1 * * MON
+
+permissions: read-all
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        ocaml-compiler:
+          - "4.14"
+          - "5.1"
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: checkout tree
+        uses: actions/checkout@v4
+
+      - name: set-up OCaml ${{ matrix.ocaml-compiler }}
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: ${{ matrix.ocaml-compiler }}
+          opam-repositories: |
+            default: https://github.com/ocaml/opam-repository.git
+
+      - run: opam install . --deps-only --with-test
+
+      - run: opam exec -- dune build
+
+      - run: opam exec -- dune runtest
