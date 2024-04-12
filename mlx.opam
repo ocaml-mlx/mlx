@@ -8,7 +8,7 @@ homepage: "https://github.com/andreypopp/mlx"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/andreypopp/mlx/issues"
 depends: [
-  "ocaml" {>= "5.1.0"}
+  "ocaml"
   "dune" {>= "3.9"}
   "menhir" {= "20210419" & with-dev-setup}
   "odoc" {with-doc}
