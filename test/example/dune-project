@@ -1,0 +1,15 @@
+(lang dune 3.10)
+
+(generate_opam_files false)
+
+(package 
+  (name mlx-example)
+  (depends dune mlx))
+
+(dialect
+ (name mlx)
+ (implementation
+  (extension mlx)
+  (preprocess
+   (run mlx-pp %{input-file}))))
+
