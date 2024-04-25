@@ -11,7 +11,7 @@
  (implementation
   (extension mlx)
   (preprocess
-   (run ./mlx/pp.exe %{input-file}))))
+   (run ./lib/pp.exe %{input-file}))))
 
 (source
  (github andreypopp/mlx))

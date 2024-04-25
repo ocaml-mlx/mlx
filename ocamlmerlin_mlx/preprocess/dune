@@ -31,7 +31,7 @@
  (files ../../merlin/src/ocaml/preprocess/menhirLib.{ml,mli}))
 
 (copy_files#
- (files ../../mlx/jsx_helper.ml))
+ (files ../../lib/jsx_helper.ml))
 
 (ocamllex lexer_ident lexer_raw)
 
