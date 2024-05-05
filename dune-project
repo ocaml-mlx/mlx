@@ -28,5 +28,4 @@
  (name mlx))
 
 (package
- (name ocamlmerlin-mlx)
- )
+ (name ocamlmerlin-mlx))

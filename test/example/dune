@@ -1,4 +1,7 @@
 (executable
-  (name main))
+ (package mlx-example)
+ (public_name mlx-example)
+ (name main))
 
-(cram (deps ./main.exe))
+(cram
+ (deps ./main.exe))
