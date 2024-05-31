@@ -1,0 +1,10 @@
+(executable
+ (name gen_recover)
+ (flags :standard -w -67)
+ (libraries unix menhirSdk))
+
+(copy_files
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/preprocess/recover/*.{ml,mli}))

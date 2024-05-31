@@ -1,0 +1,19 @@
+(library
+ (name mlx_utils)
+ (package ocamlmerlin-mlx)
+ (libraries str unix)
+ (foreign_stubs
+  (language c)
+  (names platform_misc)))
+
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/platform/platform_misc.c))
+
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/utils/*.{ml,mli}))

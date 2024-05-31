@@ -1,0 +1,21 @@
+(library
+ (name mlx_ocaml_typing)
+ (package ocamlmerlin-mlx)
+ (flags
+  -open=Mlx_ocaml_utils
+  -open=Mlx_ocaml_parsing
+  -open=Mlx_ocaml_compression
+  -open=Mlx_utils
+  (:standard -w -9))
+ (modules_without_implementation annot outcometree)
+ (libraries
+  mlx_utils
+  mlx_ocaml_parsing
+  mlx_ocaml_compression
+  mlx_ocaml_utils))
+
+(copy_files
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/typing/*.{ml,mli}))

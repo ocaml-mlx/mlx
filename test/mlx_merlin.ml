@@ -1,4 +1,4 @@
-open Ocaml_parsing
+open Mlx_ocaml_parsing
 open Mlx_kernel
 
 let parse_string filename str =
@@ -7,7 +7,7 @@ let parse_string filename str =
   let cfg =
     {
       cfg with
-      Merlin_kernel.Mconfig.query = { cfg.query with filename };
+      Mconfig.query = { cfg.query with filename };
       (* override this so we don't try to run any extensions *)
       merlin = { cfg.merlin with extension_to_reader = [] };
     }
@@ -35,6 +35,6 @@ let () =
   let () = List.iter report_error res.parser_errors in
   match res.parsetree with
   | `Implementation str ->
-      Format.printf "%a@." Ocaml_parsing.Pprintast.structure str
+      Format.printf "%a@." Mlx_ocaml_parsing.Pprintast.structure str
   | `Interface str ->
-      Format.printf "%a@." Ocaml_parsing.Pprintast.signature str
+      Format.printf "%a@." Mlx_ocaml_parsing.Pprintast.signature str

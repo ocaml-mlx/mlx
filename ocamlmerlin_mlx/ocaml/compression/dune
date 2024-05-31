@@ -1,0 +1,11 @@
+(library
+ (name mlx_ocaml_compression)
+ (package ocamlmerlin-mlx)
+ (libraries compiler-libs.common))
+
+(rule
+ (targets ocaml_compression.ml)
+ (deps ocaml_compression.cppo.ml)
+ (action
+  (run %{bin:cppo} -V OCAML:%{ocaml_version} %{deps} -o %{targets})))
+

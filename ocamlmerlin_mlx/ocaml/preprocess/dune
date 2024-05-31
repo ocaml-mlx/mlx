@@ -1,0 +1,65 @@
+(library
+ (name mlx_ocaml_preprocess)
+ (package ocamlmerlin-mlx)
+ (flags
+  :standard
+  -w=-9-67-69
+  -open=Mlx_utils
+  -open=Mlx_ocaml_utils
+  -open=Mlx_ocaml_parsing)
+ (libraries mlx_utils mlx_ocaml_utils mlx_ocaml_parsing))
+
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/preprocess/parser_explain.ml))
+
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/preprocess/lexer_ident.{mll,mli}))
+
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/preprocess/menhirLib.{ml,mli}))
+
+(copy_files#
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/mlx/jsx_helper.ml))
+
+(ocamllex lexer_ident lexer_raw)
+
+(menhir
+ (modules parser_raw)
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (flags :standard --inspection --table --cmly))
+
+(rule
+ (targets parser_recover.ml)
+ (deps parser_raw.cmly)
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{targets}
+   (run %{exe:./recover/gen_recover.exe} %{deps}))))
+
+(rule
+ (targets parser_printer.ml)
+ (deps parser_raw.cmly)
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (action
+  (with-stdout-to
+   %{targets}
+   (run %{exe:./printer/gen_printer.exe} %{deps}))))

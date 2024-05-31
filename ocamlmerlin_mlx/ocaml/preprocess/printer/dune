@@ -1,0 +1,9 @@
+(executable
+ (name gen_printer)
+ (libraries unix menhirSdk))
+
+(copy_files
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/preprocess/printer/*.{ml,mli}))

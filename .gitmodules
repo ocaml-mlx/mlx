@@ -7,3 +7,6 @@
 [submodule "ocaml"]
 	path = ocaml
 	url = https://github.com/ocaml/ocaml.git
+[submodule "merlin_414"]
+	path = merlin_414
+	url = https://github.com/ocaml/merlin.git
