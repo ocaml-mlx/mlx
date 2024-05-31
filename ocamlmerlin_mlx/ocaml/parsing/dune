@@ -1,0 +1,22 @@
+(library
+ (name mlx_ocaml_parsing)
+ (package ocamlmerlin-mlx)
+ (flags
+  -open=Mlx_utils
+  -open=Mlx_ocaml_utils
+  -open=Astlib.Ast_501
+  (:standard -w -9))
+ (modules_without_implementation asttypes parsetree)
+ (libraries ppxlib mlx_utils mlx_ocaml_utils))
+
+(copy_files
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/parsing/*.{ml,mli}))
+
+(copy_files
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/extend_helper.{ml,mli}))

@@ -3,12 +3,15 @@
  (package ocamlmerlin-mlx)
  (public_name ocamlmerlin-mlx)
  (modules ocamlmerlin_mlx)
- (libraries mlx_preprocess mlx_kernel))
-
-(rule
- (targets extend_helper.ml)
- (deps extend_helper.cppo.ml)
- (action
-  (run %{bin:cppo} -V OCAML:%{ocaml_version} %{deps} -o %{targets})))
-
-(copy_files# ../merlin-extend/*[!extend_helper].{ml,mli})
+ (flags
+  :standard
+  -open=Mlx_utils
+  -open=Mlx_kernel
+  -open=Mlx_ocaml_preprocess)
+ (libraries
+  mlx_ocaml_preprocess
+  mlx_kernel
+  merlin-lib.extend
+  merlin-lib.kernel
+  ppxlib
+  compiler-libs.common))

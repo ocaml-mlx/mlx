@@ -1,0 +1,11 @@
+(library
+ (name mlx_ocaml_utils)
+ (package ocamlmerlin-mlx)
+ (flags :standard -w=-9-67-69 -open=Mlx_utils -open Astlib.Ast_501)
+ (libraries ppxlib compiler-libs.common merlin-lib.config mlx_utils))
+
+(copy_files
+ (enabled_if
+  (<> %{profile} "release"))
+ (mode promote)
+ (files %{project_root}/merlin/src/ocaml/utils/*.{ml,mli}))

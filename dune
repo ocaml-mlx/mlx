@@ -1,3 +1,2 @@
-(vendored_dirs merlin ocaml-lsp)
-
-(data_only_dirs ocaml merlin-extend)
+(vendored_dirs merlin-extend)
+(data_only_dirs ocaml ocamlmerlin_mlx_414 merlin merlin_414)

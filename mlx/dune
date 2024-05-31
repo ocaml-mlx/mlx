@@ -3,8 +3,8 @@
  (package mlx)
  (public_name mlx-pp)
  (flags
-  (:standard -w -9-67))
- (libraries compiler-libs.common))
+  (:standard -w -9-67 -open Astlib.Ast_501))
+ (libraries ppxlib compiler-libs.common))
 
 (ocamllex lexer)
 
@@ -42,4 +42,19 @@
  (mode promote)
  (enabled_if
   (<> %{profile} "release"))
- (files ../ocaml/boot/menhir/menhirLib.{ml,mli}))
+ (files ../ocaml/parsing/syntaxerr.{ml,mli}))
+
+(copy_files
+ (mode promote)
+ (enabled_if
+  (<> %{profile} "release"))
+ (files ../ocaml/parsing/ast_helper.{ml,mli}))
+
+(copy_files
+ (mode promote)
+ (enabled_if
+  (<> %{profile} "release"))
+ (files ../ocaml/parsing/docstrings.{ml,mli}))
+
+(copy_files
+ (files ../menhirLib/menhirLib.{ml,mli}))

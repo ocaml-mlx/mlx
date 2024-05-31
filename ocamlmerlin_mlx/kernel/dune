@@ -4,53 +4,26 @@
  (flags
   :standard
   -w=-9-67-69
-  -open=Ocaml_parsing
-  -open=Mlx_preprocess
-  -open=Ocaml_utils
-  -open=Ocaml_typing
-  -open=Merlin_utils
-  -open=Merlin_extend
-  -open=Merlin_specific
-  -open=Merlin_kernel)
+  -open=Mlx_utils
+  -open=Mlx_ocaml_utils
+  -open=Mlx_ocaml_parsing
+  -open=Mlx_ocaml_preprocess
+  -open=Mlx_ocaml_typing
+  -open=Mlx_extend)
  (libraries
-  compiler-libs.common
-  mlx_preprocess
-  merlin-lib.ocaml_parsing
-  merlin-lib.extend
-  merlin-lib.kernel))
+  mlx_utils
+  mlx_ocaml_utils
+  mlx_ocaml_parsing
+  mlx_ocaml_preprocess
+  mlx_ocaml_typing
+  mlx_extend
+  merlin-lib.kernel
+  merlin-lib.os_ipc
+  merlin-lib.dot_protocol))
 
 (copy_files#
  (enabled_if
   (<> %{profile} "release"))
  (mode promote)
- (files ../../merlin/src/kernel/extension.{ml,mli}))
-
-(copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files ../../merlin/src/kernel/mreader.{ml,mli}))
-
-(copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files ../../merlin/src/kernel/mreader_explain.{ml,mli}))
-
-(copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files ../../merlin/src/kernel/mreader_lexer.{ml,mli}))
-
-(copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files ../../merlin/src/kernel/mreader_parser.{ml,mli}))
-
-(copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files ../../merlin/src/kernel/mreader_recover.{ml,mli}))
+ (files
+  %{project_root}/merlin/src/kernel/{msource,mconfig,mreader,mreader_parser,mreader_lexer,mreader_recover,mreader_explain,extension,mreader_extend,mocaml}.{ml,mli}))

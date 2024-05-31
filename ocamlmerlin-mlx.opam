@@ -9,11 +9,12 @@ doc: "https://url/to/documentation"
 bug-reports: "https://github.com/andreypopp/mlx/issues"
 depends: [
   "ocaml"
+  "ppxlib"
   "dune" {>= "3.9"}
   "merlin-lib"
   "csexp" {with-dev-setup}
   "cppo"
-  "menhir" {= "20210419" & with-dev-setup}
+  "menhir" {= "20201216" & with-dev-setup}
   "odoc" {with-doc}
 ]
 build: [
