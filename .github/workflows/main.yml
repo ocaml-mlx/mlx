@@ -18,8 +18,9 @@ jobs:
         ocaml-compiler:
           # TODO: consider adding support for 4.14, the problem with the merlin
           # code right now, we depend on a branch that is not compatible with 4.14
-          # - "4.14"
+          - "4.14"
           - "5.1"
+          - "5.2"
 
     runs-on: ${{ matrix.os }}
 
