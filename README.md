@@ -25,7 +25,8 @@ While mlx is not yet available on opam, you can use a custom opam repository to 
 ```sh
 opam repo add andreypopp https://github.com/andreypopp/opam-repository.git
 opam update
-opam pin add dune.3.16.0-dev --dev
+opam pin add dune.dev --dev
+opam pin add ocaml-lsp-server.dev --dev
 opam install mlx ocamlmerlin-mlx ocamlformat-mlx
 ```
 
