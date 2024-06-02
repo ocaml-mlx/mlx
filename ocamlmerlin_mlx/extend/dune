@@ -5,12 +5,9 @@
   (:standard \ extend_helper))
  (flags
   :standard
-  -open
-  Mlx_ocaml_utils
-  -open
-  Mlx_ocaml_parsing
-  -open
-  Mlx_ocaml_typing)
+  -open=Mlx_ocaml_utils
+  -open=Mlx_ocaml_parsing
+  -open=Mlx_ocaml_typing)
  (libraries mlx_ocaml_parsing mlx_ocaml_typing unix mlx_ocaml_utils))
 
 (copy_files#
