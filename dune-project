@@ -14,7 +14,7 @@
    (run ./mlx/pp.exe %{input-file}))))
 
 (source
- (github andreypopp/mlx))
+ (github ocaml-mlx/mlx))
 
 (authors "Andrey Popp")
 
