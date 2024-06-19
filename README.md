@@ -1,9 +1,9 @@
 # mlx
 
-An OCaml syntax dialect which adds to JSX expressions to the language.
+An OCaml syntax dialect which adds JSX expressions to the language.
 
 ```
-let header title = 
+let header ~children () = 
   <header>
     <h1>title</h1>
   </header>
@@ -11,40 +11,53 @@ let header title =
 let page =
   <html>
     <body>
-      (header "Hello, world!")
+      <header>"Hello, world!"</header>
       <div>
-        "Some content gere"
+        "Some content goes here"
       </div>
     </body>
   </html>
 ```
 
-## Installation & Usage
+This code is transformed into the following OCaml code:
+```
+let header ~children () =
+  header () ~children:[ h1 () ~children:[ title ] [@JSX]; ] [@JSX]
 
-While mlx is not yet available on opam, you can use a custom opam repository to install it:
-```sh
-opam repo add andreypopp https://github.com/andreypopp/opam-repository.git
-opam update
-opam pin add dune.dev --dev
-opam pin add ocaml-lsp-server.dev --dev
-opam install mlx ocamlmerlin-mlx ocamlformat-mlx
+let page =
+  html () ~children:[
+    body () ~children:[
+      header () ~children:[ "Hello, world!" ] [@JSX];
+      div () ~children:[ "Some content goes here" ] [@JSX];
+    ] [@JSX];
+  ] [@JSX]
 ```
 
-Then add the following config to your `dune-project` file:
+It is expected to use `mlx-pp` preprocessor with either a runtime lib which
+provides the implementation of such functions or a ppx which which further
+transforms `[@JSX]` attributes into the desired output.
+
+## Installation & Usage
+
+Currently for editor integration an unreleased version of `ocaml-lsp-server` is
+needed (along with its depenedencies, `jsonrpc` and `lsp`).
+
+Use the following commands to install the necessary packages:
+```sh
+opam pin add jsonrpc.dev --dev
+opam pin add lsp.dev --dev
+opam pin add ocaml-lsp-server.dev --dev
+opam install mlx ocamlmerlin-mlx
+```
+
+To make dune consider `.mlx` files as OCaml files you need to configure an mlx
+dialect, put this in your `dune-project` file:
 ```
 (dialect
  (name mlx)
  (implementation
   (extension mlx)
   (merlin_reader mlx)
-  (format
-   (run ocamlformat-mlx %{input-file}))
   (preprocess
    (run mlx-pp %{input-file}))))
 ```
-
-Now dune will treat `.mlx` files as `.ml` files. If you use `ocaml-lsp-server`
-then autocompletion and other editor integrations should work out of the box.
-
-To format `.mlx` files you'd need to run `dune fmt` or configure
-`ocamlformat-mlx` in your editor manually.
