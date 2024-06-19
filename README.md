@@ -2,7 +2,7 @@
 
 An OCaml syntax dialect which adds JSX expressions to the language.
 
-```
+```ocaml
 let header ~children () = 
   <header>
     <h1>title</h1>
@@ -20,7 +20,7 @@ let page =
 ```
 
 This code is transformed into the following OCaml code:
-```
+```ocaml
 let header ~children () =
   header () ~children:[ h1 () ~children:[ title ] [@JSX]; ] [@JSX]
 
@@ -52,7 +52,7 @@ opam install mlx ocamlmerlin-mlx
 
 To make dune consider `.mlx` files as OCaml files you need to configure an mlx
 dialect, put this in your `dune-project` file:
-```
+```lisp
 (dialect
  (name mlx)
  (implementation
