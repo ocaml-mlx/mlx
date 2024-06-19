@@ -2,7 +2,7 @@ opam-version: "2.0"
 synopsis: "Merlin support for MLX OCaml dialect"
 maintainer: ["Andrey Popp"]
 authors: ["Andrey Popp"]
-license: "LICENSE"
+license: "MIT"
 homepage: "https://github.com/ocaml-mlx/mlx"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/ocaml-mlx/mlx/issues"
