@@ -3,7 +3,7 @@
 An OCaml syntax dialect which adds JSX expressions to the language.
 
 ```ocaml
-let header ~children () = 
+let header ~title () = 
   <header>
     <h1>title</h1>
   </header>
@@ -11,7 +11,7 @@ let header ~children () =
 let page =
   <html>
     <body>
-      <header>"Hello, world!"</header>
+      <header title="Hello, world!" />
       <div>
         "Some content goes here"
       </div>
@@ -21,13 +21,13 @@ let page =
 
 This code is transformed into the following OCaml code:
 ```ocaml
-let header ~children () =
+let header ~title () =
   header () ~children:[ h1 () ~children:[ title ] [@JSX]; ] [@JSX]
 
 let page =
   html () ~children:[
     body () ~children:[
-      header () ~children:[ "Hello, world!" ] [@JSX];
+      header () ~title:"Hello, world!" [@JSX];
       div () ~children:[ "Some content goes here" ] [@JSX];
     ] [@JSX];
   ] [@JSX]
@@ -39,14 +39,8 @@ transforms `[@JSX]` attributes into the desired output.
 
 ## Installation & Usage
 
-Currently for editor integration an unreleased version of `ocaml-lsp-server` is
-needed (along with its depenedencies, `jsonrpc` and `lsp`).
-
 Use the following commands to install the necessary packages:
 ```sh
-opam pin add jsonrpc.dev --dev
-opam pin add lsp.dev --dev
-opam pin add ocaml-lsp-server.dev --dev
 opam install mlx ocamlmerlin-mlx
 ```
 
