@@ -55,3 +55,9 @@ dialect, put this in your `dune-project` file:
   (preprocess
    (run mlx-pp %{input-file}))))
 ```
+
+## Useful Links
+
+- Example with Dream web framework: https://github.com/aantron/dream/pull/330
+- Template ReasonReact project: https://github.com/andreypopp/melange-mlx-template
+- mlx announcement on OCaml Discourse: https://discuss.ocaml.org/t/ann-mlx-syntax-dialect/15035
