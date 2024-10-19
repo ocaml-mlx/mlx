@@ -13,5 +13,4 @@
   mlx_kernel
   merlin-lib.extend
   merlin-lib.kernel
-  ppxlib
-  compiler-libs.common))
+  ppxlib))
