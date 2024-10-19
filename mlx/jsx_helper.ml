@@ -11,7 +11,7 @@ let make_loc (startpos, endpos) =
     Location.loc_ghost = false;
   }
 
-let mkloc = Location.mkloc
+let mkloc txt loc = { Location.txt; loc }
 let mkexp ~loc d = Exp.mk ~loc:(make_loc loc) d
 
 let mkjsxexp ~loc:loc' e =

@@ -4,7 +4,7 @@
  (public_name mlx-pp)
  (flags
   (:standard -w -9-67 -open Astlib.Ast_501))
- (libraries ppxlib compiler-libs.common))
+ (libraries ppxlib ocaml-compiler-libs.shadow))
 
 (ocamllex lexer)
 
