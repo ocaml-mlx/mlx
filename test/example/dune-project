@@ -1,5 +1,4 @@
-(lang dune 3.15)
-; (lang dune 3.16)
+(lang dune 3.16)
 
 (generate_opam_files false)
 
@@ -10,7 +9,7 @@
 (dialect
  (name mlx)
  (implementation
-  ; (merlin_reader mlx)
+  (merlin_reader mlx)
   (extension mlx)
   (preprocess
    (run mlx-pp %{input-file}))))
