@@ -56,6 +56,21 @@ dialect, put this in your `dune-project` file:
    (run mlx-pp %{input-file}))))
 ```
 
+### Editor Support
+
+#### VS Code
+Syntax highlighting support for VS Code is still work in progress. As a temporary workaround, you can enable basic OCaml syntax highlighting by adding this to your settings:
+```json
+{
+  "files.associations": {
+    "*.mlx": "ocaml"
+  }
+}
+```
+
+#### Neovim
+For Neovim users, install plugin: https://github.com/ocaml-mlx/ocaml_mlx.nvim
+
 ## Useful Links
 
 - Example with Dream web framework: https://github.com/aantron/dream/pull/330
