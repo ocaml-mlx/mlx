@@ -32,7 +32,7 @@ jobs:
           submodules: 'true'
 
       - name: set-up OCaml ${{ matrix.ocaml-compiler }}
-        uses: ocaml/setup-ocaml@v2
+        uses: ocaml/setup-ocaml@v3
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
           opam-repositories: |
