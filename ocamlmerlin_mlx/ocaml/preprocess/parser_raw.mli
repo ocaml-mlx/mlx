@@ -507,8 +507,13 @@ module MenhirInterpreter : sig
   | `Prop_opt of string * Parsetree.expression
   | `Prop_opt_punned of string
   | `Prop_punned of string ]) nonterminal
-    | N_jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_ : ([> `Module | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
-    | N_jsx_longident_JSX_UIDENT_JSX_LIDENT_ : ([ `Module | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
+    | N_jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_ : ([> `Method of 'a | `Module | `Value ] *
+  (Lexing.position * Lexing.position) * Longident.t) nonterminal
+    | N_jsx_longident_JSX_UIDENT_JSX_LIDENT_ : ([ `Method of
+      Longident.t * (Lexing.position * Lexing.position) *
+      (Lexing.position * Lexing.position) * string
+  | `Module
+  | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
     | N_jsx_element : (Parsetree.expression_desc) nonterminal
     | N_item_extension : (Parsetree.extension) nonterminal
     | N_interface : (Parsetree.signature) nonterminal

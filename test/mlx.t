@@ -5,6 +5,12 @@
   MERLIN
   let _ = div () ~children:[] [@JSX]
 
+  $ echo 'let _ = <obj#view />' | ./mlx
+  BATCH
+  let _ = obj#view () ~children:[] [@JSX]
+  MERLIN
+  let _ = obj#view () ~children:[] [@JSX]
+
   $ echo 'let _ = <div>hello world</div>' | ./mlx
   BATCH
   let _ = div () ~children:[ hello; world ] [@JSX]
