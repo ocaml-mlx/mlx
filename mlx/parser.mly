@@ -3662,20 +3662,30 @@ mk_longident(prefix,final):
 jsx_longident(uident, lident):
    | id = uident { `Module, $sloc, Lident id }
    | id = lident { `Value, $sloc, Lident id }
-   | prefix = uident DOT id = mod_longident { 
+   | id = lident HASH op = LIDENT
+    { (`Method (Lident id, $loc(id),$loc(op),op)), $sloc, Lident id}
+   | prefix = uident DOT id = mod_longident {
      let rec rebase = function
        | Lident id -> Ldot (Lident prefix, id)
        | Ldot (prefix', id) -> Ldot (rebase prefix', id)
        | Lapply _ -> assert false
      in
      `Module, $sloc, rebase id }
-   | prefix = uident DOT id = val_longident { 
+   | prefix = uident DOT id = val_longident {
      let rec rebase = function
        | Lident id -> Ldot (Lident prefix, id)
        | Ldot (prefix', id) -> Ldot (rebase prefix', id)
        | Lapply _ -> assert false
      in
      `Value, $sloc, rebase id }
+   | prefix = uident DOT id = val_longident HASH op = LIDENT{
+     let rec rebase = function
+       | Lident id -> Ldot (Lident prefix, id)
+       | Ldot (prefix', id) -> Ldot (rebase prefix', id)
+       | Lapply _ -> assert false
+     in
+     let id = rebase id in
+     ((`Method (id, $loc(id),$loc(op),op)), $sloc, id) }
 ;
 val_longident:
     mk_longident(mod_longident, val_ident) { $1 }
