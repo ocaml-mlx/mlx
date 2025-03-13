@@ -3671,6 +3671,8 @@ jsx_longident(uident, lident):
        | Lapply _ -> assert false
      in
      `Module, $sloc, rebase id }
+   | id= lident HASH
+     { `Obj, $sloc, Lident id}
    | prefix = uident DOT id = val_longident {
      let rec rebase = function
        | Lident id -> Ldot (Lident prefix, id)
@@ -3686,6 +3688,14 @@ jsx_longident(uident, lident):
      in
      let id = rebase id in
      ((`Method (id, $loc(id),$loc(op),op)), $sloc, id) }
+   | prefix = uident DOT id = val_longident HASH {
+     let rec rebase = function
+       | Lident id -> Ldot (Lident prefix, id)
+       | Ldot (prefix', id) -> Ldot (rebase prefix', id)
+       | Lapply _ -> assert false
+     in
+     let id = rebase id in
+     (`Obj, $sloc, id) }
 ;
 val_longident:
     mk_longident(mod_longident, val_ident) { $1 }

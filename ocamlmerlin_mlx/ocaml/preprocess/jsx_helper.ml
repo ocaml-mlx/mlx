@@ -39,6 +39,7 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
           | (`Module, _, s), (`Module, _, e) -> equal_longindent s e
           | (`Value, _, s), (`Value, _, e) -> equal_longindent s e
           | (`Method _, _, s), (`Method _, _, e) -> equal_longindent s e
+          | (`Obj, _, s), (`Object, _, e) -> equal_longindent s e
           | _ -> false
         in
         if not eq then
@@ -68,6 +69,9 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
             (Pexp_ident { loc = make_loc objloc; txt = obj })
         in
         mkexp ~loc (Pexp_send (obj, { loc = make_loc oploc; txt = op }))
+    | `Obj, loc, txt ->
+        let obj = mkexp ~loc (Pexp_ident { loc = make_loc loc; txt }) in
+        mkexp ~loc (Pexp_send (obj, { loc = make_loc loc; txt = "make" }))
   in
   let props =
     let prop_exp ~loc name =
