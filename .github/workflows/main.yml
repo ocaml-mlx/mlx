@@ -41,7 +41,9 @@ jobs:
 
       - run: opam install . --deps-only --with-test
 
-      - run: opam exec -- dune build -p mlx,ocamlmerlin-mlx
+      - run: opam exec -- dune build -p mlx
+
+      - run: opam exec -- dune build -p ocamlmerlin-mlx
 
         # TODO: pass --with-dev-setup to opam instead? (requires opam 2.2, I think)
       - run: opam install menhir.20201216 menhirLib.20201216 menhirSdk.20201216 ocamlformat
