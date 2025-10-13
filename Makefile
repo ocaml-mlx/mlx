@@ -1,6 +1,6 @@
 .PHONY: init
 init:
-	opam switch create . 5.1.1 --no-install -y
+	opam switch create . 5.3.0 --no-install -y
 	opam install . --deps-only -y
 	opam install menhir.20201216 ocamlformat ocaml-lsp-server -y
 
