@@ -115,3 +115,14 @@ Some tests for prop expressions:
   let _ = element () ~children:[] ~prop:!?ref [@JSX]
   MERLIN
   let _ = element () ~children:[] ~prop:!?ref [@JSX]
+
+TODO: fix the following parse error, where [< is treated as LBRACKETLESS:
+  $ echo 'let _ = [<element />]' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 8-10:
+  Error: Syntax error
+  
+  MERLIN
+  File "*stdin*", line 1, characters 18-20
+  Error: Syntax error
+  
