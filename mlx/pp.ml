@@ -29,7 +29,8 @@ let () =
   match str with
   | Ok str ->
       let str = Conv.copy_structure str in
-      if !print_ml then Format.printf "%a@." Pprintast.structure str
+      if !print_ml then
+        Format.printf "%a@." Compiler_pprintast.structure str
       else
         let oc = stdout in
         output_string oc

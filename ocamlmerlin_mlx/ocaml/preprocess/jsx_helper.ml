@@ -12,7 +12,6 @@ let make_loc (startpos, endpos) =
     Location.loc_ghost = false;
   }
 
-let mkloc txt loc = { Location.txt; loc }
 let mkexp ~loc d = Exp.mk ~loc:(make_loc loc) d
 
 let mkjsxexp ~loc:loc' e =
@@ -64,7 +63,7 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
   in
   let props =
     let prop_exp ~loc name =
-      let id = mkloc (Lident name) (make_loc loc) in
+      let id = Location.mkloc (Lident name) (make_loc loc) in
       mkexp ~loc (Pexp_ident id)
     in
     List.map
