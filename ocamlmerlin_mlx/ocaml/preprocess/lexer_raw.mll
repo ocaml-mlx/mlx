@@ -590,7 +590,6 @@ rule token state = parse
   | "|]" { return BARRBRACKET }
   | ">"  { return GREATER }
   | "/>" { return SLASHGREATER }
-  | ">]" { return GREATERRBRACKET }
   | "}"  { return RBRACE }
   | ">}" { return GREATERRBRACE }
   | "[@" { return LBRACKETAT }
@@ -824,6 +823,28 @@ and skip_sharp_bang state = parse
 
   (* preprocessor support not implemented, not compatible with monadic
      interface *)
+
+  let token state lexbuf =
+    match token state lexbuf with
+    | Return LBRACKETLESS ->
+      (* Check if the next character (if any) could start an identifier.
+         UIDENT starts with A-Z, LIDENT starts with a-z or _ *)
+      let should_split =
+        lexbuf.Lexing.lex_curr_pos < lexbuf.Lexing.lex_buffer_len &&
+        begin
+          let next = Bytes.get lexbuf.Lexing.lex_buffer lexbuf.Lexing.lex_curr_pos in
+          next >= 'A' && next <= 'Z' || next >= 'a' && next <= 'z' || next = '_'
+        end
+      in
+      if should_split then begin
+        (* Backtrack one character to before the "<" so it will be lexed separately *)
+        lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_curr_pos - 1;
+        let lex_curr_p = lexbuf.lex_curr_p in
+        lexbuf.lex_curr_p <- { lex_curr_p with pos_cnum = lex_curr_p.pos_cnum - 1 };
+        Return LBRACKET
+      end else
+        Return LBRACKETLESS
+    | tok -> tok
 
   let rec token_without_comments state lexbuf =
     token state lexbuf >>= function

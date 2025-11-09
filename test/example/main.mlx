@@ -17,6 +17,7 @@ let div ~children () = Element ("div", children)
 let text s = Text s
 
 let () = 
+  let _ = [<div>(text "title")</div>; <div>(text "content")</div>] in
   print_endline (render (
     <div>
       <div>(text "title")</div>

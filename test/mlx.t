@@ -116,13 +116,27 @@ Some tests for prop expressions:
   MERLIN
   let _ = element () ~children:[] ~prop:!?ref [@JSX]
 
-TODO: fix the following parse error, where [< is treated as LBRACKETLESS:
+We have a lexer hack to parse [<element and [<Element as JSX:
   $ echo 'let _ = [<element />]' | ./mlx
   BATCH
-  File "*stdin*", line 1, characters 8-10:
-  Error: Syntax error
-  
+  let _ = [ (element () ~children:[] [@JSX]) ]
   MERLIN
-  File "*stdin*", line 1, characters 18-20
-  Error: Syntax error
-  
+  let _ = [ (element () ~children:[] [@JSX]) ]
+
+  $ echo 'let _ = [<M.element />]' | ./mlx
+  BATCH
+  let _ = [ (M.element () ~children:[] [@JSX]) ]
+  MERLIN
+  let _ = [ (M.element () ~children:[] [@JSX]) ]
+
+  $ echo 'let _ = [<element> 1 </element>]' | ./mlx
+  BATCH
+  let _ = [ (element () ~children:[ 1 ] [@JSX]) ]
+  MERLIN
+  let _ = [ (element () ~children:[ 1 ] [@JSX]) ]
+
+  $ echo 'let _ = [<M.element> 1 </M.element>]' | ./mlx
+  BATCH
+  let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
+  MERLIN
+  let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
