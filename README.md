@@ -3,7 +3,7 @@
 An OCaml syntax dialect which adds JSX expressions to the language.
 
 ```ocaml
-let header ~title () = 
+let header ~title () =
   <header>
     <h1>title</h1>
   </header>
@@ -59,14 +59,7 @@ dialect, put this in your `dune-project` file:
 ### Editor Support
 
 #### VS Code
-Syntax highlighting support for VS Code is still work in progress. As a temporary workaround, you can enable basic OCaml syntax highlighting by adding this to your settings:
-```json
-{
-  "files.associations": {
-    "*.mlx": "ocaml"
-  }
-}
-```
+For VSCode and its forks (Cursor, Windsurf, etc.), install the [Official OCaml Platform extension](https://marketplace.visualstudio.com/items?itemName=ocamllabs.ocaml-platform) (version 2.0.0 or higher). It supports mlx syntax highlighting and all LSP features on par with `.ml` files.
 
 #### Neovim
 For Neovim users, install plugin: https://github.com/ocaml-mlx/ocaml_mlx.nvim
