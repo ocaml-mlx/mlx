@@ -17,7 +17,6 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-
         ocaml-compiler:
           - "4.14"
           - "5.1"
@@ -42,7 +41,7 @@ jobs:
 
       - run: opam install . --deps-only --with-test
 
-      - run: opam exec -- dune build -p mlx
+      - run: opam exec -- dune build -p mlx,ocamlmerlin-mlx
 
         # TODO: pass --with-dev-setup to opam instead? (requires opam 2.2, I think)
       - run: opam install menhir.20201216 menhirLib.20201216 menhirSdk.20201216 ocamlformat

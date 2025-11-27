@@ -25,25 +25,40 @@ let () =
   in
   let lexbuf = Lexing.from_string src in
   Lexing.set_filename lexbuf fname;
-  let str =
-    try Ok (Parse.implementation lexbuf)
-    with exn -> (
-      match Location.error_of_exn exn with
-      | None -> raise exn
-      | Some error -> Error error)
-  in
-  match str with
-  | Ok str ->
-      let str = Conv.copy_structure str in
-      if !print_ml then Format.printf "%a@." Pprintast.structure str
-      else
-        let oc = stdout in
-        Out_channel.set_binary_mode oc true;
-        output_string oc
-          Ppxlib_ast.Compiler_version.Ast.Config.ast_impl_magic_number;
-        output_value oc fname;
-        output_value oc str
-  | Error `Already_displayed -> exit 1
-  | Error (`Ok error) ->
-      Format.eprintf "%a@." Location.print_report error;
-      exit 1
+  if !print_tokens then
+    let rec loop () =
+      match Lexer.token lexbuf with
+      | Parser.EOF -> ()
+      | _token ->
+          let toks =
+            String.sub src lexbuf.lex_start_p.pos_cnum
+              (lexbuf.lex_curr_p.pos_cnum - lexbuf.lex_start_p.pos_cnum)
+          in
+          Format.printf "%s@." toks;
+          loop ()
+    in
+    loop ()
+  else
+    let str =
+      try Ok (Parse.implementation lexbuf)
+      with exn -> (
+        match Location.error_of_exn exn with
+        | None -> raise exn
+        | Some error -> Error error)
+    in
+    match str with
+    | Ok str ->
+        let str = Conv.copy_structure str in
+        if !print_ml then
+          Format.printf "%a@." Compiler_pprintast.structure str
+        else
+          let oc = stdout in
+          Out_channel.set_binary_mode oc true;
+          output_string oc
+            Ppxlib_ast.Compiler_version.Ast.Config.ast_impl_magic_number;
+          output_value oc fname;
+          output_value oc str
+    | Error `Already_displayed -> exit 1
+    | Error (`Ok error) ->
+        Format.eprintf "%a@." Location.print_report error;
+        exit 1
