@@ -15,7 +15,7 @@
  (mode promote)
  (files %{project_root}/merlin/src/ocaml/preprocess/parser_explain.ml))
 
-(copy_files#
+(copy_files
  (enabled_if
   (<> %{profile} "release"))
  (mode promote)
