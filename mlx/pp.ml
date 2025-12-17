@@ -53,6 +53,7 @@ let () =
           Format.printf "%a@." Compiler_pprintast.structure str
         else
           let oc = stdout in
+          Out_channel.set_binary_mode oc true;
           output_string oc
             Ppxlib_ast.Compiler_version.Ast.Config.ast_impl_magic_number;
           output_value oc fname;
