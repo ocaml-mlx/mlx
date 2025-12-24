@@ -48,7 +48,26 @@ jobs:
 
       - run: opam exec -- dune runtest
 
+  release:
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout tree
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - name: set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: "5.4"
+
+      - run: make install
+
       - run: opam install dune-release -y
+
 
       - name: Run dune-release
         uses: davesnx/dune-release-action@v0.2
