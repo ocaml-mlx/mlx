@@ -71,9 +71,7 @@ jobs:
       - name: Run dune-release
         uses: davesnx/dune-release-action@v0.2.4
         with:
-          packages:
-            - "mlx"
-            - "ocamlmerlin-mlx"
+          packages: "mlx,ocamlmerlin-mlx"
           changelog: './CHANGES'
           github-token: ${{ secrets.GH_TOKEN }}
           to-opam-repository: true
