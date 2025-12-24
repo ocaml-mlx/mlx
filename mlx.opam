@@ -9,9 +9,10 @@ bug-reports: "https://github.com/ocaml-mlx/mlx/issues"
 depends: [
   "ocaml" {>= "4.14.0"}
   "ppxlib" {>= "0.32.1"}
-  "dune" {>= "3.15"}
-  "menhir" {= "20210419" & with-dev-setup}
+  "dune" {>= "3.16"}
+  "menhir" {= "20201216" & with-dev-setup}
   "ocamlformat" {with-dev-setup}
+  "ocaml-lsp-server" {with-dev-setup}
   "odoc" {with-doc}
 ]
 build: [
