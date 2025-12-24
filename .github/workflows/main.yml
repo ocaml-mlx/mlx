@@ -3,6 +3,10 @@ name: main
 on:
   pull_request:
   push:
+    branches:
+      - main
+    tags:
+      - '*'
   schedule:
     - cron: 0 1 * * MON
 
