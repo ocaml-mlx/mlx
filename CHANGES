@@ -1,3 +1,9 @@
+# Unreleased
+
+# 0.11
+- Support for OCaml 5.4 [#22](https://github.com/ocaml-mlx/mlx/pull/22)
+- Fix windows [#20](https://github.com/ocaml-mlx/mlx/pull/20)
+
 # 0.10
 - compatibility with OCaml 5.3
 
