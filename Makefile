@@ -1,6 +1,6 @@
 .PHONY: install
 install:
-opam install . --deps-only -y
+	opam install . --deps-only -y
 	opam install menhir.20201216 ocamlformat ocaml-lsp-server -y
 
 .PHONY: create-switch
