@@ -1,4 +1,3 @@
-# 1 "merlin/src/ocaml/preprocess/lexer_ident.mli"
 (* {{{ COPYING *(
 
   This file is part of Merlin, an helper for ocaml editors
