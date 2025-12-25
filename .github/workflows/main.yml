@@ -72,7 +72,7 @@ jobs:
       - run: opam install dune-release -y
 
       - name: Run dune-release
-        uses: davesnx/dune-release-action@v0.2.9
+        uses: andreypopp/dune-release-action@a5d95ed
         with:
           packages: "mlx,ocamlmerlin-mlx"
           changelog: './CHANGES'
