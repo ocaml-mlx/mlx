@@ -140,3 +140,73 @@ We have a lexer hack to parse [<element and [<Element as JSX:
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
   MERLIN
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
+
+Raw identifiers (\#foo) bypass the keyword table.
+Non-keyword raw identifiers round-trip through the full pipeline:
+
+  $ echo 'let _ = \#foo' | ./mlx
+  BATCH
+  let _ = foo
+  MERLIN
+  let _ = foo
+  $ echo 'let _ = \#bar' | ./mlx
+  BATCH
+  let _ = bar
+  MERLIN
+  let _ = bar
+
+Keyword raw identifiers are verified via tokenization (the OCaml printer
+does not emit \# escapes, so the text round-trip breaks for keywords):
+
+  $ echo 'let x = `\#lazy' | mlx-pp -print-tokens /dev/stdin
+  let
+  x
+  =
+  `
+  \#lazy
+  $ echo 'let x = `\#true' | mlx-pp -print-tokens /dev/stdin
+  let
+  x
+  =
+  `
+  \#true
+  $ echo 'let x = `\#false' | mlx-pp -print-tokens /dev/stdin
+  let
+  x
+  =
+  `
+  \#false
+  $ echo 'let f ~\#true:x = x' | mlx-pp -print-tokens /dev/stdin
+  let
+  f
+  ~\#true:
+  x
+  =
+  x
+  $ echo 'let f ?\#true:(x = true) = x' | mlx-pp -print-tokens /dev/stdin
+  let
+  f
+  ?\#true:
+  (
+  x
+  =
+  true
+  )
+  =
+  x
+  $ echo 'let _ = <\#lazy />' | mlx-pp -print-tokens /dev/stdin
+  let
+  _
+  =
+  <\#lazy
+  />
+  $ echo 'let _ = <element loading=`\#lazy />' | mlx-pp -print-tokens /dev/stdin
+  let
+  _
+  =
+  <element
+  loading
+  =
+  `
+  \#lazy
+  />

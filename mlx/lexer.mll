@@ -355,6 +355,7 @@ let kwdopchar =
 
 let ident = (lowercase | uppercase) identchar*
 let extattrident = ident ('.' ident)*
+let raw_ident_escape = "\\#"
 
 let decimal_literal =
   ['0'-'9'] ['0'-'9' '_']*
@@ -396,6 +397,8 @@ rule token = parse
   | ".~"
       { error lexbuf
           (Reserved_sequence (".~", Some "is reserved for use in MetaOCaml")) }
+  | "~" raw_ident_escape (lowercase identchar * as name) ':'
+      { LABEL name }
   | "~" (lowercase identchar * as name) ':'
       { check_label_name lexbuf name;
         LABEL name }
@@ -404,17 +407,23 @@ rule token = parse
         LABEL name }
   | "?"
       { QUESTION }
+  | "?" raw_ident_escape (lowercase identchar * as name) ':'
+      { OPTLABEL name }
   | "?" (lowercase identchar * as name) ':'
       { check_label_name lexbuf name;
         OPTLABEL name }
   | "?" (lowercase_latin1 identchar_latin1 * as name) ':'
       { warn_latin1 lexbuf;
         OPTLABEL name }
+  | raw_ident_escape (lowercase identchar * as name)
+      { LIDENT name }
   | lowercase identchar * as name
       { try Hashtbl.find keyword_table name
         with Not_found -> LIDENT name }
   | lowercase_latin1 identchar_latin1 * as name
       { warn_latin1 lexbuf; LIDENT name }
+  | "<" raw_ident_escape (lowercase identchar * as name)
+      { JSX_LIDENT name }
   | "<" (lowercase identchar * as name)
       { JSX_LIDENT name }
   | "<" "/" (lowercase identchar * as name)
