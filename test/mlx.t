@@ -158,32 +158,32 @@ Non-keyword raw identifiers round-trip through the full pipeline:
 Keyword raw identifiers are verified via tokenization (the OCaml printer
 does not emit \# escapes, so the text round-trip breaks for keywords):
 
-  $ echo 'let x = `\#lazy' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let x = `\#lazy' | mlx-pp -print-tokens
   let
   x
   =
   `
   \#lazy
-  $ echo 'let x = `\#true' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let x = `\#true' | mlx-pp -print-tokens
   let
   x
   =
   `
   \#true
-  $ echo 'let x = `\#false' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let x = `\#false' | mlx-pp -print-tokens
   let
   x
   =
   `
   \#false
-  $ echo 'let f ~\#true:x = x' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let f ~\#true:x = x' | mlx-pp -print-tokens
   let
   f
   ~\#true:
   x
   =
   x
-  $ echo 'let f ?\#true:(x = true) = x' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let f ?\#true:(x = true) = x' | mlx-pp -print-tokens
   let
   f
   ?\#true:
@@ -194,13 +194,13 @@ does not emit \# escapes, so the text round-trip breaks for keywords):
   )
   =
   x
-  $ echo 'let _ = <\#lazy />' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let _ = <\#lazy />' | mlx-pp -print-tokens
   let
   _
   =
   <\#lazy
   />
-  $ echo 'let _ = <element loading=`\#lazy />' | mlx-pp -print-tokens /dev/stdin
+  $ echo 'let _ = <element loading=`\#lazy />' | mlx-pp -print-tokens
   let
   _
   =
