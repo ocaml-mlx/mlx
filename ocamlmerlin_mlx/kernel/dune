@@ -26,4 +26,4 @@
   (<> %{profile} "release"))
  (mode promote)
  (files
-  %{project_root}/merlin/src/kernel/{msource,mconfig,mreader,mreader_parser,mreader_lexer,mreader_recover,mreader_explain,extension,mreader_extend,mocaml}.{ml,mli}))
+  %{project_root}/merlin/src/kernel/{msource,mconfig,mreader,mreader_parser,mreader_lexer,mreader_recover,mreader_explain,extension,mreader_extend}.{ml,mli}))
