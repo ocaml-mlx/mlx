@@ -20,14 +20,6 @@ let mkjsxexp ~loc:loc' e =
   let pexp_attributes = [ Attr.mk ~loc { txt = "JSX"; loc } (PStr []) ] in
   { e with pexp_attributes }
 
-let rec equal_longindent a b =
-  match a, b with
-  | Longident.Lident a, Longident.Lident b -> String.equal a b
-  | Ldot (pa, a), Ldot (pb, b) ->
-      String.equal a b && equal_longindent pa pb
-  | Lapply _, _ | _, Lapply _ -> assert false
-  | _ -> false
-
 let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
   let () =
     match end_tag with
@@ -35,8 +27,8 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
     | Some (end_tag, (_, end_loc_e)) ->
         let eq =
           match tag, end_tag with
-          | (`Module, _, s), (`Module, _, e) -> equal_longindent s e
-          | (`Value, _, s), (`Value, _, e) -> equal_longindent s e
+          | (`Module, _, s), (`Module, _, e) -> Longident.same s e
+          | (`Value, _, s), (`Value, _, e) -> Longident.same s e
           | _ -> false
         in
         if not eq then
@@ -58,8 +50,12 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
     | `Value, loc, txt ->
         mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
     | `Module, loc, txt ->
-        let txt = Longident.Ldot (txt, "createElement") in
-        mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
+        let loc' = make_loc loc in
+        let txt =
+          Longident.Ldot
+            ({ txt; loc = loc' }, { txt = "createElement"; loc = loc' })
+        in
+        mkexp ~loc (Pexp_ident { loc = loc'; txt })
   in
   let props =
     let prop_exp ~loc name =
