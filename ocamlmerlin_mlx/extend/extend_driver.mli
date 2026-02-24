@@ -12,4 +12,6 @@ val stop : t -> unit
 
 val capabilities : t -> capabilities
 
-val reader : t -> Reader.request -> Reader.response
+val reader : t ->
+  Reader.request ->
+  Reader.response
