@@ -17,7 +17,6 @@
 
 {
 open Lexing
-open Misc
 open Parser
 
 type error =

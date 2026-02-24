@@ -13,9 +13,3 @@
   mlx_ocaml_parsing
   mlx_ocaml_compression
   mlx_ocaml_utils))
-
-(copy_files
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files %{project_root}/merlin/src/ocaml/typing/*.{ml,mli}))
