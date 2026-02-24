@@ -73,7 +73,7 @@ let focus_node : attribute =
 
 (* Projections for merlin attributes and extensions *)
 
-let classify_extension ((id, _) : extension) : [`Other | `Syntax_error] =
+let classify_extension (id, _ : extension) : [`Other | `Syntax_error] =
   match id.Location.txt with
   | "merlin.syntax-error" -> `Syntax_error
   | _ -> `Other
@@ -86,7 +86,7 @@ let classify_attribute attr : [`Other | `Relaxed_location | `Hide | `Focus] =
   | "merlin.focus" -> `Focus
   | _ -> `Other
 
-let extract_syntax_error ((id, payload) : extension) : string * Location.t =
+let extract_syntax_error (id, payload : extension) : string * Location.t =
   if id.Location.txt <> "merlin.syntax-error" then
     invalid_arg "Merlin_extend.Reader_helper.extract_syntax_error";
   let invalid_msg =
