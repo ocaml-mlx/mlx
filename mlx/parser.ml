@@ -1733,11 +1733,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4130 "mlx/parser.mly"
       ( _1 )
 # 1744 "mlx/parser.ml"
@@ -1762,7 +1762,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4131 "mlx/parser.mly"
                                  ( Lident _1 )
 # 1769 "mlx/parser.ml"
@@ -1808,7 +1808,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -1871,7 +1871,7 @@ module Tables = struct
             MenhirLib.EngineTypes.next = _menhir_stack;
           };
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let ty : (Parsetree.core_type) = Obj.magic ty in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_ty_ in
@@ -1948,7 +1948,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _3 : unit = Obj.magic _3 in
         let xs : (Parsetree.core_type list) = Obj.magic xs in
         let _1 : unit = Obj.magic _1 in
@@ -2030,7 +2030,7 @@ module Tables = struct
             MenhirLib.EngineTypes.next = _menhir_stack;
           };
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _2 : unit = Obj.magic _2 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__2_ in
@@ -2101,7 +2101,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _2 : unit = Obj.magic _2 in
         let ty : (Parsetree.core_type) = Obj.magic ty in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -2185,7 +2185,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _3 : unit = Obj.magic _3 in
         let xs : (Parsetree.core_type list) = Obj.magic xs in
@@ -2276,7 +2276,7 @@ module Tables = struct
         } = _menhir_stack in
         let type_ : (Parsetree.core_type) = Obj.magic type_ in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_type__ in
@@ -2735,7 +2735,7 @@ module Tables = struct
         } = _menhir_stack in
         let _7 : (Parsetree.class_expr) = Obj.magic _7 in
         let _6 : unit = Obj.magic _6 in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
@@ -2831,7 +2831,7 @@ module Tables = struct
         } = _menhir_stack in
         let _7 : (Parsetree.class_expr) = Obj.magic _7 in
         let _6 : unit = Obj.magic _6 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _1_inlined2 : (Parsetree.attributes) = Obj.magic _1_inlined2 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
@@ -3767,11 +3767,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4120 "mlx/parser.mly"
                                       ( _1 )
 # 3778 "mlx/parser.ml"
@@ -4438,7 +4438,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -4520,7 +4520,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _3 : unit = Obj.magic _3 in
         let xs : (Parsetree.core_type list) = Obj.magic xs in
         let _1 : unit = Obj.magic _1 in
@@ -4894,7 +4894,7 @@ module Tables = struct
         } = _menhir_stack in
         let _7 : (Parsetree.class_type) = Obj.magic _7 in
         let _6 : unit = Obj.magic _6 in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
@@ -4990,7 +4990,7 @@ module Tables = struct
         } = _menhir_stack in
         let _7 : (Parsetree.class_type) = Obj.magic _7 in
         let _6 : unit = Obj.magic _6 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _1_inlined2 : (Parsetree.attributes) = Obj.magic _1_inlined2 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
@@ -5132,7 +5132,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -5214,7 +5214,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _3 : unit = Obj.magic _3 in
         let xs : (Parsetree.core_type list) = Obj.magic xs in
         let _1 : unit = Obj.magic _1 in
@@ -6030,11 +6030,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4117 "mlx/parser.mly"
                                            ( _1 )
 # 6041 "mlx/parser.ml"
@@ -6398,11 +6398,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4065 "mlx/parser.mly"
                                          ( _1 )
 # 6409 "mlx/parser.ml"
@@ -6451,11 +6451,11 @@ module Tables = struct
         let _2_inlined1 : unit = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _3 =
+        let _v : (Longident.t) = let _3 =
           let (_2, _1) = (_2_inlined1, _1_inlined1) in
           
 # 4051 "mlx/parser.mly"
@@ -6505,7 +6505,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _1 = 
+        let _v : (Longident.t) = let _1 = 
 # 4051 "mlx/parser.mly"
                                                 ( "::" )
 # 6512 "mlx/parser.ml"
@@ -6535,7 +6535,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4068 "mlx/parser.mly"
                                          ( Lident _1 )
 # 6542 "mlx/parser.ml"
@@ -7820,7 +7820,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _3 : unit = Obj.magic _3 in
         let _1_inlined1 : (string) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
@@ -7902,7 +7902,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined2 : (Parsetree.attributes) = Obj.magic _1_inlined2 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _3 : unit = Obj.magic _3 in
         let _1 : (string) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -10974,7 +10974,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : (Parsetree.expression) = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
@@ -16941,7 +16941,7 @@ module Tables = struct
         } = _menhir_stack in
         let _1_inlined2 : (Parsetree.expression) = Obj.magic _1_inlined2 in
         let _4 : unit = Obj.magic _4 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : (Parsetree.expression) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -17043,7 +17043,7 @@ module Tables = struct
         let _1_inlined3 : (string Ppxlib.loc option) = Obj.magic _1_inlined3 in
         let _1_inlined2 : unit = Obj.magic _1_inlined2 in
         let _4 : unit = Obj.magic _4 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : (Parsetree.expression) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -18326,7 +18326,7 @@ module Tables = struct
        (string)
 # 18328 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -18489,7 +18489,7 @@ module Tables = struct
        (string)
 # 18491 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -18994,7 +18994,7 @@ module Tables = struct
        (string)
 # 18996 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -19157,7 +19157,7 @@ module Tables = struct
        (string)
 # 19159 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -19662,7 +19662,7 @@ module Tables = struct
        (string)
 # 19664 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -19825,7 +19825,7 @@ module Tables = struct
        (string)
 # 19827 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -22182,7 +22182,7 @@ module Tables = struct
    | `Prop_punned of string ])
   list) = Obj.magic xs in
         let tag : ([ `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = Obj.magic tag in
+  Longident.t) = Obj.magic tag in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_tag_ in
         let _endpos = _endpos__3_ in
@@ -22257,7 +22257,7 @@ module Tables = struct
         } = _menhir_stack in
         let end_tag_ : unit = Obj.magic end_tag_ in
         let end_tag : ([> `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = Obj.magic end_tag in
+  Longident.t) = Obj.magic end_tag in
         let xs_inlined1 : (Parsetree.expression list) = Obj.magic xs_inlined1 in
         let _3 : unit = Obj.magic _3 in
         let xs : (((Lexing.position * Lexing.position) *
@@ -22267,7 +22267,7 @@ module Tables = struct
    | `Prop_punned of string ])
   list) = Obj.magic xs in
         let tag : ([ `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = Obj.magic tag in
+  Longident.t) = Obj.magic tag in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_tag_ in
         let _endpos = _endpos_end_tag__ in
@@ -22338,7 +22338,7 @@ module Tables = struct
         let _startpos = _startpos_id_ in
         let _endpos = _endpos_id_ in
         let _v : ([ `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_id_ in
         let _sloc = (_symbolstartpos, _endpos) in
         
@@ -22371,7 +22371,7 @@ module Tables = struct
         let _startpos = _startpos_id_ in
         let _endpos = _endpos_id_ in
         let _v : ([ `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_id_ in
         let _sloc = (_symbolstartpos, _endpos) in
         
@@ -22407,7 +22407,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let id : (Ocaml_common.Longident.t) = Obj.magic id in
+        let id : (Longident.t) = Obj.magic id in
         let _2 : unit = Obj.magic _2 in
         let prefix : (
 # 840 "mlx/parser.mly"
@@ -22418,7 +22418,7 @@ module Tables = struct
         let _startpos = _startpos_prefix_ in
         let _endpos = _endpos_id_ in
         let _v : ([ `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_prefix_ in
         let _loc_prefix_ = (_startpos_prefix_, _endpos_prefix_) in
         let _loc_id_ = (_startpos_id_, _endpos_id_) in
@@ -22463,7 +22463,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let id : (Ocaml_common.Longident.t) = Obj.magic id in
+        let id : (Longident.t) = Obj.magic id in
         let _2 : unit = Obj.magic _2 in
         let prefix : (
 # 840 "mlx/parser.mly"
@@ -22474,7 +22474,7 @@ module Tables = struct
         let _startpos = _startpos_prefix_ in
         let _endpos = _endpos_id_ in
         let _v : ([ `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_prefix_ in
         let _loc_prefix_ = (_startpos_prefix_, _endpos_prefix_) in
         let _loc_id_ = (_startpos_id_, _endpos_id_) in
@@ -22516,7 +22516,7 @@ module Tables = struct
         let _startpos = _startpos_id_ in
         let _endpos = _endpos_id_ in
         let _v : ([> `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_id_ in
         let _sloc = (_symbolstartpos, _endpos) in
         
@@ -22549,7 +22549,7 @@ module Tables = struct
         let _startpos = _startpos_id_ in
         let _endpos = _endpos_id_ in
         let _v : ([> `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_id_ in
         let _sloc = (_symbolstartpos, _endpos) in
         
@@ -22585,7 +22585,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let id : (Ocaml_common.Longident.t) = Obj.magic id in
+        let id : (Longident.t) = Obj.magic id in
         let _2 : unit = Obj.magic _2 in
         let prefix : (
 # 841 "mlx/parser.mly"
@@ -22596,7 +22596,7 @@ module Tables = struct
         let _startpos = _startpos_prefix_ in
         let _endpos = _endpos_id_ in
         let _v : ([> `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_prefix_ in
         let _loc_prefix_ = (_startpos_prefix_, _endpos_prefix_) in
         let _loc_id_ = (_startpos_id_, _endpos_id_) in
@@ -22641,7 +22641,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let id : (Ocaml_common.Longident.t) = Obj.magic id in
+        let id : (Longident.t) = Obj.magic id in
         let _2 : unit = Obj.magic _2 in
         let prefix : (
 # 841 "mlx/parser.mly"
@@ -22652,7 +22652,7 @@ module Tables = struct
         let _startpos = _startpos_prefix_ in
         let _endpos = _endpos_id_ in
         let _v : ([> `Module | `Value ] * (Lexing.position * Lexing.position) *
-  Ocaml_common.Longident.t) = let _endpos = _endpos_id_ in
+  Longident.t) = let _endpos = _endpos_id_ in
         let _symbolstartpos = _startpos_prefix_ in
         let _loc_prefix_ = (_startpos_prefix_, _endpos_prefix_) in
         let _loc_id_ = (_startpos_id_, _endpos_id_) in
@@ -23286,11 +23286,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4098 "mlx/parser.mly"
                                         ( _1 )
 # 23297 "mlx/parser.ml"
@@ -30486,11 +30486,11 @@ module Tables = struct
         } = _menhir_stack in
         let opat : (Parsetree.pattern option) = Obj.magic opat in
         let octy : (Parsetree.core_type option) = Obj.magic octy in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_opat_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = let _2 = 
 # 124 "<standard.mly>"
     ( None )
@@ -30571,11 +30571,11 @@ module Tables = struct
         let x : unit = Obj.magic x in
         let opat : (Parsetree.pattern option) = Obj.magic opat in
         let octy : (Parsetree.core_type option) = Obj.magic octy in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_x_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = let _2 = 
 # 126 "<standard.mly>"
     ( Some x )
@@ -30670,11 +30670,11 @@ module Tables = struct
         let _2 : unit = Obj.magic _2 in
         let opat : (Parsetree.pattern option) = Obj.magic opat in
         let octy : (Parsetree.core_type option) = Obj.magic octy in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__4_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = let x =
           let label =
             let _endpos = _endpos__1_ in
@@ -30753,16 +30753,16 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let tail : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let tail : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = Obj.magic tail in
         let _2 : unit = Obj.magic _2 in
         let opat : (Parsetree.pattern option) = Obj.magic opat in
         let octy : (Parsetree.core_type option) = Obj.magic octy in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_tail_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = let x =
           let label =
             let _endpos = _endpos__1_ in
@@ -32251,7 +32251,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4071 "mlx/parser.mly"
                       ( Lident _1 )
 # 32258 "mlx/parser.ml"
@@ -32290,11 +32290,11 @@ module Tables = struct
 # 32291 "mlx/parser.ml"
         ) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
         
 # 4072 "mlx/parser.mly"
@@ -32325,7 +32325,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4071 "mlx/parser.mly"
                       ( Lident _1 )
 # 32332 "mlx/parser.ml"
@@ -32364,11 +32364,11 @@ module Tables = struct
 # 32365 "mlx/parser.ml"
         ) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
         
 # 4072 "mlx/parser.mly"
@@ -32395,7 +32395,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = let _1 = 
+        let _v : (Longident.t) = let _1 = 
 # 4129 "mlx/parser.mly"
                                                   ( _1 )
 # 32402 "mlx/parser.ml"
@@ -32439,7 +32439,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _1 =
+        let _v : (Longident.t) = let _1 =
           let _1 = 
 # 4051 "mlx/parser.mly"
                                                 ( "::" )
@@ -32476,7 +32476,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = let _1 = 
+        let _v : (Longident.t) = let _1 = 
 # 4129 "mlx/parser.mly"
                                                   ( _1 )
 # 32483 "mlx/parser.ml"
@@ -32516,11 +32516,11 @@ module Tables = struct
         } = _menhir_stack in
         let _1_inlined1 : (string) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined1_ in
-        let _v : (Ocaml_common.Longident.t) = let _3 =
+        let _v : (Longident.t) = let _3 =
           let _1 = _1_inlined1 in
           
 # 4129 "mlx/parser.mly"
@@ -32580,11 +32580,11 @@ module Tables = struct
         let _2_inlined1 : unit = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _3 =
+        let _v : (Longident.t) = let _3 =
           let (_2, _1) = (_2_inlined1, _1_inlined1) in
           let _1 = 
 # 4051 "mlx/parser.mly"
@@ -32635,11 +32635,11 @@ module Tables = struct
         } = _menhir_stack in
         let _1_inlined1 : (string) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined1_ in
-        let _v : (Ocaml_common.Longident.t) = let _3 =
+        let _v : (Longident.t) = let _3 =
           let _1 = _1_inlined1 in
           
 # 4129 "mlx/parser.mly"
@@ -32675,7 +32675,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4071 "mlx/parser.mly"
                       ( Lident _1 )
 # 32682 "mlx/parser.ml"
@@ -32710,11 +32710,11 @@ module Tables = struct
         } = _menhir_stack in
         let _3 : (string) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
         
 # 4072 "mlx/parser.mly"
@@ -32745,7 +32745,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4071 "mlx/parser.mly"
                       ( Lident _1 )
 # 32752 "mlx/parser.ml"
@@ -32784,11 +32784,11 @@ module Tables = struct
 # 32785 "mlx/parser.ml"
         ) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
         
 # 4072 "mlx/parser.mly"
@@ -32819,7 +32819,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4071 "mlx/parser.mly"
                       ( Lident _1 )
 # 32826 "mlx/parser.ml"
@@ -32858,11 +32858,11 @@ module Tables = struct
 # 32859 "mlx/parser.ml"
         ) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
         
 # 4072 "mlx/parser.mly"
@@ -32889,7 +32889,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4071 "mlx/parser.mly"
                       ( Lident _1 )
 # 32896 "mlx/parser.ml"
@@ -32924,11 +32924,11 @@ module Tables = struct
         } = _menhir_stack in
         let _3 : (string) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
         
 # 4072 "mlx/parser.mly"
@@ -32951,11 +32951,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4107 "mlx/parser.mly"
                                             ( _1 )
 # 32962 "mlx/parser.ml"
@@ -32995,13 +32995,13 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _4 : unit = Obj.magic _4 in
-        let _3 : (Ocaml_common.Longident.t) = Obj.magic _3 in
+        let _3 : (Longident.t) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__4_ in
-        let _v : (Ocaml_common.Longident.t) = let _endpos = _endpos__4_ in
+        let _v : (Longident.t) = let _endpos = _endpos__4_ in
         let _symbolstartpos = _startpos__1_ in
         let _loc__3_ = (_startpos__3_, _endpos__3_) in
         let _loc__1_ = (_startpos__1_, _endpos__1_) in
@@ -33041,11 +33041,11 @@ module Tables = struct
         } = _menhir_stack in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
-        let _v : (Ocaml_common.Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
+        let _v : (Longident.t) = let _loc__3_ = (_startpos__3_, _endpos__3_) in
         
 # 4111 "mlx/parser.mly"
       ( expecting _loc__3_ "module path" )
@@ -33067,11 +33067,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4104 "mlx/parser.mly"
                                          ( _1 )
 # 33078 "mlx/parser.ml"
@@ -33661,7 +33661,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -33948,7 +33948,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _5 : unit = Obj.magic _5 in
         let _1_inlined2 : (
 # 839 "mlx/parser.mly"
@@ -34551,7 +34551,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -34980,11 +34980,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4114 "mlx/parser.mly"
                                           ( _1 )
 # 34991 "mlx/parser.ml"
@@ -36471,14 +36471,14 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined3 : (Parsetree.attributes) = Obj.magic _1_inlined3 in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
         let ext : (string Ppxlib.loc option) = Obj.magic ext in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined3_ in
-        let _v : (Ocaml_common.Longident.t Ppxlib.loc Parsetree.open_infos *
+        let _v : (Longident.t Ppxlib.loc Parsetree.open_infos *
   string Ppxlib.loc option) = let attrs2 =
           let _1 = _1_inlined3 in
           
@@ -36572,7 +36572,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _1_inlined2 : (Parsetree.attributes) = Obj.magic _1_inlined2 in
         let ext : (string Ppxlib.loc option) = Obj.magic ext in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
@@ -36580,7 +36580,7 @@ module Tables = struct
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_inlined4_ in
-        let _v : (Ocaml_common.Longident.t Ppxlib.loc Parsetree.open_infos *
+        let _v : (Longident.t Ppxlib.loc Parsetree.open_infos *
   string Ppxlib.loc option) = let attrs2 =
           let _1 = _1_inlined4 in
           
@@ -40697,11 +40697,11 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 1369 "mlx/parser.mly"
     ( _1 )
 # 40708 "mlx/parser.ml"
@@ -40729,11 +40729,11 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 1354 "mlx/parser.mly"
     ( _1 )
 # 40740 "mlx/parser.ml"
@@ -40825,11 +40825,11 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 1359 "mlx/parser.mly"
     ( _1 )
 # 40836 "mlx/parser.ml"
@@ -40857,11 +40857,11 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 1364 "mlx/parser.mly"
     ( _1 )
 # 40868 "mlx/parser.ml"
@@ -40953,11 +40953,11 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 1344 "mlx/parser.mly"
     ( _1 )
 # 40964 "mlx/parser.ml"
@@ -41017,11 +41017,11 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 1349 "mlx/parser.mly"
     ( _1 )
 # 41028 "mlx/parser.ml"
@@ -41685,7 +41685,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _2 : (Parsetree.pattern) = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_ in
@@ -41773,7 +41773,7 @@ module Tables = struct
         let xs : (string Ppxlib.loc list) = Obj.magic xs in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_pat_ in
@@ -43309,12 +43309,12 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos_fields_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let fields : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic fields in
+        let fields : ((Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic fields in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_fields_ in
         let _endpos = _endpos_fields_ in
         let _v : (Parsetree.expression option *
-  (Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = let eo = 
+  (Longident.t Ppxlib.loc * Parsetree.expression) list) = let eo = 
 # 124 "<standard.mly>"
     ( None )
 # 43321 "mlx/parser.ml"
@@ -43352,14 +43352,14 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let fields : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic fields in
+        let fields : ((Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic fields in
         let _2 : unit = Obj.magic _2 in
         let x : (Parsetree.expression) = Obj.magic x in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos_x_ in
         let _endpos = _endpos_fields_ in
         let _v : (Parsetree.expression option *
-  (Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = let eo =
+  (Longident.t Ppxlib.loc * Parsetree.expression) list) = let eo =
           let x = 
 # 191 "<standard.mly>"
     ( x )
@@ -49917,11 +49917,11 @@ module Tables = struct
         } = _menhir_stack in
         let eo : (Parsetree.expression option) = Obj.magic eo in
         let c : (Parsetree.type_constraint option) = Obj.magic c in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_eo_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = let _2 = 
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.expression) list) = let _2 = 
 # 124 "<standard.mly>"
     ( None )
 # 49928 "mlx/parser.ml"
@@ -49997,11 +49997,11 @@ module Tables = struct
         let x : unit = Obj.magic x in
         let eo : (Parsetree.expression option) = Obj.magic eo in
         let c : (Parsetree.type_constraint option) = Obj.magic c in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_x_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = let _2 = 
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.expression) list) = let _2 = 
 # 126 "<standard.mly>"
     ( Some x )
 # 50008 "mlx/parser.ml"
@@ -50080,15 +50080,15 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let xs : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic xs in
+        let xs : ((Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic xs in
         let _2 : unit = Obj.magic _2 in
         let eo : (Parsetree.expression option) = Obj.magic eo in
         let c : (Parsetree.type_constraint option) = Obj.magic c in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos_xs_ in
-        let _v : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = let x =
+        let _v : ((Longident.t Ppxlib.loc * Parsetree.expression) list) = let x =
           let label =
             let _endpos = _endpos__1_ in
             let _symbolstartpos = _startpos__1_ in
@@ -50780,7 +50780,7 @@ module Tables = struct
         let xs : (Parsetree.extension_constructor list) = Obj.magic xs in
         let priv : (Asttypes.private_flag) = Obj.magic priv in
         let _7 : unit = Obj.magic _7 in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let params : ((Parsetree.core_type * (Asttypes.variance * Asttypes.injectivity)) list) = Obj.magic params in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
         let ext : (string Ppxlib.loc option) = Obj.magic ext in
@@ -50944,7 +50944,7 @@ module Tables = struct
         let xs : (Parsetree.extension_constructor list) = Obj.magic xs in
         let priv : (Asttypes.private_flag) = Obj.magic priv in
         let _7 : unit = Obj.magic _7 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let params : ((Parsetree.core_type * (Asttypes.variance * Asttypes.injectivity)) list) = Obj.magic params in
         let _1_inlined2 : unit = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
@@ -51255,7 +51255,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _5 : unit = Obj.magic _5 in
         let _1_inlined2 : (string option) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
@@ -51644,7 +51644,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t Ppxlib.loc Parsetree.open_infos *
+        let _1 : (Longident.t Ppxlib.loc Parsetree.open_infos *
   string Ppxlib.loc option) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
@@ -52194,7 +52194,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _3 : unit = Obj.magic _3 in
-        let _1_inlined1 : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let _1_inlined1 : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -52263,7 +52263,7 @@ module Tables = struct
           };
         } = _menhir_stack in
         let _3 : unit = Obj.magic _3 in
-        let _1_inlined1 : ((Ocaml_common.Longident.t Ppxlib.loc * Parsetree.pattern) list *
+        let _1_inlined1 : ((Longident.t Ppxlib.loc * Parsetree.pattern) list *
   unit option) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -53094,7 +53094,7 @@ module Tables = struct
        (string)
 # 53096 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -53296,7 +53296,7 @@ module Tables = struct
        (string)
 # 53298 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -53498,7 +53498,7 @@ module Tables = struct
        (string)
 # 53500 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let array : (Parsetree.expression) = Obj.magic array in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -53879,7 +53879,7 @@ module Tables = struct
        (string)
 # 53881 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _1 : (Parsetree.expression) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -54068,7 +54068,7 @@ module Tables = struct
        (string)
 # 54070 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _1 : (Parsetree.expression) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -54257,7 +54257,7 @@ module Tables = struct
        (string)
 # 54259 "mlx/parser.ml"
         ) = Obj.magic _2 in
-        let _2_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _2_inlined1 in
+        let _2_inlined1 : (Longident.t) = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _1 : (Parsetree.expression) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -54661,7 +54661,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _1_inlined2 : (Parsetree.attributes) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (string Ppxlib.loc option) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
@@ -55291,7 +55291,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -55383,7 +55383,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -55790,7 +55790,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : (Parsetree.expression) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -55874,7 +55874,7 @@ module Tables = struct
         let _4 : (Parsetree.expression) = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -55965,7 +55965,7 @@ module Tables = struct
         let xs : ((string Ppxlib.loc * Parsetree.expression) list) = Obj.magic xs in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -56066,7 +56066,7 @@ module Tables = struct
         let xs : ((string Ppxlib.loc * Parsetree.expression) list) = Obj.magic xs in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -56326,7 +56326,7 @@ module Tables = struct
         let _2_inlined1 : unit = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_inlined1_ in
@@ -56436,7 +56436,7 @@ module Tables = struct
         let _4 : (Parsetree.expression) = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -56495,7 +56495,7 @@ module Tables = struct
         } = _menhir_stack in
         let _3 : unit = Obj.magic _3 in
         let _2 : (Parsetree.expression option *
-  (Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _2 in
+  (Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
@@ -56552,7 +56552,7 @@ module Tables = struct
         } = _menhir_stack in
         let _3 : unit = Obj.magic _3 in
         let _2 : (Parsetree.expression option *
-  (Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _2 in
+  (Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
@@ -56624,10 +56624,10 @@ module Tables = struct
         } = _menhir_stack in
         let _5 : unit = Obj.magic _5 in
         let _4 : (Parsetree.expression option *
-  (Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _4 in
+  (Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -56719,10 +56719,10 @@ module Tables = struct
         } = _menhir_stack in
         let _5 : unit = Obj.magic _5 in
         let _4 : (Parsetree.expression option *
-  (Ocaml_common.Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _4 in
+  (Longident.t Ppxlib.loc * Parsetree.expression) list) = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -56969,7 +56969,7 @@ module Tables = struct
         let es : (Parsetree.expression list) = Obj.magic es in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -57059,7 +57059,7 @@ module Tables = struct
         let _4 : unit = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__4_ in
@@ -57152,7 +57152,7 @@ module Tables = struct
         let es : (Parsetree.expression list) = Obj.magic es in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -57357,7 +57357,7 @@ module Tables = struct
         let es : (Parsetree.expression list) = Obj.magic es in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -57452,7 +57452,7 @@ module Tables = struct
         let _2_inlined1 : unit = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_inlined1_ in
@@ -57562,7 +57562,7 @@ module Tables = struct
         let es : (Parsetree.expression list) = Obj.magic es in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -57675,7 +57675,7 @@ module Tables = struct
         let _4 : unit = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__9_ in
@@ -57826,7 +57826,7 @@ module Tables = struct
         let _4 : unit = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__8_ in
@@ -58386,7 +58386,7 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
@@ -58484,7 +58484,7 @@ module Tables = struct
             MenhirLib.EngineTypes.next = _menhir_stack;
           };
         } = _menhir_stack in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
@@ -58553,7 +58553,7 @@ module Tables = struct
         } = _menhir_stack in
         let _3 : (Parsetree.pattern) = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__3_ in
@@ -58627,7 +58627,7 @@ module Tables = struct
         let _2_inlined1 : unit = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_inlined1_ in
@@ -58722,7 +58722,7 @@ module Tables = struct
         let _2_inlined1 : unit = Obj.magic _2_inlined1 in
         let _1_inlined1 : unit = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__2_inlined1_ in
@@ -58824,7 +58824,7 @@ module Tables = struct
         let _4 : (Parsetree.pattern) = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -58905,7 +58905,7 @@ module Tables = struct
         let _4 : (Parsetree.pattern) = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__5_ in
@@ -58971,7 +58971,7 @@ module Tables = struct
         let _4 : unit = Obj.magic _4 in
         let _3 : unit = Obj.magic _3 in
         let _2 : unit = Obj.magic _2 in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__4_ in
@@ -60830,7 +60830,7 @@ module Tables = struct
         } = _menhir_stack in
         let _1_inlined5 : (Parsetree.attributes) = Obj.magic _1_inlined5 in
         let _1_inlined4 : (Parsetree.attributes) = Obj.magic _1_inlined4 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let _5 : unit = Obj.magic _5 in
         let _1_inlined2 : (string) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
@@ -61494,7 +61494,7 @@ module Tables = struct
         let xs : (Parsetree.extension_constructor list) = Obj.magic xs in
         let priv : (Asttypes.private_flag) = Obj.magic priv in
         let _7 : unit = Obj.magic _7 in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let params : ((Parsetree.core_type * (Asttypes.variance * Asttypes.injectivity)) list) = Obj.magic params in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
         let ext : (string Ppxlib.loc option) = Obj.magic ext in
@@ -61658,7 +61658,7 @@ module Tables = struct
         let xs : (Parsetree.extension_constructor list) = Obj.magic xs in
         let priv : (Asttypes.private_flag) = Obj.magic priv in
         let _7 : unit = Obj.magic _7 in
-        let _1_inlined3 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined3 in
+        let _1_inlined3 : (Longident.t) = Obj.magic _1_inlined3 in
         let params : ((Parsetree.core_type * (Asttypes.variance * Asttypes.injectivity)) list) = Obj.magic params in
         let _1_inlined2 : unit = Obj.magic _1_inlined2 in
         let _1_inlined1 : (Parsetree.attributes) = Obj.magic _1_inlined1 in
@@ -62893,7 +62893,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (string) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -62970,7 +62970,7 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _1_inlined1 : (string) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -63675,11 +63675,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4101 "mlx/parser.mly"
                                              ( _1 )
 # 63686 "mlx/parser.ml"
@@ -64588,11 +64588,11 @@ module Tables = struct
           MenhirLib.EngineTypes.endp = _endpos__1_;
           MenhirLib.EngineTypes.next = _menhir_stack;
         } = _menhir_stack in
-        let _1 : (Ocaml_common.Longident.t) = Obj.magic _1 in
+        let _1 : (Longident.t) = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
         let _endpos = _endpos__1_ in
-        let _v : (Ocaml_common.Longident.t) = 
+        let _v : (Longident.t) = 
 # 4095 "mlx/parser.mly"
                                            ( _1 )
 # 64599 "mlx/parser.ml"
@@ -65456,7 +65456,7 @@ module Tables = struct
         let xs : ((Parsetree.core_type * Parsetree.core_type * Warnings.loc) list) = Obj.magic xs in
         let _1_inlined2 : (Parsetree.core_type) = Obj.magic _1_inlined2 in
         let _4 : (Asttypes.private_flag) = Obj.magic _4 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : ((Parsetree.core_type * (Asttypes.variance * Asttypes.injectivity)) list) = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -65559,7 +65559,7 @@ module Tables = struct
         } = _menhir_stack in
         let _1_inlined2 : (Parsetree.core_type) = Obj.magic _1_inlined2 in
         let _4 : unit = Obj.magic _4 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : ((Parsetree.core_type * (Asttypes.variance * Asttypes.injectivity)) list) = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -65633,9 +65633,9 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _3 : unit = Obj.magic _3 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
@@ -65701,9 +65701,9 @@ module Tables = struct
             };
           };
         } = _menhir_stack in
-        let _1_inlined2 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined2 in
+        let _1_inlined2 : (Longident.t) = Obj.magic _1_inlined2 in
         let _3 : unit = Obj.magic _3 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
         let _startpos = _startpos__1_ in
@@ -65777,7 +65777,7 @@ module Tables = struct
         } = _menhir_stack in
         let rhs : (Parsetree.module_type) = Obj.magic rhs in
         let _4 : unit = Obj.magic _4 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -65841,7 +65841,7 @@ module Tables = struct
         } = _menhir_stack in
         let rhs : (Parsetree.module_type) = Obj.magic rhs in
         let _4 : unit = Obj.magic _4 in
-        let _1_inlined1 : (Ocaml_common.Longident.t) = Obj.magic _1_inlined1 in
+        let _1_inlined1 : (Longident.t) = Obj.magic _1_inlined1 in
         let _2 : unit = Obj.magic _2 in
         let _1 : unit = Obj.magic _1 in
         let _endpos__0_ = _menhir_stack.MenhirLib.EngineTypes.endp in
@@ -65954,7 +65954,7 @@ and toplevel_phrase =
 
 and parse_val_longident =
   fun lexer lexbuf ->
-    (Obj.magic (MenhirInterpreter.entry `Simplified 2284 lexer lexbuf) : (Ocaml_common.Longident.t))
+    (Obj.magic (MenhirInterpreter.entry `Simplified 2284 lexer lexbuf) : (Longident.t))
 
 and parse_pattern =
   fun lexer lexbuf ->
@@ -65962,7 +65962,7 @@ and parse_pattern =
 
 and parse_mty_longident =
   fun lexer lexbuf ->
-    (Obj.magic (MenhirInterpreter.entry `Simplified 2276 lexer lexbuf) : (Ocaml_common.Longident.t))
+    (Obj.magic (MenhirInterpreter.entry `Simplified 2276 lexer lexbuf) : (Longident.t))
 
 and parse_module_type =
   fun lexer lexbuf ->
@@ -65974,11 +65974,11 @@ and parse_module_expr =
 
 and parse_mod_longident =
   fun lexer lexbuf ->
-    (Obj.magic (MenhirInterpreter.entry `Simplified 2264 lexer lexbuf) : (Ocaml_common.Longident.t))
+    (Obj.magic (MenhirInterpreter.entry `Simplified 2264 lexer lexbuf) : (Longident.t))
 
 and parse_mod_ext_longident =
   fun lexer lexbuf ->
-    (Obj.magic (MenhirInterpreter.entry `Simplified 2260 lexer lexbuf) : (Ocaml_common.Longident.t))
+    (Obj.magic (MenhirInterpreter.entry `Simplified 2260 lexer lexbuf) : (Longident.t))
 
 and parse_expression =
   fun lexer lexbuf ->
@@ -65990,11 +65990,11 @@ and parse_core_type =
 
 and parse_constr_longident =
   fun lexer lexbuf ->
-    (Obj.magic (MenhirInterpreter.entry `Simplified 2248 lexer lexbuf) : (Ocaml_common.Longident.t))
+    (Obj.magic (MenhirInterpreter.entry `Simplified 2248 lexer lexbuf) : (Longident.t))
 
 and parse_any_longident =
   fun lexer lexbuf ->
-    (Obj.magic (MenhirInterpreter.entry `Simplified 2230 lexer lexbuf) : (Ocaml_common.Longident.t))
+    (Obj.magic (MenhirInterpreter.entry `Simplified 2230 lexer lexbuf) : (Longident.t))
 
 and interface =
   fun lexer lexbuf ->
@@ -66016,7 +66016,7 @@ module Incremental = struct
   
   and parse_val_longident =
     fun initial_position ->
-      (Obj.magic (MenhirInterpreter.start 2284 initial_position) : (Ocaml_common.Longident.t) MenhirInterpreter.checkpoint)
+      (Obj.magic (MenhirInterpreter.start 2284 initial_position) : (Longident.t) MenhirInterpreter.checkpoint)
   
   and parse_pattern =
     fun initial_position ->
@@ -66024,7 +66024,7 @@ module Incremental = struct
   
   and parse_mty_longident =
     fun initial_position ->
-      (Obj.magic (MenhirInterpreter.start 2276 initial_position) : (Ocaml_common.Longident.t) MenhirInterpreter.checkpoint)
+      (Obj.magic (MenhirInterpreter.start 2276 initial_position) : (Longident.t) MenhirInterpreter.checkpoint)
   
   and parse_module_type =
     fun initial_position ->
@@ -66036,11 +66036,11 @@ module Incremental = struct
   
   and parse_mod_longident =
     fun initial_position ->
-      (Obj.magic (MenhirInterpreter.start 2264 initial_position) : (Ocaml_common.Longident.t) MenhirInterpreter.checkpoint)
+      (Obj.magic (MenhirInterpreter.start 2264 initial_position) : (Longident.t) MenhirInterpreter.checkpoint)
   
   and parse_mod_ext_longident =
     fun initial_position ->
-      (Obj.magic (MenhirInterpreter.start 2260 initial_position) : (Ocaml_common.Longident.t) MenhirInterpreter.checkpoint)
+      (Obj.magic (MenhirInterpreter.start 2260 initial_position) : (Longident.t) MenhirInterpreter.checkpoint)
   
   and parse_expression =
     fun initial_position ->
@@ -66052,11 +66052,11 @@ module Incremental = struct
   
   and parse_constr_longident =
     fun initial_position ->
-      (Obj.magic (MenhirInterpreter.start 2248 initial_position) : (Ocaml_common.Longident.t) MenhirInterpreter.checkpoint)
+      (Obj.magic (MenhirInterpreter.start 2248 initial_position) : (Longident.t) MenhirInterpreter.checkpoint)
   
   and parse_any_longident =
     fun initial_position ->
-      (Obj.magic (MenhirInterpreter.start 2230 initial_position) : (Ocaml_common.Longident.t) MenhirInterpreter.checkpoint)
+      (Obj.magic (MenhirInterpreter.start 2230 initial_position) : (Longident.t) MenhirInterpreter.checkpoint)
   
   and interface =
     fun initial_position ->
