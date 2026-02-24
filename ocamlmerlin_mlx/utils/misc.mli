@@ -73,6 +73,9 @@ val reraise_preserving_backtrace : exn -> (unit -> unit) -> 'a
 val map_end: ('a -> 'b) -> 'a list -> 'b list -> 'b list
        (** [map_end f l t] is [map f l @ t], just more efficient. *)
 
+val rev_map_end: ('a -> 'b) -> 'a list -> 'b list -> 'b list
+       (** [map_end f l t] is [map f (rev l) @ t], just more efficient. *)
+
 val map_left_right: ('a -> 'b) -> 'a list -> 'b list
        (** Like [List.map], with guaranteed left-to-right evaluation order *)
 
@@ -91,6 +94,9 @@ val list_remove: 'a -> 'a list -> 'a list
 
 val split_last: 'a list -> 'a list * 'a
        (** Return the last element and the other elements of the given list. *)
+
+val repeated_label : (string option * 'a) list -> string option
+       (** Detects a repeated label - for use with labeled tuples. *)
 
 val may: ('a -> unit) -> 'a option -> unit
 val may_map: ('a -> 'b) -> 'a option -> 'b option
@@ -112,10 +118,14 @@ val find_in_path: string list -> string -> string
 val find_in_path_rel: string list -> string -> string
        (** Search a relative file in a list of directories. *)
 
-val find_in_path_uncap: ?fallback:string -> string list -> string -> string
-       (** Same, but search also for uncapitalized name, i.e.
-           if name is [Foo.ml], allow [/path/Foo.ml] and [/path/foo.ml]
-            to match. *)
+ (** Normalize file name [Foo.ml] to [foo.ml] *)
+val normalized_unit_filename: string -> string
+
+val find_in_path_normalized: ?fallback:string -> string list -> string -> string
+(** Same as {!find_in_path_rel} , but search also for normalized unit filename,
+    i.e. if name is [Foo.ml], allow [/path/Foo.ml] and [/path/foo.ml] to
+    match. *)
+
 
 val canonicalize_filename : ?cwd:string -> string -> string
         (* Ensure that path is absolute (wrt to cwd), by following ".." and "." *)
@@ -123,11 +133,16 @@ val canonicalize_filename : ?cwd:string -> string -> string
 val expand_glob : ?filter:(string -> bool) -> string -> string list -> string list
         (* [expand_glob ~filter pattern acc] adds all filenames matching
            [pattern] and satistfying the [filter] predicate to [acc]*)
-val split_path : string -> string list -> string list
-        (* [split_path path tail] prepends all components of [path] to [tail],
+val split_path : string -> string list
+        (* [split_path path] returns the components of [path],
            including implicit "." if path is not absolute.
-           [split_path "a/b/c" []] = ["."; "a"; "b"; "c"]
-           [split_path "/a/b/c" []] = ["/"; "a"; "b"; "c"]
+           [split_path "a/b/c"] = ["."; "a"; "b"; "c"]
+           [split_path "/a/b/c"] = ["/"; "a"; "b"; "c"]
+        FIXME: explain windows behavior
+        *)
+val split_path_and_prepend : string -> string list -> string list
+        (* [split_path_and_prepend path tail] prepends all components of [path] to [tail],
+           including implicit "." if path is not absolute.
         FIXME: explain windows behavior
         *)
 
@@ -186,6 +201,8 @@ val no_overflow_mul: int -> int -> bool
 val no_overflow_lsl: int -> int -> bool
         (* [no_overflow_lsl n k] returns [true] if the computation of
            [n lsl k] does not overflow. *)
+
+val letter_of_int : int -> string
 
 module Int_literal_converter : sig
   val int : string -> int
@@ -269,21 +286,6 @@ val for4: 'a * 'b * 'c * 'd -> 'd
  * - modules_in_path ~ext:".mli" ["."] returns ["A"] *)
 val modules_in_path : ext:string -> string list -> string list
 
-val file_contents : string -> string
-
-module LongString :
-  sig
-    type t = bytes array
-    val create : int -> t
-    val length : t -> int
-    val get : t -> int -> char
-    val set : t -> int -> char -> unit
-    val blit : t -> int -> t -> int -> int -> unit
-    val output : out_channel -> t -> int -> int -> unit
-    val unsafe_blit_to_bytes : t -> int -> bytes -> int -> int -> unit
-    val input_bytes : in_channel -> int -> t
-  end
-
 val edit_distance : string -> string -> int -> int option
 (** [edit_distance a b cutoff] computes the edit distance between
     strings [a] and [b]. To help efficiency, it uses a cutoff: if the
@@ -302,17 +304,59 @@ val spellcheck : string list -> string -> string list
     list of suggestions taken from [env], that are close enough to
     [name] that it may be a typo for one of them. *)
 
-val did_you_mean : Format.formatter -> (unit -> string list) -> unit
-(** [did_you_mean ppf get_choices] hints that the user may have meant
-    one of the option returned by calling [get_choices]. It does nothing
-    if the returned list is empty.
 
-    The [unit -> ...] thunking is meant to delay any potentially-slow
-    computation (typically computing edit-distance with many things
-    from the current environment) to when the hint message is to be
-    printed. You should print an understandable error message before
-    calling [did_you_mean], so that users get a clear notification of
-    the failure even if producing the hint is slow.
+val align_hint:
+  prefix:string -> main:Format_doc.t -> hint:Format_doc.t ->
+  Format_doc.t * Format_doc.t
+(** [aligned_hint main hint] vertically aligns a [main] message and a hint
+    message. The vertical alignment is controlled by the use of [@{<ralign> ...
+    @}] boxes: the start of one box, in either the hint or the main message,
+    will be shifted on the left to ensure that the end of the two boxes are
+    vertically aligned, taking in account a pre-existing [prefix] before the
+    main message. For instance,
+{[
+let main, sub =
+  align_hint
+    ~prefix:"Error: "
+    (doc_printf "@{<ralign>The value @}%a is not an instance variable"
+      Style.inline_code "foobar"
+    )
+    (doc_printf
+      "@{<ralign>Did you mean @}%a" Style.inline_code "foobaz"
+    ) in
+   printf "Error: %a%a" pp_doc main pp_doc sub
+]}
+
+   produces the following text:
+
+{[
+Error:   The value "foobaz" is not an instance variable
+Hint: Did you mean "foobar"?
+]}
+
+  where the main message has been shifted to the left to align ["foobaz"] and
+  ["foobar"].
+*)
+
+
+val align_error_hint:
+  main:Format_doc.t -> hint:Format_doc.t -> Format_doc.t * Format_doc.t
+(** Same as [align_hint ~prefix:"Error: "] *)
+
+val aligned_hint:
+  prefix:string -> Format_doc.formatter ->
+  ('a, Format_doc.formatter, unit, Format_doc.t option -> unit) format4 -> 'a
+(** [aligned_hint ~prefix fmt ... hint] align the potential hint with the main
+    error message generated by the format string [fmt] before printing the two
+    message. *)
+
+val did_you_mean :
+    ?pp:string Format_doc.printer -> string list -> Format_doc.t option
+(** [did_you_mean ~pp choices] hints that the user may have meant one of the
+  option in [choices].
+
+  Each choice is printed with the [pp] function, or [Style.inline_code] if
+  [pp]=[None].
 *)
 
 val cut_at : string -> char -> string * string
@@ -360,8 +404,18 @@ val ordinal_suffix : int -> string
     [4] -> ["th"], and so on.  Handles larger numbers (e.g., [42] -> ["nd"]) and
     the numbers 11--13 (which all get ["th"]) correctly. *)
 
-(* Color handling *)
-module Color : sig
+(** {1 Color support detection }*)
+module Color: sig
+  type setting = Auto | Always | Never
+
+  val default_setting : setting
+  val is_enabled : unit -> bool
+end
+
+
+(** {1 Styling handling for terminal output } *)
+
+module Style : sig
   type color =
     | Black
     | Red
@@ -383,29 +437,99 @@ module Color : sig
   val ansi_of_style_l : style list -> string
   (* ANSI escape sequence for the given style *)
 
-  type styles = {
-    error: style list;
-    warning: style list;
-    loc: style list;
-    hint:style list;
+  type tag_style ={
+    ansi: style list;
+    text_open:string;
+    text_close:string
   }
+
+  type styles = {
+    error: tag_style;
+    warning: tag_style;
+    loc: tag_style;
+    hint: tag_style;
+    inline_code: tag_style;
+  }
+
+  val hint: Format_doc.formatter -> unit
+  val as_inline_code: 'a Format_doc.printer -> 'a Format_doc.printer
+  val inline_code: string Format_doc.printer
 
   val default_styles: styles
   val get_styles: unit -> styles
   val set_styles: styles -> unit
 
-  type setting = Auto | Always | Never
-
-  val default_setting : setting
-
-  val setup : setting option -> unit
+  val setup : Color.setting option -> unit
   (* [setup opt] will enable or disable color handling on standard formatters
      according to the value of color setting [opt].
      Only the first call to this function has an effect. *)
 
-  val set_color_tag_handling : Format.formatter -> unit
+  val set_tag_handling : Format.formatter -> unit
   (* adds functions to support color tags to the given formatter. *)
 end
 
-val print_see_manual : Format.formatter -> int list -> unit
+(* See the -error-style option *)
+module Error_style : sig
+  type setting =
+    | Contextual
+    | Short
+    | Merlin
+
+  val default_setting : setting
+end
+
+val print_see_manual : int list Format_doc.printer
 (** See manual section *)
+
+
+module Utf8_lexeme: sig
+  type t = string
+
+  val normalize: string -> (t,t) Result.t
+  (** Normalize the given UTF-8 encoded string.
+      Invalid UTF-8 sequences results in a error and are replaced
+      by U+FFFD.
+      Identifier characters are put in NFC normalized form.
+      Other Unicode characters are left unchanged. *)
+
+  val capitalize: string -> (t,t) Result.t
+  (** Like [normalize], but if the string starts with a lowercase identifier
+      character, it is replaced by the corresponding uppercase character.
+      Subsequent characters are not changed. *)
+
+  val uncapitalize: string -> (t,t) Result.t
+  (** Like [normalize], but if the string starts with an uppercase identifier
+      character, it is replaced by the corresponding lowercase character.
+      Subsequent characters are not changed. *)
+
+  val is_capitalized: t -> bool
+  (** Returns [true] if the given normalized string starts with an
+      uppercase identifier character, [false] otherwise.  May return
+      wrong results if the string is not normalized. *)
+
+  val is_valid_identifier: t -> bool
+  (** Check whether the given normalized string is a valid OCaml identifier:
+      - all characters are identifier characters
+      - it does not start with a digit or a single quote
+  *)
+
+  val is_lowercase: t -> bool
+  (** Returns [true] if the given normalized string only contains lowercase
+      identifier character, [false] otherwise. May return wrong results if the
+      string is not normalized. *)
+
+  type validation_result =
+    | Valid
+    | Invalid_character of Uchar.t   (** Character not allowed *)
+    | Invalid_beginning of Uchar.t   (** Character not allowed as first char *)
+
+  val validate_identifier: ?with_dot:bool -> t -> validation_result
+  (** Like [is_valid_identifier], but returns a more detailed error code. Dots
+      can be allowed to extend support to path-like identifiers. *)
+
+  val starts_like_a_valid_identifier: t -> bool
+  (** Checks whether the given normalized string starts with an identifier
+      character other than a digit or a single quote.  Subsequent characters
+      are not checked. *)
+end
+

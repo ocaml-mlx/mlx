@@ -20,10 +20,3 @@
   merlin-lib.kernel
   merlin-lib.os_ipc
   merlin-lib.dot_protocol))
-
-(copy_files#
- (enabled_if
-  (<> %{profile} "release"))
- (mode promote)
- (files
-  %{project_root}/merlin/src/kernel/{msource,mconfig,mreader,mreader_parser,mreader_lexer,mreader_recover,mreader_explain,extension,mreader_extend,mocaml}.{ml,mli}))

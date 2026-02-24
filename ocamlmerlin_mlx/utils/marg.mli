@@ -26,6 +26,9 @@ val param : string -> (string -> 'acc -> 'acc) -> 'acc t
 (** Action consuming a boolean argument *)
 val bool : (bool -> 'acc -> 'acc) -> 'acc t
 
+(** Action consuming an integer argument *)
+val int : (int -> 'acc -> 'acc) -> 'acc t
+
 (** Action doing nothing *)
 val unit_ignore : 'acc t
 
@@ -36,7 +39,7 @@ val param_ignore : 'acc t
 
 type docstring = string
 
-type 'a spec = (string * docstring * 'a t)
+type 'a spec = string * docstring * 'a t
 
 (** Consume at most one flag from the list, returning updated state or
     [None] in case of failure.
@@ -44,14 +47,20 @@ type 'a spec = (string * docstring * 'a t)
     use.  *)
 val parse_one :
   warning:(string -> unit) ->
-  'global table -> 'local spec list ->
-  string list -> 'global -> 'local ->
+  'global table ->
+  'local spec list ->
+  string list ->
+  'global ->
+  'local ->
   (string list * 'global * 'local) option
 
 (** Consume all arguments from the input list, calling warning for incorrect
     ones and resuming parsing after. *)
 val parse_all :
   warning:(string -> unit) ->
-  'global table -> 'local spec list ->
-  string list -> 'global -> 'local ->
+  'global table ->
+  'local spec list ->
+  string list ->
+  'global ->
+  'local ->
   'global * 'local
