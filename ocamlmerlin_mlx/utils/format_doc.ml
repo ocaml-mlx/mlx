@@ -276,7 +276,7 @@ module Doc = struct
    let rec approx_len acc = function
      | [] -> Some acc
      | Text x :: r->
-         let len = Format.utf_8_scalar_width ~pos:0 ~len:(String.length x) x in
+         let len = String.length x in
          approx_len (acc + len) r
      | With_size n :: Text _ :: r -> approx_len (acc + n) r
      | (Open_box _ | Close_box | Open_tag _ | Close_tag
