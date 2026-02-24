@@ -171,7 +171,6 @@ let mkuplus ~sloc ~oploc name arg =
       Pexp_apply(mkoperator ~loc:oploc ("~" ^ name), [Nolabel, arg])
 
 let mk_attr ~loc name payload =
-  Builtin_attributes.(register_attr Parser name);
   Attr.mk ~loc name payload
 
 (* TODO define an abstraction boundary between locations-as-pairs
