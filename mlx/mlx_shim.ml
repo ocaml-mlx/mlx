@@ -33,6 +33,20 @@ module Longident = struct
 
   let last = function
     | Lident s -> s
-    | Ldot (_, s) -> s
+    | Ldot (_, { txt = s; _ }) -> s
     | Lapply (_, _) -> Misc.fatal_error "Longident.last"
+
+  let rec flatten = function
+    | Lident s -> [ s ]
+    | Ldot ({ txt = lid; _ }, { txt = s; _ }) -> flatten lid @ [ s ]
+    | Lapply _ -> Misc.fatal_error "Longident.flatten"
+
+  let rec same a b =
+    match a, b with
+    | Lident a, Lident b -> String.equal a b
+    | ( Ldot ({ txt = pa; _ }, { txt = a; _ }),
+        Ldot ({ txt = pb; _ }, { txt = b; _ }) ) ->
+        String.equal a b && same pa pb
+    | Lapply _, _ | _, Lapply _ -> false
+    | _ -> false
 end
