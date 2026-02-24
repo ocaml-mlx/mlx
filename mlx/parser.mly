@@ -4368,8 +4368,6 @@ payload:
 ;
 attr_payload:
   payload
-    { Builtin_attributes.mark_payload_attrs_used $1;
-      $1
-    }
+    { $1 }
 ;
 %%
