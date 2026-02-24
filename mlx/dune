@@ -4,7 +4,7 @@
  (public_name mlx-pp)
  (modules :standard \ mlx_shim)
  (flags
-  (:standard -w -9-67 -open Astlib -open Astlib.Ast_501 -open Mlx_shim))
+  (:standard -w -9-67 -open Astlib -open Astlib.Ast_504 -open Mlx_shim))
  (libraries ppxlib ocaml-compiler-libs.shadow mlx_shim))
 
 (library
@@ -12,7 +12,7 @@
  (package mlx)
  (modules mlx_shim)
  (flags
-  (:standard -w -9-67 -open Astlib -open Astlib.Ast_501))
+  (:standard -w -9-67 -open Astlib -open Astlib.Ast_504))
  (libraries ppxlib ocaml-compiler-libs.shadow))
 
 (ocamllex lexer)
@@ -39,7 +39,7 @@
  (mode promote)
  (enabled_if
   (<> %{profile} "release"))
- (files ../ocaml/parsing/parse.{ml,mli}))
+ (files ../ocaml/parsing/parse.mli))
 
 (copy_files
  (mode promote)

@@ -10,7 +10,7 @@ let speclist =
 
 module Conv =
   Ppxlib_ast.Convert
-    (Ppxlib_ast__Versions.OCaml_501)
+    (Ppxlib_ast__Versions.OCaml_504)
     (Ppxlib_ast.Compiler_version)
 
 let () =

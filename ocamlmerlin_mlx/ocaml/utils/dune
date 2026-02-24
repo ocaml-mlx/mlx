@@ -1,7 +1,7 @@
 (library
  (name mlx_ocaml_utils)
  (package ocamlmerlin-mlx)
- (flags :standard -w=-9-67-69 -open=Mlx_utils -open Astlib.Ast_501)
+ (flags :standard -w=-9-67-69 -open=Mlx_utils -open Astlib.Ast_504)
  (libraries ppxlib merlin-lib.config mlx_utils))
 
 (copy_files
