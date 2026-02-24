@@ -49,13 +49,19 @@ type type_expected = private {
 }
 
 (* Variables in patterns *)
+type pattern_variable_kind =
+  | Std_var
+  | As_var
+  | Continuation_var
+
 type pattern_variable =
   {
     pv_id: Ident.t;
     pv_type: type_expr;
     pv_loc: Location.t;
-    pv_as_var: bool;
+    pv_kind: pattern_variable_kind;
     pv_attributes: Typedtree.attributes;
+    pv_uid : Uid.t;
   }
 
 val mk_expected:
@@ -98,10 +104,6 @@ type existential_restriction =
   | In_class_def (** or in [class c = let ... in ...] *)
   | In_self_pattern (** or in self pattern *)
 
-type module_patterns_restriction =
-  | Modules_allowed of { scope : int }
-  | Modules_rejected
-
 val type_binding:
         Env.t -> rec_flag ->
           Parsetree.value_binding list ->
@@ -121,10 +123,9 @@ val type_self_pattern:
         Env.t -> Parsetree.pattern ->
         Typedtree.pattern * pattern_variable list
 val check_partial:
-        ?lev:int -> module_patterns_restriction -> Env.t -> type_expr ->
+        ?lev:int -> Env.t -> type_expr ->
         Location.t -> Typedtree.value Typedtree.case list -> Typedtree.partial
 val type_expect:
-        ?in_function:(Location.t * type_expr) ->
         Env.t -> Parsetree.expression -> type_expected -> Typedtree.expression
 val type_exp:
         Env.t -> Parsetree.expression -> Typedtree.expression
@@ -138,7 +139,6 @@ val option_some: Env.t -> Typedtree.expression -> Typedtree.expression
 val option_none: Env.t -> type_expr -> Location.t -> Typedtree.expression
 val extract_option_type: Env.t -> type_expr -> type_expr
 val generalizable: int -> type_expr -> bool
-val generalize_structure_exp: Typedtree.expression -> unit
 type delayed_check
 val delayed_checks: delayed_check list ref
 val reset_delayed_checks: unit -> unit
@@ -148,6 +148,11 @@ val name_pattern : string -> Typedtree.pattern list -> Ident.t
 val name_cases : string -> Typedtree.value Typedtree.case list -> Ident.t
 
 val self_coercion : (Path.t * Location.t list ref) list ref
+
+type existential_binding =
+  | Bind_already_bound
+  | Bind_not_in_scope
+  | Bind_non_locally_abstract
 
 type error =
   | Constructor_arity_mismatch of Longident.t * int * int
@@ -160,7 +165,12 @@ type error =
   | Orpat_vars of Ident.t * Ident.t list
   | Expr_type_clash of
       Errortrace.unification_error * type_forcing_context option
-      * Parsetree.expression_desc option
+      * Parsetree.expression option
+  | Function_arity_type_clash of
+      { syntactic_arity :  int;
+        type_constraint : type_expr;
+        trace : Errortrace.unification_error;
+      }
   | Apply_non_function of {
       funct : Typedtree.expression;
       func_ty : type_expr;
@@ -182,7 +192,7 @@ type error =
   | Virtual_class of Longident.t
   | Private_type of type_expr
   | Private_label of Longident.t * type_expr
-  | Private_constructor of constructor_description * type_expr
+  | Private_constructor of Data_types.constructor_description * type_expr
   | Unbound_instance_variable of string * string list
   | Instance_variable_not_mutable of string
   | Not_subtype of Errortrace.Subtype.error
@@ -205,17 +215,22 @@ type error =
   | Modules_not_allowed
   | Cannot_infer_signature
   | Not_a_packed_module of type_expr
-  | Unexpected_existential of existential_restriction * string * string list
+  | Unexpected_existential of existential_restriction * string
   | Invalid_interval
   | Invalid_for_loop_index
   | No_value_clauses
   | Exception_pattern_disallowed
   | Mixed_value_and_exception_patterns_under_guard
+  | Effect_pattern_below_toplevel
+  | Invalid_continuation_pattern
   | Inlined_record_escape
   | Inlined_record_expected
   | Unrefuted_pattern of Typedtree.pattern
   | Invalid_extension_constructor_payload
   | Not_an_extension_constructor
+  | Invalid_atomic_loc_payload
+  | Label_not_atomic of Longident.t
+  | Atomic_in_pattern of Longident.t
   | Literal_overflow of string
   | Unknown_literal of string * char
   | Illegal_letrec_pat
@@ -225,9 +240,16 @@ type error =
   | Andop_type_clash of string * Errortrace.unification_error
   | Bindings_type_clash of Errortrace.unification_error
   | Unbound_existential of Ident.t list * type_expr
+  | Bind_existential of existential_binding * Ident.t * type_expr
   | Missing_type_constraint
   | Wrong_expected_kind of wrong_kind_sort * wrong_kind_context * type_expr
   | Expr_not_a_record_type of type_expr
+  | Constructor_labeled_arg
+  | Partial_tuple_pattern_bad_type
+  | Extra_tuple_label of string option * type_expr
+  | Missing_tuple_label of string option * type_expr
+  | Repeated_tuple_exp_label of string
+  | Repeated_tuple_pat_label of string
 
 exception Error of Location.t * Env.t * error
 exception Error_forward of Location.error
@@ -253,12 +275,13 @@ val type_object:
   (Env.t -> Location.t -> Parsetree.class_structure ->
    Typedtree.class_structure * string list) ref
 val type_package:
-  (Env.t -> Parsetree.module_expr -> Path.t -> (Longident.t * type_expr) list ->
-  Typedtree.module_expr * (Longident.t * type_expr) list) ref
+  (Env.t -> Parsetree.module_expr -> package ->
+   Typedtree.module_expr * package) ref
 
 val constant: Parsetree.constant -> (Asttypes.constant, error) result
 
-val check_recursive_bindings : Env.t -> Typedtree.value_binding list -> unit
+val annotate_recursive_bindings :
+  Env.t -> Typedtree.value_binding list -> Typedtree.value_binding list
 val check_recursive_class_bindings :
   Env.t -> Ident.t list -> Typedtree.class_expr list -> unit
 

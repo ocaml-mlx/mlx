@@ -90,9 +90,13 @@ let rec scope = function
 
 let kfalse _ = false
 
+let maybe_escape s =
+  if Lexer.is_keyword s then "\\#" ^ s else s
+
 let rec name ?(paren=kfalse) = function
-    Pident id -> Ident.name id
+    Pident id -> maybe_escape (Ident.name id)
   | Pdot(p, s) | Pextra_ty (p, Pcstr_ty s) ->
+      let s = maybe_escape s in
       name ~paren p ^ if paren s then ".( " ^ s ^ " )" else "." ^ s
   | Papply(p1, p2) -> name ~paren p1 ^ "(" ^ name ~paren p2 ^ ")"
   | Pextra_ty (p, Pext_ty) -> name ~paren p
@@ -100,8 +104,8 @@ let rec name ?(paren=kfalse) = function
 let rec print ppf = function
   | Pident id -> Ident.print_with_scope ppf id
   | Pdot(p, s) | Pextra_ty (p, Pcstr_ty s) ->
-      Format.fprintf ppf "%a.%s" print p s
-  | Papply(p1, p2) -> Format.fprintf ppf "%a(%a)" print p1 print p2
+      Format_doc.fprintf ppf "%a.%s" print p s
+  | Papply(p1, p2) -> Format_doc.fprintf ppf "%a(%a)" print p1 print p2
   | Pextra_ty (p, Pext_ty) -> print ppf p
 
 let rec head = function
@@ -117,6 +121,10 @@ let flatten =
     | Pextra_ty (p, Pext_ty) -> flatten acc p
   in
   fun t -> flatten [] t
+
+let rec scrape_extra_ty = function
+  | Pextra_ty (t, _) -> scrape_extra_ty t
+  | t -> t
 
 let heads p =
   let rec heads p acc = match p with
