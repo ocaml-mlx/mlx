@@ -39,7 +39,7 @@ type out_attribute =
   { oattr_name: string }
 
 type out_value =
-  | Oval_array of out_value list
+  | Oval_array of out_value list * Asttypes.mutable_flag
   | Oval_char of char
   | Oval_constr of out_ident * out_value list
   | Oval_ellipsis
@@ -49,38 +49,56 @@ type out_value =
   | Oval_int64 of int64
   | Oval_nativeint of nativeint
   | Oval_list of out_value list
-  | Oval_printer of (Format.formatter -> unit)
+  | Oval_printer of (Format_doc.formatter -> unit)
   | Oval_record of (out_ident * out_value) list
   | Oval_string of string * int * out_string (* string, size-to-print, kind *)
   | Oval_stuff of string
-  | Oval_tuple of out_value list
+  | Oval_tuple of (string option * out_value) list
   | Oval_variant of string * out_value option
+  | Oval_lazy of out_value
+  | Oval_floatarray of floatarray
 
-type out_type_param = string * (Asttypes.variance * Asttypes.injectivity)
+type out_type_param = {
+    ot_non_gen: bool;
+    ot_name: string;
+    ot_variance: Asttypes.variance * Asttypes.injectivity
+}
 
 type out_type =
   | Otyp_abstract
   | Otyp_open
   | Otyp_alias of {non_gen:bool; aliased:out_type; alias:string}
-  | Otyp_arrow of string * out_type * out_type
+  | Otyp_arrow of Asttypes.arg_label * out_type * out_type
   | Otyp_class of out_ident * out_type list
   | Otyp_constr of out_ident * out_type list
   | Otyp_manifest of out_type * out_type
   | Otyp_object of { fields: (string * out_type) list; open_row:bool}
-  | Otyp_record of (string * bool * out_type) list
+  | Otyp_record of out_label list
   | Otyp_stuff of string
   | Otyp_sum of out_constructor list
-  | Otyp_tuple of out_type list
+  | Otyp_tuple of (string option * out_type) list
   | Otyp_var of bool * string
   | Otyp_variant of out_variant * bool * (string list) option
   | Otyp_poly of string list * out_type
-  | Otyp_module of out_ident * (string * out_type) list
+  | Otyp_module of out_package
   | Otyp_attribute of out_type * out_attribute
+
+and out_label = {
+  olab_name: string;
+  olab_mut: Asttypes.mutable_flag;
+  olab_atomic: Asttypes.atomic_flag;
+  olab_type: out_type;
+}
 
 and out_constructor = {
   ocstr_name: string;
   ocstr_args: out_type list;
   ocstr_return_type: out_type option;
+}
+
+and out_package = {
+  opack_path: out_ident;
+  opack_cstrs: (string * out_type) list;
 }
 
 and out_variant =
@@ -89,7 +107,7 @@ and out_variant =
 
 type out_class_type =
   | Octy_constr of out_ident * out_type list
-  | Octy_arrow of string * out_type * out_class_type
+  | Octy_arrow of Asttypes.arg_label * out_type * out_class_type
   | Octy_signature of out_type option * out_class_sig_item list
 and out_class_sig_item =
   | Ocsg_constraint of out_type * out_type

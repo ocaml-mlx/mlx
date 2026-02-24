@@ -45,6 +45,12 @@ module TyVarEnv : sig
 
 end
 
+(* Forward declaration, to be filled in by Typemod.type_open *)
+val type_open:
+  (?used_slot:bool ref -> Asttypes.override_flag -> Env.t -> Location.t ->
+   Longident.t Asttypes.loc -> Path.t * Env.t)
+    ref
+
 val valid_tyvar_name : string -> bool
 
 val transl_simple_type:
@@ -73,7 +79,6 @@ type error =
   | Type_arity_mismatch of Longident.t * int * int
   | Bound_type_variable of string
   | Recursive_type
-  | Unbound_row_variable of Longident.t
   | Type_mismatch of Errortrace.unification_error
   | Alias_type_mismatch of Errortrace.unification_error
   | Present_has_conjunction of string
@@ -87,13 +92,16 @@ type error =
   | Method_mismatch of string * type_expr * type_expr
   | Opened_object of Path.t option
   | Not_an_object of type_expr
+  | Repeated_tuple_label of string
 
 exception Error of Location.t * Env.t * error
-
-val report_error: Env.t -> Format.formatter -> error -> unit
 
 (* Support for first-class modules. *)
 val transl_modtype_longident:  (* from Typemod *)
     (Location.t -> Env.t -> Longident.t -> Path.t) ref
 val transl_modtype: (* from Typemod *)
     (Env.t -> Parsetree.module_type -> Typedtree.module_type) ref
+val check_package_with_type_constraints: (* from Typemod *)
+    (Location.t -> Env.t -> Types.module_type ->
+     (Longident.t Asttypes.loc * Typedtree.core_type) list ->
+     Types.module_type) ref

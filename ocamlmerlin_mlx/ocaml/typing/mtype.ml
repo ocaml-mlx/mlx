@@ -65,7 +65,7 @@ and strengthen_lazy_sig' ~aliasable env sg p =
     [] -> []
   | (SigL_value(_, _, _) as sigelt) :: rem ->
       sigelt :: strengthen_lazy_sig' ~aliasable env rem p
-  | SigL_type(id, {type_kind=Type_abstract}, _, _) :: rem
+  | SigL_type(id, {type_kind=Type_abstract _}, _, _) :: rem
     when Btype.is_row_name (Ident.name id) ->
       strengthen_lazy_sig' ~aliasable env rem p
   | SigL_type(id, decl, rs, vis) :: rem ->
@@ -77,7 +77,7 @@ and strengthen_lazy_sig' ~aliasable env sg p =
             let manif =
               Some(Btype.newgenty(Tconstr(Pdot(p, Ident.name id),
                                           decl.type_params, ref Mnil))) in
-            if decl.type_kind = Type_abstract then
+            if Btype.type_kind_is_abstract decl then
               { decl with type_private = Public; type_manifest = manif }
             else
               { decl with type_manifest = manif }
@@ -239,14 +239,7 @@ and nondep_sig_item env va ids = function
       let pres, mty = nondep_mty_with_presence env va ids pres md.md_type in
       Sig_module(id, pres, {md with md_type = mty}, rs, vis)
   | Sig_modtype(id, d, vis) ->
-      begin try
-        Sig_modtype(id, nondep_modtype_decl env ids d, vis)
-      with Ctype.Nondep_cannot_erase _ as exn ->
-        match va with
-          Co -> Sig_modtype(id, {mtd_type=None; mtd_loc=Location.none;
-                                 mtd_attributes=[]; mtd_uid = d.mtd_uid}, vis)
-        | _  -> raise exn
-      end
+      Sig_modtype(id, nondep_modtype_decl env ids d, vis)
   | Sig_class(id, d, rs, vis) ->
       Sig_class(id, Ctype.nondep_class_declaration env ids d, rs, vis)
   | Sig_class_type(id, d, rs, vis) ->
@@ -392,7 +385,7 @@ and contains_type_sig env = List.iter (contains_type_item env)
 
 and contains_type_item env = function
     Sig_type (_,({type_manifest = None} |
-                 {type_kind = Type_abstract; type_private = Private}),_, _)
+                 {type_kind = Type_abstract _; type_private = Private}),_, _)
   | Sig_modtype _
   | Sig_typext (_, {ext_args = Cstr_record _}, _, _) ->
       (* We consider that extension constructors with an inlined
@@ -460,9 +453,11 @@ let collect_arg_paths mty =
   and bindings = ref Ident.empty in
   (* let rt = Ident.create "Root" in
      and prefix = ref (Path.Pident rt) in *)
+  with_type_mark begin fun mark ->
+  let super = type_iterators mark in
   let it_path p = paths := Path.Set.union (get_arg_paths p) !paths
   and it_signature_item it si =
-    type_iterators.it_signature_item it si;
+    super.it_signature_item it si;
     match si with
     | Sig_module (id, _, {md_type=Mty_alias p}, _, _) ->
         bindings := Ident.add id p !bindings
@@ -475,11 +470,11 @@ let collect_arg_paths mty =
           sg
     | _ -> ()
   in
-  let it = {type_iterators with it_path; it_signature_item} in
+  let it = {super with it_path; it_signature_item} in
   it.it_module_type it mty;
-  it.it_module_type unmark_iterators mty;
   Path.Set.fold (fun p -> Ident.Set.union (collect_ids !subst !bindings p))
     !paths Ident.Set.empty
+  end
 
 type remove_alias_args =
     { mutable modified: bool;
@@ -556,14 +551,16 @@ let scrape_for_type_of ~remove_aliases env mty =
 
 let lower_nongen nglev mty =
   let open Btype in
-  let it_type_expr it ty =
+  with_type_mark begin fun mark ->
+  let super = type_iterators mark in
+  let it_do_type_expr it ty =
     match get_desc ty with
       Tvar _ ->
         let level = get_level ty in
         if level < generic_level && level > nglev then set_level ty nglev
     | _ ->
-        type_iterators.it_type_expr it ty
+        super.it_do_type_expr it ty
   in
-  let it = {type_iterators with it_type_expr} in
-  it.it_module_type it mty;
-  it.it_module_type unmark_iterators mty
+  let it = {super with it_do_type_expr} in
+  it.it_module_type it mty
+  end

@@ -122,13 +122,6 @@ let echo_eof () =
   print_newline ();
   incr num_loc_lines
 
-(* This is used by the toplevel and the report printers below. *)
-let separate_new_message ppf =
-  if not (is_first_message ()) then begin
-    Format.pp_print_newline ppf ();
-    incr num_loc_lines
-  end
-
 (* Code printing errors and warnings must be wrapped using this function, in
    order to update [num_loc_lines].
 
@@ -149,6 +142,11 @@ let print_updating_num_loc_lines ppf f arg =
   f ppf arg ;
   pp_print_flush ppf ();
   pp_set_formatter_out_functions ppf out_functions
+
+(*
+let setup_tags () =
+  Misc.Style.setup !Clflags.color
+*)
 
 (******************************************************************************)
 (* Printing locations, e.g. 'File "foo.ml", line 3, characters 10-12' *)
@@ -209,8 +207,19 @@ let absolute_path s = (* This function could go into Filename *)
 let show_filename file =
   (* if !Clflags.absname then absolute_path file else *) file
 
-let print_filename ppf file =
-  Format.pp_print_string ppf (show_filename file)
+module Fmt = Format_doc
+
+module Doc = struct
+
+  (* This is used by the toplevel and the report printers below. *)
+  let separate_new_message ppf () =
+    if not (is_first_message ()) then begin
+      Fmt.pp_print_newline ppf ();
+      incr num_loc_lines
+    end
+
+  let filename ppf file =
+    Fmt.pp_print_string ppf (show_filename file)
 
 (* Best-effort printing of the text describing a location, of the form
    'File "foo.ml", line 3, characters 10-12'.
@@ -218,58 +227,73 @@ let print_filename ppf file =
    Some of the information (filename, line number or characters numbers) in the
    location might be invalid; in which case we do not print it.
  *)
-let print_loc ppf loc =
-  let file_valid = function
-    | "_none_" ->
-        (* This is a dummy placeholder, but we print it anyway to please editors
-           that parse locations in error messages (e.g. Emacs). *)
-        true
-    | "" | "//toplevel//" -> false
-    | _ -> true
-  in
-  let line_valid line = line > 0 in
-  let chars_valid ~startchar ~endchar = startchar <> -1 && endchar <> -1 in
+  let loc ppf loc =
+    let file_valid = function
+      | "_none_" ->
+          (* This is a dummy placeholder, but we print it anyway to please
+             editors that parse locations in error messages (e.g. Emacs). *)
+          true
+      | "" | "//toplevel//" -> false
+      | _ -> true
+    in
+    let line_valid line = line > 0 in
+    let chars_valid ~startchar ~endchar = startchar <> -1 && endchar <> -1 in
 
-  let file =
-    (* According to the comment in location.mli, if [pos_fname] is "", we must
-       use [!input_name]. *)
-    if loc.loc_start.pos_fname = "" then !input_name
-    else loc.loc_start.pos_fname
-  in
-  let line = loc.loc_start.pos_lnum in
-  let startchar = loc.loc_start.pos_cnum - loc.loc_start.pos_bol in
-  let endchar = loc.loc_end.pos_cnum - loc.loc_start.pos_bol in
+    let file =
+      (* According to the comment in location.mli, if [pos_fname] is "", we must
+         use [!input_name]. *)
+      if loc.loc_start.pos_fname = "" then !input_name
+      else loc.loc_start.pos_fname
+    in
+    let startline = loc.loc_start.pos_lnum in
+    let endline = loc.loc_end.pos_lnum in
+    let startchar = loc.loc_start.pos_cnum - loc.loc_start.pos_bol in
+    let endchar = loc.loc_end.pos_cnum - loc.loc_end.pos_bol in
 
-  let first = ref true in
-  let capitalize s =
-    if !first then (first := false; String.capitalize_ascii s)
-    else s in
-  let comma () =
-    if !first then () else Format.fprintf ppf ", " in
+    let first = ref true in
+    let capitalize s =
+      if !first then (first := false; String.capitalize_ascii s)
+      else s in
+    let comma () =
+      if !first then () else Fmt.fprintf ppf ", " in
 
-  Format.fprintf ppf "@{<loc>";
+    Fmt.fprintf ppf "@{<loc>";
 
-  if file_valid file then
-    Format.fprintf ppf "%s \"%a\"" (capitalize "file") print_filename file;
+    if file_valid file then
+      Fmt.fprintf ppf "%s \"%a\"" (capitalize "file") filename file;
 
-  (* Print "line 1" in the case of a dummy line number. This is to please the
-     existing setup of editors that parse locations in error messages (e.g.
-     Emacs). *)
-  comma ();
-  Format.fprintf ppf "%s %i" (capitalize "line")
-    (if line_valid line then line else 1);
-
-  if chars_valid ~startchar ~endchar then (
+    (* Print "line 1" in the case of a dummy line number. This is to please the
+       existing setup of editors that parse locations in error messages (e.g.
+       Emacs). *)
     comma ();
-    Format.fprintf ppf "%s %i-%i" (capitalize "characters") startchar endchar
-  );
+    let startline = if line_valid startline then startline else 1 in
+    let endline = if line_valid endline then endline else startline in
+    begin if startline = endline then
+        Fmt.fprintf ppf "%s %i" (capitalize "line") startline
+      else
+        Fmt.fprintf ppf "%s %i-%i" (capitalize "lines") startline endline
+    end;
 
-  Format.fprintf ppf "@}"
+    if chars_valid ~startchar ~endchar then (
+      comma ();
+      Fmt.fprintf ppf "%s %i-%i" (capitalize "characters") startchar endchar
+    );
 
-(* Print a comma-separated list of locations *)
-let print_locs ppf locs =
-  Format.pp_print_list ~pp_sep:(fun ppf () -> Format.fprintf ppf ",@ ")
-    print_loc ppf locs
+    Fmt.fprintf ppf "@}"
+
+  (* Print a comma-separated list of locations *)
+  let locs ppf locs =
+    Fmt.pp_print_list ~pp_sep:(fun ppf () -> Fmt.fprintf ppf ",@ ")
+      loc ppf locs
+  let quoted_filename ppf f = Misc.Style.as_inline_code filename ppf f
+
+end
+
+let print_filename = Fmt.compat Doc.filename
+let print_loc = Fmt.compat Doc.loc
+let print_locs = Fmt.compat Doc.locs
+let separate_new_message ppf = Fmt.compat Doc.separate_new_message ppf ()
+
 
 (******************************************************************************)
 (* An interval set structure; additionally, it stores user-provided information
@@ -283,7 +307,6 @@ let print_locs ppf locs =
    overlap).
 *)
 
-(*
 module ISet : sig
   type 'a bound = 'a * int
   type 'a t
@@ -333,33 +356,26 @@ struct
     List.exists (fun ((_, s), (_, e)) -> s <= pos && pos <= e) iset
 
   let find_bound_in iset ~range:(start, end_)  =
-    try Some (
-    List.find_map ~f:(fun ((a, x), (b, y)) ->
+    List.find_map (fun ((a, x), (b, y)) ->
       if start <= x && x <= end_ then Some (a, x)
       else if start <= y && y <= end_ then Some (b, y)
       else None
     ) iset
-    ) with Not_found -> None
 
   let is_start iset ~pos =
-    try Some (
-    List.find_map ~f:(fun ((a, x), _) ->
+    List.find_map (fun ((a, x), _) ->
       if pos = x then Some a else None
     ) iset
-    ) with Not_found -> None
 
   let is_end iset ~pos =
-    try Some (
-    List.find_map ~f:(fun (_, (b, y)) ->
+    List.find_map (fun (_, (b, y)) ->
       if pos = y then Some b else None
     ) iset
-    ) with Not_found -> None
 
   let extrema iset =
     if iset = [] then None
     else Some (fst (List.hd iset), snd (List.hd (List.rev iset)))
 end
-*)
 
 
 (* Highlight the location by printing it again.
@@ -393,12 +409,12 @@ end
    If [locs] is empty then this function is a no-op.
 *)
 
-(*
+
 type input_line = {
   text : string;
   start_pos : int;
 }
-*)
+
 
 (* Takes a list of lines with possibly missing line numbers.
 
@@ -407,7 +423,7 @@ type input_line = {
 
    This is not always the case, typically if lexer line directives are
    involved... *)
-(*
+
 let infer_line_numbers
     (lines: (int option * input_line) list):
   (int option * input_line) list
@@ -425,14 +441,14 @@ let infer_line_numbers
       List.mapi (fun i (_, line) -> (Some (m + i), line)) lines
   | _, _ ->
       lines
-*)
+
 (* [get_lines] must return the lines to highlight, given starting and ending
    positions.
 
    See [lines_around_from_current_input] below for an instantiation of
    [get_lines] that reads from the current input.
 *)
-(*
+
 let highlight_quote ppf
     ~(get_lines: start_pos:position -> end_pos:position -> input_line list)
     ?(max_lines = 10)
@@ -463,13 +479,13 @@ let highlight_quote ppf
            Option.fold ~some:Int.to_string ~none:"" lnum,
            start_pos))
       in
-    Format.fprintf ppf "@[<v>";
+    Fmt.fprintf ppf "@[<v>";
     begin match lines with
     | [] | [("", _, _)] -> ()
     | [(line, line_nb, line_start_cnum)] ->
         (* Single-line error *)
-        Format.fprintf ppf "%s | %s@," line_nb line;
-        Format.fprintf ppf "%*s   " (String.length line_nb) "";
+        Fmt.fprintf ppf "%s | %s@," line_nb line;
+        Fmt.fprintf ppf "%*s   " (String.length line_nb) "";
         (* Iterate up to [rightmost], which can be larger than the length of
            the line because we may point to a location after the end of the
            last token on the line, for instance:
@@ -481,21 +497,21 @@ let highlight_quote ppf
         for i = 0 to rightmost.pos_cnum - line_start_cnum - 1 do
           let pos = line_start_cnum + i in
           if ISet.is_start iset ~pos <> None then
-            Format.fprintf ppf "@{<%s>" highlight_tag;
-          if ISet.mem iset ~pos then Format.pp_print_char ppf '^'
+            Fmt.fprintf ppf "@{<%s>" highlight_tag;
+          if ISet.mem iset ~pos then Fmt.pp_print_char ppf '^'
           else if i < String.length line then begin
             (* For alignment purposes, align using a tab for each tab in the
                source code *)
-            if line.[i] = '\t' then Format.pp_print_char ppf '\t'
-            else Format.pp_print_char ppf ' '
+            if line.[i] = '\t' then Fmt.pp_print_char ppf '\t'
+            else Fmt.pp_print_char ppf ' '
           end;
           if ISet.is_end iset ~pos <> None then
-            Format.fprintf ppf "@}"
+            Fmt.fprintf ppf "@}"
         done;
-        Format.fprintf ppf "@}@,"
+        Fmt.fprintf ppf "@}@,"
     | _ ->
         (* Multi-line error *)
-        Misc.pp_two_columns ~sep:"|" ~max_lines ppf
+        Fmt.pp_two_columns ~sep:"|" ~max_lines ppf
         @@ List.map (fun (line, line_nb, line_start_cnum) ->
           let line = String.mapi (fun i car ->
             if ISet.mem iset ~pos:(line_start_cnum + i) then car else '.'
@@ -503,12 +519,9 @@ let highlight_quote ppf
           (line_nb, line)
         ) lines
     end;
-    Format.fprintf ppf "@]"
-*)
+    Fmt.fprintf ppf "@]"
 
 
-
-(*
 let lines_around
     ~(start_pos: position) ~(end_pos: position)
     ~(seek: int -> unit)
@@ -545,10 +558,8 @@ let lines_around
   in
   loop ();
   List.rev !lines
-*)
 
-(*
-(* Try to get lines from a lexbuf *)
+(* Attempt to get lines from the lexing buffer. *)
 let lines_around_from_lexbuf
     ~(start_pos: position) ~(end_pos: position)
     (lb: lexbuf):
@@ -571,9 +582,7 @@ let lines_around_from_lexbuf
     in
     lines_around ~start_pos ~end_pos ~seek ~read_char
   end
-*)
 
-(*
 (* Attempt to get lines from the phrase buffer *)
 let lines_around_from_phrasebuf
     ~(start_pos: position) ~(end_pos: position)
@@ -590,67 +599,26 @@ let lines_around_from_phrasebuf
     end
   in
   lines_around ~start_pos ~end_pos ~seek ~read_char
-*)
 
-(*
-(* Get lines from a file *)
-let lines_around_from_file
-    ~(start_pos: position) ~(end_pos: position)
-    (filename: string):
-  input_line list
-  =
-  try
-    let cin = open_in_bin filename in
-    let read_char () =
-      try Some (input_char cin) with End_of_file -> None
-    in
-    let lines =
-      lines_around ~start_pos ~end_pos ~seek:(seek_in cin) ~read_char
-    in
-    close_in cin;
-    lines
-  with Sys_error _ -> []
-*)
-
-(*
 (* A [get_lines] function for [highlight_quote] that reads from the current
-   input.
-
-   It first tries to read from [!input_lexbuf], then if that fails (because the
-   lexbuf no longer contains the input we want), it reads from [!input_name]
-   directly *)
+   input. *)
 let lines_around_from_current_input ~start_pos ~end_pos =
-  (* Be a bit defensive, and do not try to open one of the possible
-     [!input_name] values that we know do not denote valid filenames. *)
-  let file_valid = function
-    | "//toplevel//" | "_none_" | "" -> false
-    | _ -> true
-  in
-  let from_file () =
-    if file_valid !input_name then
-      lines_around_from_file !input_name ~start_pos ~end_pos
-    else
+  match !input_lexbuf, !input_phrase_buffer, !input_name with
+  | _, Some pb, "//toplevel//" ->
+      lines_around_from_phrasebuf pb ~start_pos ~end_pos
+  | Some lb, _, _ ->
+      lines_around_from_lexbuf lb ~start_pos ~end_pos
+  | None, _, _ ->
       []
-  in
-  match !input_lexbuf with
-  | Some lb ->
-      begin match lines_around_from_lexbuf lb ~start_pos ~end_pos with
-      | [] -> (* The input is likely not in the lexbuf anymore *)
-          from_file ()
-      | lines ->
-          lines
-      end
-  | None ->
-      from_file ()
-*)
 
 (******************************************************************************)
 (* Reporting errors and warnings *)
 
-type msg = (Format.formatter -> unit) loc
+
+type msg = Fmt.t loc
 
 let msg ?(loc = none) fmt =
-  Format.kdprintf (fun txt -> { loc; txt }) fmt
+  Fmt.kdoc_printf (fun txt -> { loc; txt }) fmt
 
 type report_kind =
   | Report_error
@@ -665,11 +633,12 @@ type report = {
   kind : report_kind;
   main : msg;
   sub : msg list;
+  footnote: Fmt.t option;
   source : error_source;
 }
 
 let loc_of_report { main; _ } = main.loc
-let print_msg fmt msg = msg.txt fmt
+let print_msg fmt msg = Fmt.Doc.format fmt msg.txt
 let print_main fmt { main; _ } = print_msg fmt main
 let print_sub_msg = print_msg
 
@@ -684,7 +653,7 @@ type report_printer = {
   pp_main_loc : report_printer -> report ->
     Format.formatter -> t -> unit;
   pp_main_txt : report_printer -> report ->
-    Format.formatter -> (Format.formatter -> unit) -> unit;
+    Format.formatter -> Fmt.t -> unit;
   pp_submsgs : report_printer -> report ->
     Format.formatter -> msg list -> unit;
   pp_submsg : report_printer -> report ->
@@ -692,10 +661,9 @@ type report_printer = {
   pp_submsg_loc : report_printer -> report ->
     Format.formatter -> t -> unit;
   pp_submsg_txt : report_printer -> report ->
-    Format.formatter -> (Format.formatter -> unit) -> unit;
+    Format.formatter -> Fmt.t -> unit;
 }
 
-(*
 let is_dummy_loc loc =
   (* Fixme: this should be just [loc.loc_ghost] and the function should be
      inlined below. However, currently, the compiler emits in some places ghost
@@ -703,7 +671,6 @@ let is_dummy_loc loc =
      should be made non-ghost -- in the meantime we just check if the ranges are
      valid. *)
   loc.loc_start.pos_cnum = -1 || loc.loc_end.pos_cnum = -1
-*)
 
 (* It only makes sense to highlight (i.e. quote or underline the corresponding
    source code) locations that originate from the current input.
@@ -721,7 +688,7 @@ let is_dummy_loc loc =
    in particular this is not what happens when using -pp or -ppx or a ppx
    driver.
 *)
-                                 (*
+
 let is_quotable_loc loc =
   not (is_dummy_loc loc)
   && loc.loc_start.pos_fname = !input_name
@@ -732,11 +699,11 @@ let error_style () =
   match !Clflags.error_style with
   | Some Contextual | None -> Contextual
   | Some Short -> Short
-                                 *)
+  | Some Merlin -> Merlin
 
 let batch_mode_printer : report_printer =
-  let pp_loc _self _report _ppf _loc =
-    (*
+  let pp_loc _self report ppf loc =
+    if error_style () = Merlin then () else
     let tag = match report.kind with
       | Report_warning_as_error _
       | Report_alert_as_error _
@@ -746,6 +713,7 @@ let batch_mode_printer : report_printer =
     in
     let highlight ppf loc =
       match error_style () with
+      | Misc.Error_style.Merlin -> assert false
       | Misc.Error_style.Contextual ->
           if is_quotable_loc loc then
             highlight_quote ppf
@@ -754,27 +722,47 @@ let batch_mode_printer : report_printer =
       | Misc.Error_style.Short ->
           ()
     in
-    Format.fprintf ppf "@[<v>%a:@ %a@]" print_loc loc highlight loc
-    *)
-    ()
+    Format.fprintf ppf "%a:@ %a" print_loc loc
+      (Fmt.compat highlight) loc
   in
-  let pp_txt ppf txt = Format.fprintf ppf "@[%t@]" txt in
-  let pp self ppf report =
-    separate_new_message ppf;
-    (* Make sure we keep [num_loc_lines] updated.
-        The tabulation box is here to give submessage the option
-        to be aligned with the main message box
-    *)
-    print_updating_num_loc_lines ppf (fun ppf () ->
-      Format.fprintf ppf "@[<v>%a%a%a: %a%a%a%a@]@."
+  let pp_txt ppf txt = Format.fprintf ppf "%a" Fmt.Doc.format txt in
+  let pp_footnote ppf f =
+    Option.iter (Format.fprintf ppf "@,%a" pp_txt) f
+  in
+  let error_format self ppf report =
+    Format.fprintf ppf "@[<v>%a%a%a: %a@[%a@]%a%a%a@]@."
       Format.pp_open_tbox ()
       (self.pp_main_loc self report) report.main.loc
       (self.pp_report_kind self report) report.kind
       Format.pp_set_tab ()
       (self.pp_main_txt self report) report.main.txt
       (self.pp_submsgs self report) report.sub
+      pp_footnote report.footnote
       Format.pp_close_tbox ()
-    ) ()
+  in
+  let warning_format self ppf report =
+    Format.fprintf ppf "@[<v>%a@[<b 2>%a: %a@]%a%a@]@."
+      (self.pp_main_loc self report) report.main.loc
+      (self.pp_report_kind self report) report.kind
+      (self.pp_main_txt self report) report.main.txt
+      (self.pp_submsgs self report) report.sub
+      pp_footnote report.footnote
+  in
+  let pp self ppf report =
+    (* setup_tags (); *)
+    separate_new_message ppf;
+    let printer ppf () = match report.kind with
+      | Report_warning _
+      | Report_warning_as_error _
+      | Report_alert _ | Report_alert_as_error _ ->
+          warning_format self ppf report
+      | Report_error -> error_format self ppf report
+    in
+    (* Make sure we keep [num_loc_lines] updated.
+       The tabulation box is here to give submessage the option
+       to be aligned with the main message box
+    *)
+    print_updating_num_loc_lines ppf printer ()
   in
   let pp_report_kind _self _ ppf = function
     | Report_error -> Format.fprintf ppf "@{<error>Error@}"
@@ -797,9 +785,12 @@ let batch_mode_printer : report_printer =
     ) msgs
   in
   let pp_submsg self report ppf { loc; txt } =
-    Format.fprintf ppf "@[%a  %a@]"
-      (self.pp_submsg_loc self report) loc
-      (self.pp_submsg_txt self report) txt
+    if loc.loc_ghost then
+      Format.fprintf ppf "@[%a@]" (self.pp_submsg_txt self report) txt
+    else
+      Format.fprintf ppf "%a  @[%a@]"
+        (self.pp_submsg_loc self report) loc
+        (self.pp_submsg_txt self report) txt
   in
   let pp_submsg_loc self report ppf loc =
     if not loc.loc_ghost then
@@ -814,7 +805,7 @@ let batch_mode_printer : report_printer =
 (*
 let terminfo_toplevel_printer (lb: lexbuf): report_printer =
   let pp self ppf err =
-    setup_colors ();
+    setup_tags ();
     (* Highlight all toplevel locations of the report, instead of displaying
        the main location. Do it now instead of in [pp_main_loc], to avoid
        messing with Format boxes. *)
@@ -853,24 +844,35 @@ let print_report ppf report =
 (* Reporting errors *)
 
 type error = report
+type delayed_msg = unit -> Fmt.t option
 
 let report_error ppf err =
   print_report ppf err
 
-let mkerror loc sub txt source =
-  { kind = Report_error; main = { loc; txt }; sub; source }
+let mkerror loc sub footnote source txt =
+  { kind = Report_error; main = { loc; txt }; sub; footnote=footnote (); source }
 
-let errorf ?(loc = none) ?(sub = []) ?(source=Typer) =
-  Format.kdprintf (fun msg -> mkerror loc sub msg source)
+let errorf ?(loc = none) ?(sub = []) ?(footnote=Fun.const None) ?(source = Typer) =
+  Fmt.kdoc_printf (mkerror loc sub footnote source)
 
-let error ?(loc = none) ?(sub = []) ?(source=Typer) msg_str =
-  mkerror loc sub (fun ppf -> Format.pp_print_string ppf msg_str) source
+let aligned_error_hint
+    ?(loc = none) ?(sub = []) ?(footnote=Fun.const None) ?(source = Typer) fmt =
+  Fmt.kdoc_printf (fun main hint ->
+      match hint with
+      | None -> mkerror loc sub footnote source main
+      | Some hint ->
+          let main, hint = Misc.align_error_hint ~main ~hint in
+          mkerror loc (mknoloc hint :: sub) footnote source main
+  ) fmt
 
-let error_of_printer ?(loc = none) ?(sub = []) ?(source=Typer) pp x =
-  mkerror loc sub (fun ppf -> pp ppf x) source
+let error ?(loc = none) ?(sub = []) ?(footnote=Fun.const None) ?(source = Typer) msg_str =
+  mkerror loc sub footnote source Fmt.Doc.(string msg_str empty)
 
-let error_of_printer_file ?source print x =
-  error_of_printer ?source ~loc:(in_file !input_name) print x
+let error_of_printer ?(loc = none) ?(sub = []) ?(footnote=Fun.const None) ?(source = Typer) pp x =
+  mkerror loc sub footnote source (Fmt.doc_printf "%a" pp x)
+
+let error_of_printer_file ?(source = Typer) print x =
+  error_of_printer ~source ~loc:(in_file !input_name) print x
 
 (******************************************************************************)
 (* Reporting warnings: generating a report from a warning number using the
@@ -880,14 +882,12 @@ let default_warning_alert_reporter ?(source = Typer) report mk (loc: t) w : repo
   match report w with
   | `Inactive -> None
   | `Active { Warnings.id; message; is_error; sub_locs } ->
-      let msg_of_str str = fun ppf -> Format.pp_print_string ppf str in
       let kind = mk is_error id in
-      let main = { loc; txt = msg_of_str message } in
+      let main = { loc; txt = message } in
       let sub = List.map (fun (loc, sub_message) ->
-        { loc; txt = msg_of_str sub_message }
+        { loc; txt = sub_message }
       ) sub_locs in
-      Some { kind; main; sub; source }
-
+      Some { kind; main; sub; footnote=None; source }
 
 let default_warning_reporter =
   default_warning_alert_reporter
@@ -939,13 +939,21 @@ let deprecated ?def ?use loc message =
   alert ?def ?use ~kind:"deprecated" loc message
 
 
+module Style = Misc.Style
+
 let auto_include_alert lib =
-  let message = Printf.sprintf "\
-    OCaml's lib directory layout changed in 5.0. The %s subdirectory has been \
-    automatically added to the search path, but you should add -I +%s to the \
-    command-line to silence this alert (e.g. by adding %s to the list of \
-    libraries in your dune file, or adding use_%s to your _tags file for \
-    ocamlbuild, or using -package %s for ocamlfind)." lib lib lib lib lib in
+  let message = Fmt.asprintf "\
+    OCaml's lib directory layout changed in 5.0. The %a subdirectory has been \
+    automatically added to the search path, but you should add %a to the \
+    command-line to silence this alert (e.g. by adding %a to the list of \
+    libraries in your dune file, or adding %a to your %a file for \
+    ocamlbuild, or using %a for ocamlfind)."
+      Style.inline_code lib
+      Style.inline_code ("-I +" ^lib)
+      Style.inline_code lib
+      Style.inline_code ("use_"^lib)
+      Style.inline_code "_tags"
+      Style.inline_code ("-package " ^ lib) in
   let alert =
     {Warnings.kind="ocaml_deprecated_auto_include"; use=none; def=none;
      message = Format.asprintf "@[@\n%a@]" Format.pp_print_text message}
@@ -953,11 +961,14 @@ let auto_include_alert lib =
   prerr_alert none alert
 
 let deprecated_script_alert program =
-  let message = Printf.sprintf "\
-    Running %s where the first argument is an implicit basename with no \
-    extension (e.g. %s script-file) is deprecated. Either rename the script \
-    (%s script-file.ml) or qualify the basename (%s ./script-file)"
-    program program program program
+  let message = Fmt.asprintf "\
+    Running %a where the first argument is an implicit basename with no \
+    extension (e.g. %a) is deprecated. Either rename the script \
+    (%a) or qualify the basename (%a)"
+      Style.inline_code program
+      Style.inline_code (program ^ " script-file")
+      Style.inline_code (program ^ " script-file.ml")
+      Style.inline_code (program ^ " ./script-file")
   in
   let alert =
     {Warnings.kind="ocaml_deprecated_cli"; use=none; def=none;
@@ -986,6 +997,7 @@ let error_of_exn exn =
           | None -> loop rest
      in
      loop !error_of_exn
+
 
 let () =
   register_error_of_exn
@@ -1016,5 +1028,5 @@ let () =
       | _ -> None
     )
 
-let raise_errorf ?(loc = none) ?(sub = []) ?(source = Typer)=
-  Format.kdprintf (fun txt -> raise (Error (mkerror loc sub txt source)))
+let raise_errorf ?(loc = none) ?(sub = []) ?(footnote=Fun.const None) ?(source = Typer) =
+  Fmt.kdoc_printf (fun txt -> raise (Error (mkerror loc sub footnote source txt)))
