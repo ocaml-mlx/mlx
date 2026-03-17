@@ -1,3 +1,4 @@
+# 1 "merlin/src/kernel/mconfig.ml"
 open Std
 
 (** {1 OCaml commandline parsing} *)
