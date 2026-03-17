@@ -46,7 +46,10 @@ type 'a parser =
 let wrap (parser : 'a parser) lexbuf : 'a =
   try
     Docstrings.init ();
-    Lexer.init ();
+    let keyword_edition =
+      Clflags.(Option.map parse_keyword_edition !keyword_edition)
+    in
+    Lexer.init ?keyword_edition ();
     let ast = parser token lexbuf in
     Parsing.clear_parser();
     Docstrings.warn_bad_docstrings ();
@@ -106,6 +109,9 @@ let simple_module_path = wrap Parser.parse_mod_longident
 let type_ident = wrap Parser.parse_mty_longident
 
 (* Error reporting for Syntaxerr *)
+(* The code has been moved here so that one can reuse Pprintast.tyvar *)
+
+module Style = Misc.Style
 
 let prepare_error err =
   let open Syntaxerr in
@@ -113,24 +119,30 @@ let prepare_error err =
   | Unclosed(opening_loc, opening, closing_loc, closing) ->
       Location.errorf
         ~loc:closing_loc
+        "Syntax error: %a expected" Style.inline_code closing
         ~sub:[
           Location.msg ~loc:opening_loc
-            "This '%s' might be unmatched" opening
+            "This %a might be unmatched" Style.inline_code opening
         ]
-        "Syntax error: '%s' expected" closing
+
   | Expecting (loc, nonterm) ->
-      Location.errorf ~loc "Syntax error: %s expected." nonterm
+      Location.errorf ~loc "Syntax error: %a expected."
+        Style.inline_code nonterm
   | Not_expecting (loc, nonterm) ->
-      Location.errorf ~loc "Syntax error: %s not expected." nonterm
+      Location.errorf ~loc "Syntax error: %a not expected."
+        Style.inline_code nonterm
   | Applicative_path loc ->
       Location.errorf ~loc
-        "Syntax error: applicative paths of the form F(X).t \
-         are not supported when the option -no-app-func is set."
+        "Syntax error: applicative paths of the form %a \
+         are not supported when the option %a is set."
+        Style.inline_code "F(X).t"
+        Style.inline_code "-no-app-func"
   | Variable_in_scope (loc, var) ->
       Location.errorf ~loc
-        "In this scoped type, variable '%a' \
-         is reserved for the local type %s."
-        Pprintast.tyvar var var
+        "In this scoped type, variable %a \
+         is reserved for the local type %a."
+        (Style.as_inline_code Pprintast.Doc.tyvar) var
+        Style.inline_code var
   | Other loc ->
       Location.errorf ~loc "Syntax error"
   | Ill_formed_ast (loc, s) ->
@@ -139,25 +151,33 @@ let prepare_error err =
   | Invalid_package_type (loc, ipt) ->
       let invalid ppf ipt = match ipt with
         | Syntaxerr.Parameterized_types ->
-            Format.fprintf ppf "parametrized types are not supported"
+            Format_doc.fprintf ppf "parametrized types are not supported"
         | Constrained_types ->
-            Format.fprintf ppf "constrained types are not supported"
+            Format_doc.fprintf ppf "constrained types are not supported"
         | Private_types ->
-            Format.fprintf ppf "private types are not supported"
+            Format_doc.fprintf ppf  "private types are not supported"
         | Not_with_type ->
-            Format.fprintf ppf "only 'with type t =' constraints are supported"
+            Format_doc.fprintf ppf "only %a constraints are supported"
+              Style.inline_code "with type t ="
         | Neither_identifier_nor_with_type ->
-            Format.fprintf ppf
-              "only module type identifier and 'with type' constraints are supported"
+            Format_doc.fprintf ppf
+              "only module type identifier and %a constraints are supported"
+              Style.inline_code "with type"
       in
       Location.errorf ~loc "Syntax error: invalid package type: %a" invalid ipt
   | Removed_string_set loc ->
       Location.errorf ~loc
-        "Syntax error: strings are immutable, there is no assignment \
-         syntax for them.\n\
-         @{<hint>Hint@}: Mutable sequences of bytes are available in \
-         the Bytes module.\n\
-         @{<hint>Hint@}: Did you mean to use 'Bytes.set'?"
+        "Syntax error: strings are immutable,@ there@ is@ no@ assignment@ \
+         syntax@ for@ them."
+        ~sub:[
+          Location.msg
+            "@{<hint>Hint@}: Mutable sequences of bytes are available in \
+             the %a module."
+            Style.inline_code "Bytes";
+          Location.msg
+            "@{<hint>Hint@}: Did you mean to use %a?"
+            Style.inline_code "Bytes.set"
+        ]
 
 let () =
   Location.register_error_of_exn
