@@ -3,7 +3,6 @@
  (package mlx)
  (public_name mlx-pp)
  (modules :standard \ mlx_shim)
- (modules_without_implementation config)
  (flags
   (:standard -w -9-67 -open Astlib -open Astlib.Ast_504 -open Mlx_shim))
  (libraries ppxlib ocaml-compiler-libs.shadow mlx_shim))
@@ -40,7 +39,7 @@
  (mode promote)
  (enabled_if
   (<> %{profile} "release"))
- (files ../ocaml/parsing/parse.{ml,mli}))
+ (files ../ocaml/parsing/parse.mli))
 
 (copy_files
  (mode promote)
@@ -68,27 +67,3 @@
 
 (copy_files
  (files ../menhirLib/menhirLib.{ml,mli}))
-
-(copy_files
- (mode promote)
- (enabled_if
-  (<> %{profile} "release"))
- (files ../ocaml/utils/clflags.{ml,mli}))
-
-(copy_files
- (mode promote)
- (enabled_if
-  (<> %{profile} "release"))
- (files ../ocaml/utils/config.mli))
-
-; (copy_files
-;  (mode promote)
-;  (enabled_if
-;   (<> %{profile} "release"))
-;  (files ../ocaml/utils/misc.{ml,mli}))
-
-; (copy_files
-;  (mode promote)
-;  (enabled_if
-;   (<> %{profile} "release"))
-;  (files ../ocaml/utils/format_doc.{ml,mli}))
