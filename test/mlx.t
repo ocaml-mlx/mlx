@@ -29,6 +29,18 @@
   MERLIN
   let _ = Hello.createElement () ~children:[] ~attr ~with_value:1 [@JSX]
 
+  $ echo 'let render children = <Component children />' | ./mlx
+  BATCH
+  let render children = Component.createElement () ~children [@JSX]
+  MERLIN
+  let render children = Component.createElement () ~children [@JSX]
+
+  $ echo 'let render children nested = <Component children>nested</Component>' | ./mlx
+  BATCH
+  let render children nested = Component.createElement () ~children [@JSX]
+  MERLIN
+  let render children nested = Component.createElement () ~children [@JSX]
+
   $ echo 'let _ = <Hello.ok attr with_value=1 />' | ./mlx
   BATCH
   let _ = Hello.ok () ~children:[] ~attr ~with_value:1 [@JSX]
