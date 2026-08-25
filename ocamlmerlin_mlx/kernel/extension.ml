@@ -1,4 +1,3 @@
-# 1 "merlin/src/kernel/extension.ml"
 (* {{{ COPYING *(
 
      This file is part of Merlin, an helper for ocaml editors
