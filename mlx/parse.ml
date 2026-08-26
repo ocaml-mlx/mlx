@@ -106,7 +106,6 @@ let simple_module_path = wrap Parser.parse_mod_longident
 let type_ident = wrap Parser.parse_mty_longident
 
 (* Error reporting for Syntaxerr *)
-(* The code has been moved here so that one can reuse Pprintast.tyvar *)
 
 let prepare_error err =
   let open Syntaxerr in
@@ -119,7 +118,6 @@ let prepare_error err =
             "This '%s' might be unmatched" opening
         ]
         "Syntax error: '%s' expected" closing
-
   | Expecting (loc, nonterm) ->
       Location.errorf ~loc "Syntax error: %s expected." nonterm
   | Not_expecting (loc, nonterm) ->
@@ -130,7 +128,7 @@ let prepare_error err =
          are not supported when the option -no-app-func is set."
   | Variable_in_scope (loc, var) ->
       Location.errorf ~loc
-        "In this scoped type, variable %a \
+        "In this scoped type, variable '%a' \
          is reserved for the local type %s."
         Pprintast.tyvar var var
   | Other loc ->
@@ -138,8 +136,21 @@ let prepare_error err =
   | Ill_formed_ast (loc, s) ->
       Location.errorf ~loc
         "broken invariant in parsetree: %s" s
-  | Invalid_package_type (loc, s) ->
-      Location.errorf ~loc "invalid package type: %s" s
+  | Invalid_package_type (loc, ipt) ->
+      let invalid ppf ipt = match ipt with
+        | Syntaxerr.Parameterized_types ->
+            Format.fprintf ppf "parametrized types are not supported"
+        | Constrained_types ->
+            Format.fprintf ppf "constrained types are not supported"
+        | Private_types ->
+            Format.fprintf ppf "private types are not supported"
+        | Not_with_type ->
+            Format.fprintf ppf "only 'with type t =' constraints are supported"
+        | Neither_identifier_nor_with_type ->
+            Format.fprintf ppf
+              "only module type identifier and 'with type' constraints are supported"
+      in
+      Location.errorf ~loc "Syntax error: invalid package type: %a" invalid ipt
   | Removed_string_set loc ->
       Location.errorf ~loc
         "Syntax error: strings are immutable, there is no assignment \
@@ -147,6 +158,7 @@ let prepare_error err =
          @{<hint>Hint@}: Mutable sequences of bytes are available in \
          the Bytes module.\n\
          @{<hint>Hint@}: Did you mean to use 'Bytes.set'?"
+
 let () =
   Location.register_error_of_exn
     (function

@@ -5,6 +5,7 @@ open Std
 
 type ocaml = {
   include_dirs         : string list;
+  hidden_dirs          : string list;
   no_std_include       : bool;
   unsafe               : bool;
   classic              : bool;
@@ -30,11 +31,17 @@ val dump_ocaml : ocaml -> json
 type merlin = {
   build_path  : string list;
   source_path : string list;
+  hidden_build_path  : string list;
+  hidden_source_path : string list;
   cmi_path    : string list;
   cmt_path    : string list;
+  index_files : string list;
   extensions  : string list;
   suffixes    : (string * string) list;
   stdlib      : string option;
+  source_root : string option;
+  unit_name   : string option;
+  wrapping_prefix : string option;
   reader      : string list;
   protocol    : [`Json | `Sexp];
   log_file    : string option;
@@ -114,6 +121,8 @@ val source_path : t -> string list
 
 val build_path : t -> string list
 
+val hidden_build_path : t -> string list
+
 val cmt_path : t -> string list
 
 val global_modules : ?include_current:bool -> t -> string list
@@ -123,3 +132,7 @@ val global_modules : ?include_current:bool -> t -> string list
 val filename : t -> string
 
 val unitname : t -> string
+
+val intf_or_impl : t -> Unit_info.intf_or_impl
+
+val unit_info : t -> Unit_info.t

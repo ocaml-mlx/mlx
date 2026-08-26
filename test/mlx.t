@@ -82,8 +82,8 @@ Expected error (tag mismatch):
   
   MERLIN
   File "*stdin*", line 1, characters 18-24
-  Error: Syntax error: '</one>' expected
-    This '<one>' might be unmatched
+  Error: Syntax error: </one> expected
+    This <one> might be unmatched
   
 Some tests for prop expressions:
 
