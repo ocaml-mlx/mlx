@@ -66,7 +66,7 @@ jobs:
       - name: set-up OCaml
         uses: ocaml/setup-ocaml@v3
         with:
-          ocaml-compiler: "5.4"
+          ocaml-compiler: "5.5"
 
       - run: make install
 
