@@ -5,6 +5,12 @@
   MERLIN
   let _ = div () ~children:[] [@JSX]
 
+  $ echo 'let css = {|color: red;|}' | ./mlx
+  BATCH
+  let css = {|color: red;|}
+  MERLIN
+  let css = {|color: red;|}
+
   $ echo 'let _ = <div>hello world</div>' | ./mlx
   BATCH
   let _ = div () ~children:[ hello; world ] [@JSX]
