@@ -74,5 +74,15 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
     Exp.mk ~loc:Location.none
       (Pexp_construct ({ txt = Lident "()"; loc = Location.none }, None))
   in
-  let props = (Labelled "children", children) :: props in
+  let has_children =
+    List.exists
+      (fun (label, _) ->
+        match label with
+        | Labelled "children" | Optional "children" -> true
+        | _ -> false)
+      props
+  in
+  let props =
+    if has_children then props else (Labelled "children", children) :: props
+  in
   Pexp_apply (tag, (Nolabel, unit) :: props)

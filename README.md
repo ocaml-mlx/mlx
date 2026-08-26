@@ -64,6 +64,9 @@ For VSCode and its forks (Cursor, Windsurf, etc.), install the [Official OCaml P
 #### Neovim
 For Neovim users, install plugin: https://github.com/ocaml-mlx/ocaml_mlx.nvim
 
+#### Emacs
+For Emacs users, install mlx-mode: https://github.com/ocaml-mlx/emacs-mlx
+
 ## Useful Links
 
 - Example with Dream web framework: https://github.com/aantron/dream/pull/330
