@@ -1,4 +1,5 @@
 # Unreleased
+- Support for OCaml 5.5
 
 # 0.11
 - Support for OCaml 5.4 [#22](https://github.com/ocaml-mlx/mlx/pull/22)
