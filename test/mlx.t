@@ -71,6 +71,27 @@
   MERLIN
   let _ = Hello.Ok.createElement () ~children:[ world ] [@JSX]
 
+UTF-8 is accepted in source text:
+
+  $ printf '%s\n' '(** Text — arrow → emoji 🌟 and Japanese 東京. *)' 'let message = "“Quoted” text isn’t ASCII"' | ./mlx
+  BATCH
+  let message = "\226\128\156Quoted\226\128\157 text isn\226\128\153t ASCII"
+  [@@ocaml.doc
+    " Text \226\128\148 arrow \226\134\146 emoji \240\159\140\159 and Japanese \
+     \230\157\177\228\186\172. "]
+  MERLIN
+  let message = "\226\128\156Quoted\226\128\157 text isn\226\128\153t ASCII"
+
+UTF-8 is accepted in quoted strings:
+
+  $ printf '%s\n' 'let quoted = {|“Quoted” text 東京 🌟|}' 'let delimited = {utf|“Quoted” text 東京 🌟|utf}' | ./mlx
+  BATCH
+  let quoted = {|“Quoted” text 東京 🌟|}
+  let delimited = {utf|“Quoted” text 東京 🌟|utf}
+  MERLIN
+  let quoted = {|“Quoted” text 東京 🌟|}
+  let delimited = {utf|“Quoted” text 東京 🌟|utf}
+
 Expected error (tag mismatch):
 
   $ echo 'let _ = <one>world</two>' | ./mlx
