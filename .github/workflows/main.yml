@@ -72,10 +72,11 @@ jobs:
       - run: opam install dune-release -y
 
       - name: Run dune-release
-        uses: andreypopp/dune-release-action@6118dbc7ecba2b9acbd80bb8339dad5a579ef122
+        uses: davesnx/dune-release-action@v0.4.0
         with:
           packages: "mlx,ocamlmerlin-mlx"
           changelog: './CHANGES'
           github-token: ${{ secrets.GH_TOKEN }}
           to-opam-repository: true
           to-github-releases: true
+          pr-preamble-message: 'Released automatically by dune-release-action. Contact @davesnx or @andreypopp'
