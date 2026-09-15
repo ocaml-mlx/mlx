@@ -17,7 +17,7 @@
 open Misc
 
 module Consistbl : module type of struct
-  include Consistbl.Make (Misc.String)
+  include Consistbl.Make (Misc.Stdlib.String)
 end
 
 type error =
@@ -27,17 +27,20 @@ type error =
 
 exception Error of error
 
-val report_error: Format.formatter -> error -> unit
+val report_error: error Format_doc.format_printer
+val report_error_doc: error Format_doc.printer
 
 module Persistent_signature : sig
   type t =
     { filename : string; (** Name of the file containing the signature. *)
-      cmi : Cmi_format.cmi_infos }
+      cmi : Cmi_format.cmi_infos;
+      visibility : Load_path.visibility
+    }
 
   (** Function used to load a persistent signature. The default is to look for
       the .cmi file in the load path. This function can be overridden to load
       it from memory, for instance to build a self-contained toplevel. *)
-  val load : (unit_name:string -> t option) ref
+  val load : (allow_hidden:bool -> unit_name:string -> t option) ref
 end
 
 type can_load_cmis =
@@ -57,14 +60,14 @@ val fold : 'a t -> (modname -> 'a -> 'b -> 'b) -> 'b -> 'b
 
 val read : 'a t -> (Persistent_signature.t -> 'a)
   -> (string -> 'a -> Short_paths.Desc.Module.components Lazy.t)
-  -> modname -> filepath -> 'a
-val find : 'a t -> (Persistent_signature.t -> 'a)
+  -> Unit_info.Artifact.t -> 'a
+val find : allow_hidden:bool -> 'a t -> (Persistent_signature.t -> 'a)
   -> (string -> 'a -> Short_paths.Desc.Module.components Lazy.t)
   -> modname -> 'a
 
 val find_in_cache : 'a t -> modname -> 'a option
 
-val check : 'a t -> (Persistent_signature.t -> 'a)
+val check : allow_hidden:bool -> 'a t -> (Persistent_signature.t -> 'a)
   -> (string -> 'a -> Short_paths.Desc.Module.components Lazy.t)
   -> loc:Location.t -> modname -> unit
 
@@ -103,9 +106,10 @@ val import_crcs : 'a t -> source:filepath -> crcs -> unit
 val imports : 'a t -> crcs
 
 (* Return the CRC of the interface of the given compilation unit *)
-val crc_of_unit: 'a t -> (Persistent_signature.t -> 'a)
+val crc_of_unit:
+  'a t -> (Persistent_signature.t -> 'a)
   -> (string -> 'a -> Short_paths.Desc.Module.components Lazy.t)
-  -> modname -> Digest.t
+  -> modname -> Digest.BLAKE128.t
 
 (* Forward declaration to break mutual recursion with Typecore. *)
 val add_delayed_check_forward: ((unit -> unit) -> unit) ref

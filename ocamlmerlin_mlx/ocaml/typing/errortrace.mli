@@ -18,9 +18,12 @@
 open Types
 
 type position = First | Second
+type order = Less | Equal | More
 
 val swap_position : position -> position
-val print_pos : Format.formatter -> position -> unit
+val print_pos : position Format_doc.printer
+
+val swap_order: order -> order
 
 type expanded_type = { ty: type_expr; expanded: type_expr }
 
@@ -44,6 +47,7 @@ type 'a escape_kind =
      we keep a [type_expr] to track renaming in {!Printtyp} *)
   | Self
   | Module_type of Path.t
+  | Module of Ident.t
   | Equation of 'a
   | Constraint
 
@@ -84,13 +88,26 @@ type 'variety obj =
   (* Unification *)
   | Self_cannot_be_closed : unification obj
 
+type first_class_module =
+    | Package_cannot_scrape of Path.t
+    | Package_inclusion of Format_doc.doc
+    | Package_coercion of Format_doc.doc
+
+type univar =
+  | Var_mismatch of { order:order; diff:type_expr diff }
+  | Quantification_mismatch of type_expr list
+
 type ('a, 'variety) elt =
   (* Common *)
   | Diff : 'a diff -> ('a, _) elt
   | Variant : 'variety variant -> ('a, 'variety) elt
   | Obj : 'variety obj -> ('a, 'variety) elt
   | Escape : 'a escape -> ('a, _) elt
+  | Function_label_mismatch of Asttypes.arg_label diff
+  | Tuple_label_mismatch of string option diff
   | Incompatible_fields : { name:string; diff: type_expr diff } -> ('a, _) elt
+  | First_class_module: first_class_module -> ('a,_) elt
+  | Univar of univar
   (* Unification & Moregen; included in Equality for simplicity *)
   | Rec_occur : type_expr * type_expr -> ('a, _) elt
 

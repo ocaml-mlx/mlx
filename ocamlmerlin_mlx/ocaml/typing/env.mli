@@ -16,11 +16,8 @@
 (* Environment handling *)
 
 open Types
+open Data_types
 open Misc
-
-val register_uid : Uid.t -> Location.t -> unit
-
-val get_uid_to_loc_tbl : unit -> Location.t Types.Uid.Tbl.t
 
 type value_unbound_reason =
   | Val_unbound_instance_variable
@@ -29,7 +26,8 @@ type value_unbound_reason =
   | Val_unbound_ghost_recursive of Location.t
 
 type module_unbound_reason =
-  | Mod_unbound_illegal_recursion
+  | Mod_unbound_illegal_recursion of
+      { container : string option; unbound: string }
 
 type summary =
     Env_empty
@@ -43,7 +41,7 @@ type summary =
   | Env_open of summary * Path.t
   (** The string set argument of [Env_open] represents a list of module names
       to skip, i.e. that won't be imported in the toplevel namespace. *)
-  | Env_functor_arg of summary * Ident.t
+  | Env_not_aliasable of summary * Ident.t
   | Env_constraints of summary * type_declaration Path.Map.t
   | Env_copy_types of summary
   | Env_persistent of summary * Ident.t
@@ -60,6 +58,9 @@ val empty: t
 val initial: t
 val diff: t -> t -> Ident.t list
 
+(* approximation to the preimage equivalence class of [find_type] *)
+val same_type_declarations: t -> t -> bool
+
 type type_descr_kind =
   (label_description, constructor_description) type_kind
 
@@ -73,7 +74,7 @@ val iter_types:
     t -> iter_cont
 val run_iter_cont: iter_cont list -> (Path.t * iter_cont) list
 val same_types: t -> t -> bool
-val used_persistent: unit -> String.Set.t
+val used_persistent: unit -> Stdlib.String.Set.t
 val find_shadowed_types: Path.t -> t -> Path.t list
 val without_cmis: ('a -> 'b) -> 'a -> 'b
 (* [without_cmis f arg] applies [f] to [arg], but does not
@@ -112,11 +113,18 @@ val find_module_address: Path.t -> t -> address
 val find_class_address: Path.t -> t -> address
 val find_constructor_address: Path.t -> t -> address
 
+(** Lookup an item in the environment and returns its Uid. *)
+val find_uid : Shape.Sig_component_kind.t -> Path.t -> t -> Uid.t option
+
 val shape_of_path:
   namespace:Shape.Sig_component_kind.t -> t -> Path.t -> Shape.t
 
-val add_functor_arg: Ident.t -> t -> t
-val is_functor_arg: Path.t -> t -> bool
+(** Indicates if a path [p] can be aliased, i.e. if
+    - it does not contain functor applications
+    - it does not start with a functor parameter
+    - it does not start with a recursive module (inside the recursive
+    definition) *)
+val is_aliasable: Path.t -> t -> bool
 
 val normalize_module_path: Location.t option -> t -> Path.t -> Path.t
 (* Normalize the path to a concrete module.
@@ -127,11 +135,18 @@ val normalize_module_path: Location.t option -> t -> Path.t -> Path.t
 val normalize_type_path: Location.t option -> t -> Path.t -> Path.t
 (* Normalize the prefix part of the type path *)
 
+val try_normalize_type_path: Location.t option -> t -> Path.t -> Path.t option
+(* Normalize the prefix part of the type path,
+   returns None if the path did not change *)
+
 val normalize_value_path: Location.t option -> t -> Path.t -> Path.t
 (* Normalize the prefix part of the value path *)
 
 val normalize_modtype_path: t -> Path.t -> Path.t
 (* Normalize a module type path *)
+
+val try_normalize_modtype_path: t -> Path.t -> Path.t option
+(* Normalize a module type path, returns None if the path did not change *)
 
 val reset_required_globals: unit -> unit
 val get_required_globals: unit -> Ident.t list
@@ -146,14 +161,14 @@ val mark_type_used: Uid.t -> unit
 
 type constructor_usage = Positive | Pattern | Exported_private | Exported
 val mark_constructor_used:
-    constructor_usage -> constructor_declaration -> unit
+    constructor_usage -> Uid.t -> unit
 val mark_extension_used:
-    constructor_usage -> extension_constructor -> unit
+    constructor_usage -> Uid.t -> unit
 
 type label_usage =
     Projection | Mutation | Construct | Exported_private | Exported
 val mark_label_used:
-    label_usage -> label_declaration -> unit
+    label_usage -> Uid.t -> unit
 
 (* Lookup by long identifiers *)
 
@@ -182,7 +197,14 @@ type lookup_error =
   | Functor_used_as_structure of Longident.t
   | Abstract_used_as_structure of Longident.t
   | Generative_used_as_applicative of Longident.t
-  | Illegal_reference_to_recursive_module
+  | Illegal_reference_to_recursive_module of
+      { container : string option; unbound : string }
+  | Illegal_reference_to_recursive_class_type of
+      { container : string option;
+        unbound : string;
+        unbound_class_type : Longident.t;
+        container_class_type : string
+      }
   | Cannot_scrape_alias of Longident.t * Path.t
 
 val lookup_error: Location.t -> t -> lookup_error -> 'a
@@ -297,15 +319,18 @@ val make_copy_of_types: t -> (t -> t)
 
 val add_value:
     ?check:(string -> Warnings.t) -> Ident.t -> value_description -> t -> t
-val add_type: check:bool -> Ident.t -> type_declaration -> t -> t
-val add_type_long_path: check:bool -> Ident.t -> type_declaration -> t -> t
+val add_type:
+  check:bool -> ?shape:Shape.t -> Ident.t -> type_declaration -> t -> t
+val add_type_long_path:
+  check:bool -> ?shape:Shape.t -> Ident.t -> type_declaration -> t -> t
 val add_extension:
-  check:bool -> rebind:bool -> Ident.t -> extension_constructor -> t -> t
-val add_module: ?arg:bool -> ?shape:Shape.t ->
+  check:bool -> ?shape:Shape.t -> rebind:bool -> Ident.t ->
+  extension_constructor -> t -> t
+val add_module: ?noalias:bool -> ?shape:Shape.t ->
   Ident.t -> module_presence -> module_type -> t -> t
 val add_module_lazy: update_summary:bool ->
   Ident.t -> module_presence -> Subst.Lazy.modtype -> t -> t
-val add_module_declaration: ?arg:bool -> ?shape:Shape.t -> check:bool ->
+val add_module_declaration: ?noalias:bool -> ?shape:Shape.t -> check:bool ->
   Ident.t -> module_presence -> module_declaration -> t -> t
 val add_module_declaration_lazy: update_summary:bool ->
   Ident.t -> module_presence -> Subst.Lazy.module_decl -> t -> t
@@ -314,7 +339,7 @@ val add_modtype_lazy: update_summary:bool ->
    Ident.t -> Subst.Lazy.modtype_declaration -> t -> t
 val add_class: Ident.t -> class_declaration -> t -> t
 val add_cltype: Ident.t -> class_type_declaration -> t -> t
-val add_local_type: Path.t -> type_declaration -> t -> t
+val add_local_constraint: Path.t -> type_declaration -> t -> t
 
 (* Insertion of persistent signatures *)
 
@@ -326,9 +351,9 @@ val add_local_type: Path.t -> type_declaration -> t -> t
    contents of the module is accessed. *)
 val add_persistent_structure : Ident.t -> t -> t
 
-(* Returns the set of persistent structures found in the given
+ (* Returns the set of persistent structures found in the given
    directory. *)
-val persistent_structures_of_dir : Load_path.Dir.t -> Misc.String.Set.t
+val persistent_structures_of_dir : Load_path.Dir.t -> Misc.Stdlib.String.Set.t
 
 (* [filter_non_loaded_persistent f env] removes all the persistent
    structures that are not yet loaded and for which [f] returns
@@ -337,7 +362,11 @@ val filter_non_loaded_persistent : (Ident.t -> bool) -> t -> t
 
 (* Insertion of all fields of a signature. *)
 
-val add_signature: signature -> t -> t
+(* [long_path] (defaults to [false]) prevents the inserted types from being
+   added to the short-paths graph. It is used when the signature is already in
+   scope and is being re-inserted only for a local check, to avoid defining the
+   same identifier twice in the graph. *)
+val add_signature: ?long_path:bool -> signature -> t -> t
 
 (* Insertion of all fields of a signature, relative to the given path.
    Used to implement open. Returns None if the path refers to a functor,
@@ -353,19 +382,22 @@ val open_pers_signature: string -> t -> (t, [`Not_found]) result
 val remove_last_open: Path.t -> t -> t option
 
 (* Insertion by name *)
-
+(*  *)
 val enter_value:
     ?check:(string -> Warnings.t) ->
     string -> value_description -> t -> Ident.t * t
-val enter_type: scope:int -> string -> type_declaration -> t -> Ident.t * t
+val enter_type:
+  ?long_path:bool -> scope:int ->
+  string -> type_declaration -> t -> Ident.t * t
+val reenter_type: Ident.t -> type_declaration -> t -> t
 val enter_extension:
   scope:int -> rebind:bool -> string ->
   extension_constructor -> t -> Ident.t * t
 val enter_module:
-  scope:int -> ?arg:bool -> string -> module_presence ->
+  scope:int -> ?noalias:bool -> string -> module_presence ->
   module_type -> t -> Ident.t * t
 val enter_module_declaration:
-  scope:int -> ?arg:bool -> ?shape:Shape.t -> string -> module_presence ->
+  scope:int -> ?noalias:bool -> ?shape:Shape.t -> string -> module_presence ->
   module_declaration -> t -> Ident.t * t
 val enter_modtype:
   scope:int -> string -> modtype_declaration -> t -> Ident.t * t
@@ -394,25 +426,26 @@ val reset_cache: unit -> unit
 (* To be called before each toplevel phrase. *)
 val reset_cache_toplevel: unit -> unit
 
-(* Remember the name of the current compilation unit. *)
-val set_unit_name: string -> unit
-val get_unit_name: unit -> string
+(* Remember the current compilation unit. *)
+val set_current_unit: Unit_info.t -> unit
+val get_current_unit : unit -> Unit_info.t option
+val get_current_unit_name: unit -> string
 
 (* Read, save a signature to/from a file *)
-val read_signature: modname -> filepath -> signature
+val read_signature: Unit_info.Artifact.t -> signature
         (* Arguments: module name, file name. Results: signature. *)
 val save_signature:
-  alerts:alerts -> signature -> modname -> filepath
+  alerts:alerts -> Types.signature -> Unit_info.Artifact.t
   -> Cmi_format.cmi_infos
         (* Arguments: signature, module name, file name. *)
 val save_signature_with_imports:
-  alerts:alerts -> signature -> modname -> filepath -> crcs
+  alerts:alerts -> signature -> Unit_info.Artifact.t -> crcs
   -> Cmi_format.cmi_infos
         (* Arguments: signature, module name, file name,
            imported units with their CRCs. *)
 
 (* Return the CRC of the interface of the given compilation unit *)
-val crc_of_unit: modname -> Digest.t
+val crc_of_unit: modname -> Digest.BLAKE128.t
 
 (* Return the set of compilation units imported, with their CRC *)
 val imports: unit -> crcs
@@ -444,6 +477,21 @@ val update_short_paths : t -> t
 (* Return the short paths table *)
 val short_paths : t -> Short_paths.t
 
+(* Equivalence of unscoped identifiers *)
+
+module Unscoped : sig
+  val with_pairs : (Ident.Unscoped.t * Ident.Unscoped.t) list -> t -> t
+  val get_pairs : t -> (Ident.Unscoped.t * Ident.Unscoped.t) list
+  val path_equiv : t -> Path.t -> Path.t -> bool
+end
+[@@alert dangerous "
+It is unsafe to use the common [Path.same] function in contexts where
+[Unscoped.with_pairs] has been used to enrich the environment with
+unscoped equalities; [Path.equiv] must be used instead. See [ctype.ml]
+for an example of careful usage of [Unscoped], by locally shadowing
+[Path] to hide [Path.same].
+"]
+
 (* Error report *)
 
 type error =
@@ -452,12 +500,6 @@ type error =
   | Lookup_error of Location.t * t * lookup_error
 
 exception Error of error
-
-open Format
-
-val report_error: formatter -> error -> unit
-
-val report_lookup_error: Location.t -> t -> formatter -> lookup_error -> unit
 
 val in_signature: bool -> t -> t
 
@@ -488,9 +530,9 @@ val strengthen:
 (* Forward declaration to break mutual recursion with Ctype. *)
 val same_constr: (t -> type_expr -> type_expr -> bool) ref
 (* Forward declaration to break mutual recursion with Printtyp. *)
-val print_longident: (Format.formatter -> Longident.t -> unit) ref
+val print_longident: Longident.t Format_doc.printer ref
 (* Forward declaration to break mutual recursion with Printtyp. *)
-val print_path: (Format.formatter -> Path.t -> unit) ref
+val print_path: Path.t Format_doc.printer ref
 
 
 (* Forward declaration to break mutual recursion with Printtyp *)
@@ -547,3 +589,4 @@ val with_cmis : (unit -> 'a) -> 'a
 
 val add_merlin_extension_module: Ident.t -> module_type -> t -> t
 val cleanup_functor_caches : stamp:int -> unit
+val cleanup_usage_tables : stamp:int -> unit

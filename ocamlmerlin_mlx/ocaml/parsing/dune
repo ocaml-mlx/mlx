@@ -3,10 +3,10 @@
  (package ocamlmerlin-mlx)
  (flags
   -open=Mlx_utils
+  -open=Astlib.Ast_505
   -open=Mlx_ocaml_utils
-  -open=Astlib.Ast_501
   (:standard -w -9))
- (modules_without_implementation asttypes parsetree)
+ (modules_without_implementation parsetree)
  (libraries ppxlib mlx_utils mlx_ocaml_utils))
 
 (copy_files

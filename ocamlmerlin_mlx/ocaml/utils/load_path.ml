@@ -14,22 +14,28 @@
 
 open Local_store
 
-module STbl = Misc.String.Tbl
+module STbl = Misc.Stdlib.String.Tbl
 
 (* Mapping from basenames to full filenames *)
 type registry = string STbl.t
 
-let files : registry ref = s_table STbl.create 42
-let files_uncap : registry ref = s_table STbl.create 42
+let visible_files : registry ref = s_table STbl.create 42
+let visible_files_uncap : registry ref = s_table STbl.create 42
+
+let hidden_files : registry ref = s_table STbl.create 42
+let hidden_files_uncap : registry ref = s_table STbl.create 42
 
 module Dir = struct
   type t = {
     path : string;
     files : string list;
+    file_id : File_id.t;
+    hidden : bool;
   }
 
   let path t = t.path
   let files t = t.files
+  let hidden t = t.hidden
 
   let find t fn =
     if List.mem fn t.files then
@@ -37,38 +43,74 @@ module Dir = struct
     else
       None
 
-  let find_uncap t fn =
-    let fn = String.uncapitalize_ascii fn in
+  let find_normalized t fn =
+    let fn = Misc.normalized_unit_filename fn in
     let search base =
-      if String.uncapitalize_ascii base = fn then
+      if Misc.normalized_unit_filename base = fn then
         Some (Filename.concat t.path base)
       else
         None
     in
     List.find_map search t.files
 
-  let create path =
-    { path; files = Array.to_list (Directory_content_cache.read path) }
 
-  let check t = Directory_content_cache.check t.path
+  (* Merlin: In server mode we need each typer instance to know that a directory
+     changed at some point. Relying on the global [Directory_content_cache]
+     means only the first such check will notice the invalidation but not
+     following ones. We thus use individual [file_id]s for directory
+     invalidation, so that every impacted instance is eventually updated. *)
+
+  let create ~hidden path =
+    { path;
+      files = Array.to_list (Directory_content_cache.read path);
+      file_id = File_id.get path;
+      hidden
+    }
+
+  let check t = File_id.check (File_id.get t.path) t.file_id
 
 end
 
 type auto_include_callback =
   (Dir.t -> string -> string option) -> string -> string
-let dirs = s_ref []
+
+let visible_dirs = s_ref []
+let hidden_dirs = s_ref []
 let no_auto_include _ _ = raise Not_found
 let auto_include_callback = ref no_auto_include
 
-let reset () =
+let reset_visible () =
   assert (not Config.merlin || Local_store.is_bound ());
-  STbl.clear !files;
-  STbl.clear !files_uncap;
-  dirs := [];
+  STbl.clear !visible_files;
+  STbl.clear !visible_files_uncap;
+  visible_dirs := []
+
+let reset_hidden () =
+  assert (not Config.merlin || Local_store.is_bound ());
+  STbl.clear !hidden_files;
+  STbl.clear !hidden_files_uncap;
+  hidden_dirs := []
+
+let reset ?(only_hidden = false) ?(only_visible = false) () =
+  if not only_visible then reset_hidden ();
+  if not only_hidden then reset_visible ();
   auto_include_callback := no_auto_include
 
-let get () = List.rev !dirs
-let get_paths () = List.rev_map Dir.path !dirs
+let get_visible () = List.rev !visible_dirs
+
+let get_path_list () =
+  Misc.rev_map_end Dir.path !visible_dirs (List.rev_map Dir.path !hidden_dirs)
+
+type paths =
+  { visible : string list;
+    hidden : string list }
+
+let get_paths () =
+  { visible = List.rev_map Dir.path !visible_dirs;
+    hidden = List.rev_map Dir.path !hidden_dirs }
+
+let get_visible_path_list () = List.rev_map Dir.path !visible_dirs
+let get_hidden_path_list () = List.rev_map Dir.path !hidden_dirs
 
 (* Optimized version of [add] below, for use in [init] and [remove_dir]: since
    we are starting from an empty cache, we can avoid checking whether a unit
@@ -76,78 +118,112 @@ let get_paths () = List.rev_map Dir.path !dirs
    order. *)
 let prepend_add dir =
   List.iter (fun base ->
-      let fn = Filename.concat dir.Dir.path base in
-      STbl.replace !files base fn;
-      STbl.replace !files_uncap (String.uncapitalize_ascii base) fn
+      Result.iter (fun filename ->
+          let fn = Filename.concat dir.Dir.path base in
+          if dir.Dir.hidden then begin
+            STbl.replace !hidden_files base fn;
+            STbl.replace !hidden_files_uncap filename fn
+          end else begin
+            STbl.replace !visible_files base fn;
+            STbl.replace !visible_files_uncap filename fn
+          end)
+        (Misc.normalized_unit_filename base)
     ) dir.Dir.files
 
-let init ~auto_include l =
+let init ~auto_include ~visible ~hidden =
   assert (not Config.merlin || Local_store.is_bound ());
-  let rec loop_changed acc = function
+  let rec loop_changed ~hidden acc = function
     | [] -> Some acc
     | new_path :: new_rest ->
-      loop_changed (Dir.create new_path :: acc) new_rest
+      loop_changed ~hidden (Dir.create ~hidden new_path :: acc) new_rest
   in
-  let rec loop_unchanged acc new_paths old_dirs =
+  let rec loop_unchanged ~hidden acc new_paths old_dirs =
     match new_paths, old_dirs with
     | [], [] -> None
     | new_path :: new_rest, [] ->
-      loop_changed (Dir.create new_path :: acc) new_rest
+      loop_changed ~hidden (Dir.create ~hidden new_path :: acc) new_rest
     | [], _ :: _ -> Some acc
     | new_path :: new_rest, old_dir :: old_rest ->
       if String.equal new_path (Dir.path old_dir) then begin
         if Dir.check old_dir then begin
-          loop_unchanged (old_dir :: acc) new_rest old_rest
+          loop_unchanged ~hidden (old_dir :: acc) new_rest old_rest
         end else begin
-          loop_changed (Dir.create new_path :: acc) new_rest
+          loop_changed ~hidden (Dir.create ~hidden new_path :: acc) new_rest
         end
       end else begin
-        loop_changed (Dir.create new_path :: acc) new_rest
+        loop_changed ~hidden (Dir.create ~hidden new_path :: acc) new_rest
       end
   in
-  match loop_unchanged [] l (List.rev !dirs) with
+  let () =
+    match loop_unchanged ~hidden:false [] visible (List.rev !visible_dirs) with
+    | None -> ()
+    | Some new_dirs ->
+      reset ~only_visible:true ();
+      visible_dirs := new_dirs;
+      List.iter prepend_add new_dirs;
+      auto_include_callback := auto_include
+  in
+  match loop_unchanged ~hidden:true [] hidden (List.rev !hidden_dirs) with
   | None -> ()
   | Some new_dirs ->
-    reset ();
-    dirs := new_dirs;
+    reset ~only_hidden:true ();
+    hidden_dirs := new_dirs;
     List.iter prepend_add new_dirs;
     auto_include_callback := auto_include
 
 let remove_dir dir =
   assert (not Config.merlin || Local_store.is_bound ());
-  let new_dirs = List.filter (fun d -> Dir.path d <> dir) !dirs in
-  if List.compare_lengths new_dirs !dirs <> 0 then begin
+  let visible = List.filter (fun d -> Dir.path d <> dir) !visible_dirs in
+  let hidden = List.filter (fun d -> Dir.path d <> dir) !hidden_dirs in
+  if    List.compare_lengths visible !visible_dirs <> 0
+     || List.compare_lengths hidden !hidden_dirs <> 0 then begin
     reset ();
-    List.iter prepend_add new_dirs;
-    dirs := new_dirs
+    visible_dirs := visible;
+    hidden_dirs := hidden;
+    List.iter prepend_add hidden;
+    List.iter prepend_add visible
   end
 
 (* General purpose version of function to add a new entry to load path: We only
-   add a basename to the cache if it is not already present in the cache, in
-   order to enforce left-to-right precedence. *)
-let add dir =
+   add a basename to the cache if it is not already present, in order to enforce
+   left-to-right precedence. *)
+let add (dir : Dir.t) =
   assert (not Config.merlin || Local_store.is_bound ());
+  let update base fn visible_files hidden_files =
+    if dir.hidden then begin
+      if not (STbl.mem !hidden_files base) then
+        STbl.replace !hidden_files base fn
+    end else if not (STbl.mem !visible_files base) then
+      STbl.replace !visible_files base fn
+  in
   List.iter
     (fun base ->
-       let fn = Filename.concat dir.Dir.path base in
-       if not (STbl.mem !files base) then
-         STbl.replace !files base fn;
-       let ubase = String.uncapitalize_ascii base in
-       if not (STbl.mem !files_uncap ubase) then
-         STbl.replace !files_uncap ubase fn)
-    dir.Dir.files;
-  dirs := dir :: !dirs
+       Result.iter (fun ubase ->
+           let fn = Filename.concat dir.Dir.path base in
+           update base fn visible_files hidden_files;
+           update ubase fn visible_files_uncap hidden_files_uncap
+         )
+         (Misc.normalized_unit_filename base)
+    )
+    dir.files;
+  if dir.hidden then
+    hidden_dirs := dir :: !hidden_dirs
+  else
+    visible_dirs := dir :: !visible_dirs
 
 let append_dir = add
 
-let add_dir dir = add (Dir.create dir)
+let add_dir ~hidden dir = add (Dir.create ~hidden dir)
 
 (* Add the directory at the start of load path - so basenames are
    unconditionally added. *)
-let prepend_dir dir =
+let prepend_dir (dir : Dir.t) =
   assert (not Config.merlin || Local_store.is_bound ());
   prepend_add dir;
-  dirs := !dirs @ [dir]
+  if dir.hidden then
+    hidden_dirs := !hidden_dirs @ [dir]
+  else
+    visible_dirs := !visible_dirs @ [dir]
 
 let is_basename fn = Filename.basename fn = fn
 
@@ -169,27 +245,45 @@ let is_basename fn = Filename.basename fn = fn
   (* Ensure directories are only ever scanned once *)
   let expand = Misc.expand_directory Config.standard_library in
   let otherlibs =
-    let read_lib lib = lazy (Dir.create (expand ("+" ^ lib))) in
+    let read_lib lib = lazy (Dir.create ~hidden:false (expand ("+" ^ lib))) in
     List.map (fun lib -> (lib, read_lib lib)) ["dynlink"; "str"; "unix"] in
   auto_include_libs otherlibs *)
+
+type visibility = Visible | Hidden
+
+let find_file_in_cache fn visible_files hidden_files =
+  try (STbl.find !visible_files fn, Visible) with
+  | Not_found -> (STbl.find !hidden_files fn, Hidden)
 
 let find fn =
   assert (not Config.merlin || Local_store.is_bound ());
   try
     if is_basename fn && not !Sys.interactive then
-      STbl.find !files fn
+      fst (find_file_in_cache fn visible_files hidden_files)
     else
-      Misc.find_in_path (get_paths ()) fn
+      Misc.find_in_path (get_path_list ()) fn
   with Not_found ->
     !auto_include_callback Dir.find fn
 
-let find_uncap fn =
+let find_normalized_with_visibility fn =
   assert (not Config.merlin || Local_store.is_bound ());
+  match Misc.normalized_unit_filename fn with
+  | Error _ -> raise Not_found
+  | Ok fn_uncap ->
   try
     if is_basename fn && not !Sys.interactive then
-      STbl.find !files_uncap (String.uncapitalize_ascii fn)
+      find_file_in_cache fn_uncap
+        visible_files_uncap hidden_files_uncap
     else
-      Misc.find_in_path_uncap (get_paths ()) fn
+      try
+        (Misc.find_in_path_normalized (get_visible_path_list ()) fn, Visible)
+      with
+      | Not_found ->
+        (Misc.find_in_path_normalized (get_hidden_path_list ()) fn, Hidden)
   with Not_found ->
-    let fn_uncap = String.uncapitalize_ascii fn in
-    !auto_include_callback Dir.find_uncap fn_uncap
+    (!auto_include_callback Dir.find_normalized fn_uncap, Visible)
+
+let find_normalized fn = fst (find_normalized_with_visibility fn)
+
+(* Merlin: expose standard reset function *)
+let reset () = reset ()
