@@ -4,8 +4,8 @@ open Mlx_ocaml_parsing
 open Mlx_kernel
 
 (* Some notes on usage of Obj.magic here...
-   - we copy parsetree.ml from merlin' 501 branch which copies AST from OCaml's
-     5.1.x branch. TODO: instead we should inject ppxlib's Ast_501 module there
+   - we copy parsetree.ml from merlin's 505 branch which copies AST from OCaml's
+     5.5.x branch. TODO: instead we should inject ppxlib's Ast_505 module there
    - then finally the currently installed merlin-extend should have the same
      AST as the one used by compiled. TODO: figure out why compiler doesn't see
      that...
@@ -13,19 +13,19 @@ open Mlx_kernel
 module Conv = struct
   module Conv =
     Ppxlib_ast.Convert
-      (Ppxlib_ast__Versions.OCaml_501)
+      (Ppxlib_ast__Versions.OCaml_505)
       (Ppxlib_ast.Compiler_version)
 
   let conv_signature (intf : Mlx_ocaml_parsing.Parsetree.signature) :
       Ocaml_parsing.Parsetree.signature =
-    let intf : Astlib.Ast_501.Parsetree.signature = Obj.magic intf in
+    let intf : Astlib.Ast_505.Parsetree.signature = Obj.magic intf in
     let intf = Conv.copy_signature intf in
     let intf : Ocaml_parsing.Parsetree.signature = Obj.magic intf in
     intf
 
   let conv_structure (impl : Mlx_ocaml_parsing.Parsetree.structure) :
       Ocaml_parsing.Parsetree.structure =
-    let impl : Astlib.Ast_501.Parsetree.structure = Obj.magic impl in
+    let impl : Astlib.Ast_505.Parsetree.structure = Obj.magic impl in
     let impl = Conv.copy_structure impl in
     let impl : Ocaml_parsing.Parsetree.structure = Obj.magic impl in
     impl
