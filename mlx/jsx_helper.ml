@@ -23,7 +23,7 @@ let rec equal_longindent a b =
   match a, b with
   | Longident.Lident a, Longident.Lident b -> String.equal a b
   | Ldot (pa, a), Ldot (pb, b) ->
-      String.equal a b && equal_longindent pa pb
+      String.equal a.txt b.txt && equal_longindent pa.txt pb.txt
   | Lapply _, _ | _, Lapply _ -> assert false
   | _ -> false
 
@@ -57,8 +57,12 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
     | `Value, loc, txt ->
         mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
     | `Module, loc, txt ->
-        let txt = Longident.Ldot (txt, "createElement") in
-        mkexp ~loc (Pexp_ident { loc = make_loc loc; txt })
+        let lloc = make_loc loc in
+        let txt =
+          Longident.Ldot
+            ({ txt; loc = lloc }, { txt = "createElement"; loc = lloc })
+        in
+        mkexp ~loc (Pexp_ident { loc = lloc; txt })
   in
   let props =
     let prop_exp ~loc name =
