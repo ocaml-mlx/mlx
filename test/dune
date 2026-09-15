@@ -6,4 +6,4 @@
 
 (executable
  (name mlx_merlin)
- (libraries mlx_kernel))
+ (libraries mlx_kernel mlx_conv merlin-lib.ocaml_parsing))

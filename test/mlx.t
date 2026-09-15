@@ -152,3 +152,34 @@ We have a lexer hack to parse [<element and [<Element as JSX:
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
   MERLIN
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
+
+Conversion to the host merlin's AST — exercises the Obj.magic + ppxlib
+migration bridge (Mlx_conv) that the reader uses to hand its parsetree to
+merlin; a shape mismatch here segfaults or garbles the output. Constants are
+the interesting case (their representation changed across AST versions):
+
+  $ echo "let _ = <div attr with_value=1 ?opt>hello \"str\" 3.14 'c'</div>" | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ =
+    div () ~children:[ hello; "str"; 3.14; 'c' ] ~attr ~with_value:1 ?opt [@JSX]
+
+  $ echo 'let _ = <Hello.Ok ?opt_value=some attr><span>inner</span></Hello.Ok>' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ =
+    Hello.Ok.createElement ()
+      ~children:[ (span () ~children:[ inner ] [@JSX]) ]
+      ?opt_value:some ~attr [@JSX]
+
+  $ echo 'let f ?(y = 2) = function Some (a, b) -> [ a; b; y ] | None -> []' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let f ?(y = 2) = function
+    | Some (a, b) -> [ a; b; y ] [@merlin.loc]
+    | None -> [] [@merlin.loc]
+
+Signature conversion:
+
+  $ printf 'val f : int -> string\nmodule M : sig type t val x : t option end\n' | ./mlx_merlin.exe -conv -intf | ocamlformat - --intf --enable-outside-detected-project
+  val f : int -> string
+  
+  module M : sig
+    type t
+  
+    val x : t option
+  end

@@ -29,12 +29,25 @@ let report_error exn =
   exit 1
 
 let () =
+  (* -conv additionally exercises Mlx_conv (the Obj.magic + ppxlib
+     migration bridge the reader uses to hand its AST to the host
+     merlin): the converted AST is printed with the host merlin-lib's
+     Pprintast, so a shape mismatch shows up as garbage or a crash. *)
+  let conv = Array.mem "-conv" Sys.argv in
+  let intf = Array.mem "-intf" Sys.argv in
   let str = In_channel.input_all stdin in
-  let res = parse_string "*stdin*" str in
+  let filename = if intf then "stdin.mli" else "*stdin*" in
+  let res = parse_string filename str in
   let () = List.iter report_error res.lexer_errors in
   let () = List.iter report_error res.parser_errors in
   match res.parsetree with
   | `Implementation str ->
-      Format.printf "%a@." Mlx_ocaml_parsing.Pprintast.structure str
+      if conv then
+        Format.printf "%a@." Ocaml_parsing.Pprintast.structure
+          (Mlx_conv.conv_structure str)
+      else Format.printf "%a@." Mlx_ocaml_parsing.Pprintast.structure str
   | `Interface str ->
-      Format.printf "%a@." Mlx_ocaml_parsing.Pprintast.signature str
+      if conv then
+        Format.printf "%a@." Ocaml_parsing.Pprintast.signature
+          (Mlx_conv.conv_signature str)
+      else Format.printf "%a@." Mlx_ocaml_parsing.Pprintast.signature str
