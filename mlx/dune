@@ -2,7 +2,7 @@
  (name pp)
  (package mlx)
  (public_name mlx-pp)
- (modules :standard \ mlx_shim)
+ (modules :standard \ mlx_shim format_doc)
  (flags
   (:standard -w -9-67 -open Astlib -open Astlib.Ast_505 -open Mlx_shim))
  (libraries ppxlib ocaml-compiler-libs.shadow mlx_shim))
@@ -10,10 +10,14 @@
 (library
  (name mlx_shim)
  (package mlx)
- (modules mlx_shim)
+ (modules mlx_shim format_doc)
  (flags
   (:standard -w -9-67 -open Astlib -open Astlib.Ast_505))
  (libraries ppxlib ocaml-compiler-libs.shadow))
+
+;; format_doc.{ml,mli} are vendored from ocaml/utils with a local
+;; modification (utf_8_scalar_width fallback for pre-5.4 hosts), so they
+;; are not auto-promoted like the pure copies below.
 
 (ocamllex lexer)
 
