@@ -10,7 +10,7 @@ depends: [
   "ocaml" {>= "4.14.0"}
   "ppxlib" {>= "0.34.0"}
   "dune" {>= "3.16"}
-  "menhir" {= "20201216" & with-dev-setup}
+  "menhir" {= "20230608" & with-dev-setup}
   "ocamlformat" {with-dev-setup}
   "ocaml-lsp-server" {with-dev-setup}
   "odoc" {with-doc}

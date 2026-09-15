@@ -16,23 +16,21 @@
 (* Typing of type definitions and primitive definitions *)
 
 open Types
-open Format
-
 val transl_type_decl:
     Env.t -> Asttypes.rec_flag -> Parsetree.type_declaration list ->
-    Typedtree.type_declaration list * Env.t
+    Typedtree.type_declaration list * Env.t * Shape.t list
 
 val transl_exception:
     Env.t -> Parsetree.extension_constructor ->
-    Typedtree.extension_constructor * Env.t
+    Typedtree.extension_constructor * Env.t * Shape.t
 
 val transl_type_exception:
     Env.t ->
-    Parsetree.type_exception -> Typedtree.type_exception * Env.t
+    Parsetree.type_exception -> Typedtree.type_exception * Env.t * Shape.t
 
 val transl_type_extension:
     bool -> Env.t -> Location.t -> Parsetree.type_extension ->
-    Typedtree.type_extension * Env.t
+    Typedtree.type_extension * Env.t * Shape.t list
 
 val transl_value_decl:
     Env.t -> Location.t ->
@@ -46,12 +44,29 @@ val transl_with_constraint:
     outer_env:Env.t -> Parsetree.type_declaration ->
     Typedtree.type_declaration
 
-val abstract_type_decl: injective:bool -> int -> type_declaration
+val transl_package_constraint:
+  loc:Location.t -> Env.t -> type_expr -> Types.type_declaration
+
+val abstract_type_decl:
+    injective:bool -> explanation:Types.type_origin -> int -> type_declaration
+
+(** Approximate a list of type declarations with abstract types of the
+    given origin. *)
 val approx_type_decl:
-    Parsetree.type_declaration list ->
+    explanation:Types.type_origin -> Parsetree.type_declaration list ->
                                   (Ident.t * type_declaration) list
+
+(** [check_recmod_typedecl ~abs_env env loc recmod_ids path decl]
+   - [recmod_ids] is the list of recursively-defined module idents.
+   - [path, decl] is the type declaration to be checked.
+   - [abs_env] is an abstract environment without physical cycles. It is used
+      as a printing environment.
+   - [env] is the main environment, which may contain cycles introduced by the
+      recursive module definitions.
+*)
 val check_recmod_typedecl:
-    Env.t -> Location.t -> Ident.t list -> Path.t -> type_declaration -> unit
+    abs_env:Env.t -> Env.t -> Location.t -> Ident.t list -> Path.t ->
+    type_declaration -> unit
 val check_coherence:
     Env.t -> Location.t -> Path.t -> type_declaration -> unit
 
@@ -99,13 +114,16 @@ type error =
   | Multiple_native_repr_attributes
   | Cannot_unbox_or_untag_type of native_repr_kind
   | Deep_unbox_or_untag_attribute of native_repr_kind
+  | Type_cannot_be_external of type_expr
   | Immediacy of Typedecl_immediacy.error
   | Separability of Typedecl_separability.error
   | Bad_unboxed_attribute of string
   | Boxed_and_unboxed
   | Nonrec_gadt
   | Invalid_private_row_declaration of type_expr
+  | Atomic_field_must_be_mutable of string
+  | External_with_non_syntactic_arity
 
 exception Error of Location.t * error
 
-val report_error: formatter -> error -> unit
+val report_error: loc:Location.t -> error -> Location.report

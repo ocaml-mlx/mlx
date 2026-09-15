@@ -22,7 +22,12 @@
 
 open Asttypes
 
-type constant =
+type constant = {
+  pconst_desc : constant_desc;
+  pconst_loc : Location.t;
+}
+
+and constant_desc =
   | Pconst_integer of string * char option
       (** Integer constants such as [3] [3l] [3L] [3n].
 
@@ -96,9 +101,14 @@ and core_type_desc =
             - [?l:T1 -> T2] when [lbl] is
                                      {{!Asttypes.arg_label.Optional}[Optional]}.
          *)
-  | Ptyp_tuple of core_type list
-      (** [Ptyp_tuple([T1 ; ... ; Tn])]
-          represents a product type [T1 * ... * Tn].
+  | Ptyp_tuple of (string option * core_type) list
+      (** [Ptyp_tuple(tl)] represents a product type:
+          - [T1 * ... * Tn]
+              when [tl] is [(None, T1); ...; (None, Tn)]
+          - [L1:T1 * ... * Ln:Tn]
+              when [tl] is [(Some L1, T1); ...; (Some Ln, Tn)]
+          - A mix, e.g., [L1:T1 * T2]
+              when [tl] is [(Some L1, T1); (None, T2)]
 
            Invariant: [n >= 2].
         *)
@@ -121,7 +131,7 @@ and core_type_desc =
             - [T #tconstr]             when [l=[T]],
             - [(T1, ..., Tn) #tconstr] when [l=[T1 ; ... ; Tn]].
          *)
-  | Ptyp_alias of core_type * string  (** [T as 'a]. *)
+  | Ptyp_alias of core_type * string loc  (** [T as 'a]. *)
   | Ptyp_variant of row_field list * closed_flag * label list option
       (** [Ptyp_variant([`A;`B], flag, labels)] represents:
             - [[ `A|`B ]]
@@ -166,12 +176,22 @@ and core_type_desc =
            {!value_description}.
          *)
   | Ptyp_package of package_type  (** [(module S)]. *)
+  | Ptyp_open of Longident.t loc * core_type (** [M.(T)] *)
   | Ptyp_extension of extension  (** [[%id]]. *)
+  | Ptyp_functor of arg_label * string loc * package_type * core_type
+        (** [(module M : S) -> ...] : module-dependent arrow *)
 
-and package_type = Longident.t loc * (Longident.t loc * core_type) list
+
+and package_type =
+    {
+     ppt_path: Longident.t loc;
+     ppt_constraints: (Longident.t loc * core_type) list;
+     ppt_loc: Location.t;
+     ppt_attrs: attributes;
+    }
 (** As {!package_type} typed values:
-         - [(S, [])] represents [(module S)],
-         - [(S, [(t1, T1) ; ... ; (tn, Tn)])]
+         - [{ppt_path: S; ppt_constraints: []}] represents [(module S)],
+         - [{ppt_path: S; ppt_constraints: [(t1, T1) ; ... ; (tn, Tn)]}]
           represents [(module S with type t1 = T1 and ... and tn = Tn)].
        *)
 
@@ -228,11 +248,22 @@ and pattern_desc =
 
            Other forms of interval are recognized by the parser
            but rejected by the type-checker. *)
-  | Ppat_tuple of pattern list
-      (** Patterns [(P1, ..., Pn)].
+  | Ppat_tuple of (string option * pattern) list * Asttypes.closed_flag
+      (** [Ppat_tuple(pl, Closed)] represents
+          - [(P1, ..., Pn)]
+              when [pl] is [(None, P1); ...; (None, Pn)]
+          - [(~L1:P1, ..., ~Ln:Pn)]
+              when [pl] is [(Some L1, P1); ...; (Some Ln, Pn)]
+          - A mix, e.g. [(~L1:P1, P2)]
+              when [pl] is [(Some L1, P1); (None, P2)]
 
-           Invariant: [n >= 2]
-        *)
+          [Ppat_tuple(pl, Open)] is similar, but indicates the pattern
+          additionally ends in a [..].
+
+          Invariant:
+          - If Closed, [n >= 2].
+          - If Open, [n >= 1].
+      *)
   | Ppat_construct of Longident.t loc * (string loc list * pattern) option
       (** [Ppat_construct(C, args)] represents:
             - [C]               when [args] is [None],
@@ -260,15 +291,15 @@ and pattern_desc =
   | Ppat_constraint of pattern * core_type  (** Pattern [(P : T)] *)
   | Ppat_type of Longident.t loc  (** Pattern [#tconst] *)
   | Ppat_lazy of pattern  (** Pattern [lazy P] *)
-  | Ppat_unpack of string option loc
-      (** [Ppat_unpack(s)] represents:
-            - [(module P)] when [s] is [Some "P"]
-            - [(module _)] when [s] is [None]
-
-           Note: [(module P : S)] is represented as
-           [Ppat_constraint(Ppat_unpack(Some "P"), Ptyp_package S)]
+  | Ppat_unpack of string option loc * package_type option
+      (** [Ppat_unpack(s, ptyp)] represents:
+            - [(module P : S)] when [s] is [Some "P"] and [ptyp] is [Some "S"]
+            - [(module _ : S)] when [s] is [None] and [ptyp] is [Some "S"]
+            - [(module P)] when [s] is [Some "P"] and [ptyp] is [None]
+            - [(module _)] when [s] is [None] and [ptyp] is [None]
          *)
   | Ppat_exception of pattern  (** Pattern [exception P] *)
+  | Ppat_effect of pattern * pattern (* Pattern [effect P P] *)
   | Ppat_extension of extension  (** Pattern [[%id]] *)
   | Ppat_open of Longident.t loc * pattern  (** Pattern [M.(P)] *)
 
@@ -296,30 +327,22 @@ and expression_desc =
             - [let rec P1 = E1 and ... and Pn = EN in E]
                when [flag] is {{!Asttypes.rec_flag.Recursive}[Recursive]}.
          *)
-  | Pexp_function of case list  (** [function P1 -> E1 | ... | Pn -> En] *)
-  | Pexp_fun of arg_label * expression option * pattern * expression
-      (** [Pexp_fun(lbl, exp0, P, E1)] represents:
-            - [fun P -> E1]
-                      when [lbl] is {{!Asttypes.arg_label.Nolabel}[Nolabel]}
-                       and [exp0] is [None]
-            - [fun ~l:P -> E1]
-                      when [lbl] is {{!Asttypes.arg_label.Labelled}[Labelled l]}
-                       and [exp0] is [None]
-            - [fun ?l:P -> E1]
-                      when [lbl] is {{!Asttypes.arg_label.Optional}[Optional l]}
-                       and [exp0] is [None]
-            - [fun ?l:(P = E0) -> E1]
-                      when [lbl] is {{!Asttypes.arg_label.Optional}[Optional l]}
-                       and [exp0] is [Some E0]
+  | Pexp_function of
+      function_param list * type_constraint option * function_body
+  (** [Pexp_function ([P1; ...; Pn], C, body)] represents any construct
+      involving [fun] or [function], including:
+      - [fun P1 ... Pn -> E]
+        when [body = Pfunction_body E]
+      - [fun P1 ... Pn -> function p1 -> e1 | ... | pm -> em]
+        when [body = Pfunction_cases [ p1 -> e1; ...; pm -> em ]]
 
-           Notes:
-           - If [E0] is provided, only
-             {{!Asttypes.arg_label.Optional}[Optional]} is allowed.
-           - [fun P1 P2 .. Pn -> E1] is represented as nested
-             {{!expression_desc.Pexp_fun}[Pexp_fun]}.
-           - [let f P = E] is represented using
-             {{!expression_desc.Pexp_fun}[Pexp_fun]}.
-         *)
+      [C] represents a type constraint or coercion placed immediately before the
+      arrow, e.g. [fun P1 ... Pn : ty -> ...] when [C = Some (Pconstraint ty)].
+
+      A function must have parameters: in [Pexp_function (params, _, body)],
+      if [params] does not contain a [Pparam_val _], [body] must be
+      [Pfunction_cases _].
+  *)
   | Pexp_apply of expression * (arg_label * expression) list
       (** [Pexp_apply(E0, [(l1, E1) ; ... ; (ln, En)])]
             represents [E0 ~l1:E1 ... ~ln:En]
@@ -335,8 +358,14 @@ and expression_desc =
       (** [match E0 with P1 -> E1 | ... | Pn -> En] *)
   | Pexp_try of expression * case list
       (** [try E0 with P1 -> E1 | ... | Pn -> En] *)
-  | Pexp_tuple of expression list
-      (** Expressions [(E1, ..., En)]
+  | Pexp_tuple of (string option * expression) list
+      (** [Pexp_tuple(el)] represents
+          - [(E1, ..., En)]
+              when [el] is [(None, E1); ...; (None, En)]
+          - [(~L1:E1, ..., ~Ln:En)]
+              when [el] is [(Some L1, E1); ...; (Some Ln, En)]
+          - A mix, e.g., [(~L1:E1, E2)]
+              when [el] is [(Some L1, E1); (None, E2)]
 
            Invariant: [n >= 2]
         *)
@@ -384,10 +413,8 @@ and expression_desc =
   | Pexp_setinstvar of label loc * expression  (** [x <- 2] *)
   | Pexp_override of (label loc * expression) list
       (** [{< x1 = E1; ...; xn = En >}] *)
-  | Pexp_letmodule of string option loc * module_expr * expression
-      (** [let module M = ME in E] *)
-  | Pexp_letexception of extension_constructor * expression
-      (** [let exception C in E] *)
+  | Pexp_struct_item of structure_item * expression
+      (** [let SI in E] *)
   | Pexp_assert of expression
       (** [assert E].
 
@@ -402,15 +429,8 @@ and expression_desc =
            values). *)
   | Pexp_object of class_structure  (** [object ... end] *)
   | Pexp_newtype of string loc * expression  (** [fun (type t) -> E] *)
-  | Pexp_pack of module_expr
-      (** [(module ME)].
-
-           [(module ME : S)] is represented as
-           [Pexp_constraint(Pexp_pack ME, Ptyp_package S)] *)
-  | Pexp_open of open_declaration * expression
-      (** - [M.(E)]
-            - [let open M in E]
-            - [let open! M in E] *)
+  | Pexp_pack of module_expr * package_type option
+      (** [(module ME)] or [(module ME : S)]. *)
   | Pexp_letop of letop
       (** - [let* P = E0 in E1]
             - [let* P0 = E00 and* P1 = E01 in E1] *)
@@ -440,6 +460,66 @@ and binding_op =
     pbop_loc : Location.t;
   }
 
+and function_param_desc =
+  | Pparam_val of arg_label * expression option * pattern
+  (** [Pparam_val (lbl, exp0, P)] represents the parameter:
+      - [P]
+        when [lbl] is {{!Asttypes.arg_label.Nolabel}[Nolabel]}
+        and [exp0] is [None]
+      - [~l:P]
+        when [lbl] is {{!Asttypes.arg_label.Labelled}[Labelled l]}
+        and [exp0] is [None]
+      - [?l:P]
+        when [lbl] is {{!Asttypes.arg_label.Optional}[Optional l]}
+        and [exp0] is [None]
+      - [?l:(P = E0)]
+        when [lbl] is {{!Asttypes.arg_label.Optional}[Optional l]}
+        and [exp0] is [Some E0]
+
+      Note: If [E0] is provided, only
+      {{!Asttypes.arg_label.Optional}[Optional]} is allowed.
+  *)
+  | Pparam_newtype of string loc
+  (** [Pparam_newtype x] represents the parameter [(type x)].
+      [x] carries the location of the identifier, whereas the [pparam_loc]
+      on the enclosing [function_param] node is the location of the [(type x)]
+      as a whole.
+
+      Multiple parameters [(type a b c)] are represented as multiple
+      [Pparam_newtype] nodes, let's say:
+
+      {[ [ { pparam_kind = Pparam_newtype a; pparam_loc = loc1 };
+           { pparam_kind = Pparam_newtype b; pparam_loc = loc2 };
+           { pparam_kind = Pparam_newtype c; pparam_loc = loc3 };
+         ]
+      ]}
+
+      Here, the first loc [loc1] is the location of [(type a b c)], and the
+      subsequent locs [loc2] and [loc3] are the same as [loc1], except marked as
+      ghost locations. The locations on [a], [b], [c], correspond to the
+      variables [a], [b], and [c] in the source code.
+  *)
+
+and function_param =
+  { pparam_loc : Location.t;
+    pparam_desc : function_param_desc;
+  }
+
+and function_body =
+  | Pfunction_body of expression
+  | Pfunction_cases of case list * Location.t * attributes
+  (** In [Pfunction_cases (_, loc, attrs)], the location extends from the
+      start of the [function] keyword to the end of the last case. The compiler
+      will only use typechecking-related attributes from [attrs], e.g. enabling
+      or disabling a warning.
+  *)
+(** See the comment on {{!expression_desc.Pexp_function}[Pexp_function]}. *)
+
+and type_constraint =
+  | Pconstraint of core_type
+  | Pcoerce of core_type option * core_type
+(** See the comment on {{!expression_desc.Pexp_function}[Pexp_function]}. *)
+
 (** {2 Value descriptions} *)
 
 and value_description =
@@ -464,7 +544,7 @@ and type_declaration =
      ptype_name: string loc;
      ptype_params: (core_type * (variance * injectivity)) list;
       (** [('a1,...'an) t] *)
-     ptype_cstrs: (core_type * core_type * Location.t) list;
+     ptype_constraints: (core_type * core_type * Location.t) list;
       (** [... constraint T1=T1'  ... constraint Tn=Tn'] *)
      ptype_kind: type_kind;
      ptype_private: private_flag;  (** for [= private ...] *)
@@ -496,6 +576,10 @@ and type_declaration =
  - [type t = ..]
               when [type_kind] is {{!type_kind.Ptype_open}[Ptype_open]},
                and [manifest]  is [None].
+ - [type t = external "gmp"]
+              when [type_kind] is
+                 {{!type_kind.Ptype_external}[Ptype_external("gmp")]}
+               and [manifest]  is [None].
 *)
 
 and type_kind =
@@ -503,6 +587,7 @@ and type_kind =
   | Ptype_variant of constructor_declaration list
   | Ptype_record of label_declaration list  (** Invariant: non-empty list *)
   | Ptype_open
+  | Ptype_external of string
 
 and label_declaration =
     {

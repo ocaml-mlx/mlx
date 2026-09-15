@@ -18,6 +18,11 @@
 val version: string
         (* The current version number of the system *)
 
+val as_has_debug_prefix_map : bool
+(** Whether the assembler supports --debug-prefix-map *)
+
+val ext_obj : string
+
 val interface_suffix: string ref
         (* Suffix for interface file names *)
 
@@ -41,14 +46,28 @@ val cmxs_magic_number: string
         (* Magic number for dynamically-loadable plugins *)
 val cmt_magic_number: string
         (* Magic number for compiled interface files *)
+val index_magic_number: string
+        (* Magic number for index files *)
+
 
 val max_tag: int
         (* Biggest tag that can be stored in the header of a regular block. *)
 
-val flat_float_array: bool
+val flambda : bool
+(** Whether the compiler was configured for flambda *)
+
+val flat_float_array : bool
+        (* Whether the compiler and runtime automagically flatten float arrays *)
+
+(** Access to configuration values *)
+val print_config : out_channel -> unit
+
+val config_var : string -> string option
+(** the configuration value of a variable, if it exists *)
 
 (**/**)
 
 val merlin : bool
+
 
 (**/**)

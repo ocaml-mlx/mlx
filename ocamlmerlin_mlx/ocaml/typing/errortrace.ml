@@ -16,13 +16,19 @@
 (**************************************************************************)
 
 open Types
-open Format
+open Format_doc
 
 type position = First | Second
+type order = Less | Equal | More
 
 let swap_position = function
   | First -> Second
   | Second -> First
+
+let swap_order = function
+  | Less -> More
+  | Equal -> Equal
+  | More -> Less
 
 let print_pos ppf = function
   | First -> fprintf ppf "first"
@@ -49,6 +55,7 @@ type 'a escape_kind =
      we keep a [type_expr] to track renaming in {!Printtyp} *)
   | Self
   | Module_type of Path.t
+  | Module of Ident.t
   | Equation of 'a
   | Constraint
 
@@ -59,7 +66,8 @@ type 'a escape =
 let map_escape f esc =
   {esc with kind = match esc.kind with
      | Equation eq -> Equation (f eq)
-     | (Constructor _ | Univ _ | Self | Module_type _ | Constraint) as c -> c}
+     | (Constructor _ | Univ _ | Self | Module_type _
+        | Module _ | Constraint) as c -> c}
 
 let explain trace f =
   let rec explain = function
@@ -98,14 +106,27 @@ type 'variety obj =
   (* Unification *)
   | Self_cannot_be_closed : unification obj
 
+type first_class_module =
+    | Package_cannot_scrape of Path.t
+    | Package_inclusion of Format_doc.doc
+    | Package_coercion of Format_doc.doc
+
+type univar =
+  | Var_mismatch of { order:order; diff:type_expr diff }
+  | Quantification_mismatch of type_expr list
+
 type ('a, 'variety) elt =
   (* Common *)
   | Diff : 'a diff -> ('a, _) elt
   | Variant : 'variety variant -> ('a, 'variety) elt
   | Obj : 'variety obj -> ('a, 'variety) elt
   | Escape : 'a escape -> ('a, _) elt
+  | Function_label_mismatch of Asttypes.arg_label diff
+  | Tuple_label_mismatch of string option diff
   | Incompatible_fields : { name:string; diff: type_expr diff } -> ('a, _) elt
       (* Could move [Incompatible_fields] into [obj] *)
+  | First_class_module: first_class_module -> ('a,_) elt
+  | Univar of univar
   (* Unification & Moregen; included in Equality for simplicity *)
   | Rec_occur : type_expr * type_expr -> ('a, _) elt
 
@@ -123,9 +144,13 @@ let map_elt (type variety) f : ('a, variety) elt -> ('b, variety) elt = function
   | Diff x -> Diff (map_diff f x)
   | Escape {kind = Equation x; context} ->
       Escape { kind = Equation (f x); context }
-  | Escape {kind = (Univ _ | Self | Constructor _ | Module_type _ | Constraint);
+  | Escape {kind = (Univ _ | Self | Constructor _
+      | Module_type _ | Module _ | Constraint);
             _}
-  | Variant _ | Obj _ | Incompatible_fields _ | Rec_occur (_, _) as x -> x
+  | Variant _ | Obj _ | Function_label_mismatch _ | Tuple_label_mismatch _
+  | Incompatible_fields _
+  | Rec_occur (_, _) | First_class_module _  as x -> x
+  | Univar _  as x -> x
 
 let map f t = List.map (map_elt f) t
 
@@ -144,6 +169,12 @@ let swap_elt (type variety) : ('a, variety) elt -> ('a, variety) elt = function
     Variant (Fixed_row(swap_position pos,k,f))
   | Variant (No_tags(pos,f)) ->
     Variant (No_tags(swap_position pos,f))
+  | Univar (Var_mismatch d) ->
+      Univar (Var_mismatch {
+        order = swap_order d.order;
+        diff = swap_diff d.diff
+      })
+  | Univar (Quantification_mismatch _) as x -> x
   | x -> x
 
 let swap_trace e = List.map swap_elt e

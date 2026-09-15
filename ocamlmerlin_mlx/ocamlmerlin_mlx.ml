@@ -67,7 +67,11 @@ module Mlx_reader = struct
     mkstri
       (mkexp
          (Pexp_constant
-            (Parsetree.Pconst_string (text, Location.none, None))))
+            {
+              Parsetree.pconst_desc =
+                Pconst_string (text, Location.none, None);
+              pconst_loc = Location.none;
+            }))
 
   let to_extension_node exn =
     match Location.error_of_exn exn with
@@ -77,7 +81,10 @@ module Mlx_reader = struct
         let name =
           { Location.loc = error.main.loc; txt = "ocaml.error" }
         in
-        let () = error.main.txt Format.str_formatter in
+        let () =
+          Mlx_ocaml_utils.Format_doc.Doc.format Format.str_formatter
+            error.main.txt
+        in
         let msg = Format.flush_str_formatter () in
         let payload = mkpayload msg in
         Some

@@ -19,7 +19,7 @@
 open Misc
 open Cmi_format
 
-module Consistbl = Consistbl.Make (Misc.String)
+module Consistbl = Consistbl.Make (Misc.Stdlib.String)
 
 let add_delayed_check_forward = ref (fun _ -> assert false)
 
@@ -34,14 +34,19 @@ let error err = raise (Error err)
 module Persistent_signature = struct
   type t =
     { filename : string;
-      cmi : Cmi_format.cmi_infos }
+      cmi : Cmi_format.cmi_infos;
+      visibility : Load_path.visibility }
 
-  let load = ref (fun ~unit_name ->
-      match Load_path.find_uncap (unit_name ^ ".cmi") with
-      | filename ->
-        let cmi = Cmi_cache.read filename in
-        Some { filename; cmi }
-      | exception Not_found -> None)
+  let load = ref (fun ~allow_hidden ~unit_name ->
+    match Load_path.find_normalized_with_visibility (unit_name ^ ".cmi") with
+    | filename, visibility when allow_hidden ->
+      let cmi = Cmi_cache.read filename in
+      Some { filename; cmi; visibility}
+    | filename, Visible ->
+      let cmi = Cmi_cache.read filename in
+      Some { filename; cmi; visibility = Visible}
+    | _, Hidden
+    | exception Not_found -> None)
 end
 
 type can_load_cmis =
@@ -50,17 +55,18 @@ type can_load_cmis =
 
 type pers_struct = {
   ps_name: string;
-  ps_crcs: (string * Digest.t option) list;
+  ps_crcs: (string * Digest.BLAKE128.t option) list;
   ps_filename: string;
   ps_flags: pers_flags list;
+  ps_visibility: Load_path.visibility;
 }
 
-module String = Misc.String
+module String = Misc.Stdlib.String
 
 (* If a .cmi file is missing (or invalid), we
    store it as Missing in the cache. *)
 type 'a pers_struct_info =
-  | Missing
+  | Missing of { hidden_were_allowed : bool }
   | Found of pers_struct * 'a
 
 type 'a t = {
@@ -101,7 +107,9 @@ let clear penv =
 let clear_missing {persistent_structures; _} =
   let missing_entries =
     Hashtbl.fold
-      (fun name r acc -> if r = Missing then name :: acc else acc)
+      (fun name r acc -> match r with
+       | Missing _ -> name :: acc
+       | Found _ -> acc)
       persistent_structures []
   in
   List.iter (Hashtbl.remove persistent_structures) missing_entries
@@ -115,7 +123,7 @@ let register_import_as_opaque {imported_opaque_units; _} s =
 let find_in_cache {persistent_structures; _} s =
   match Hashtbl.find persistent_structures s with
   | exception Not_found -> None
-  | Missing -> None
+  | Missing _ -> None
   | Found (_ps, pm) -> Some pm
 
 let import_crcs penv ~source crcs =
@@ -156,7 +164,7 @@ let without_cmis penv f x =
 
 let fold {persistent_structures; _} f x =
   Hashtbl.fold (fun modname pso x -> match pso with
-      | Missing -> x
+      | Missing _ -> x
       | Found (_, pm) -> f modname pm x)
     persistent_structures x
 
@@ -204,7 +212,7 @@ let save_pers_struct penv crc ps pm =
   add_import penv modname
 
 let acknowledge_pers_struct penv short_path_comps check modname pers_sig pm =
-  let { Persistent_signature.filename; cmi } = pers_sig in
+  let { Persistent_signature.filename; cmi; visibility } = pers_sig in
   let name = cmi.cmi_name in
   let crcs = cmi.cmi_crcs in
   let flags = cmi.cmi_flags in
@@ -212,6 +220,7 @@ let acknowledge_pers_struct penv short_path_comps check modname pers_sig pm =
              ps_crcs = crcs;
              ps_filename = filename;
              ps_flags = flags;
+             ps_visibility = visibility;
            } in
   if ps.ps_name <> modname then
     error (Illegal_renaming(modname, ps.ps_name, filename));
@@ -229,29 +238,35 @@ let acknowledge_pers_struct penv short_path_comps check modname pers_sig pm =
   register_pers_for_short_paths penv ps (short_path_comps ps.ps_name pm);
   ps
 
-let read_pers_struct penv val_of_pers_sig short_path_comps check modname filename =
+let read_pers_struct penv val_of_pers_sig short_path_comps check cmi =
+  let modname = Unit_info.Artifact.modname cmi in
+  let filename = Unit_info.Artifact.filename cmi in
   add_import penv modname;
   let cmi = Cmi_cache.read filename in
-  let pers_sig = { Persistent_signature.filename; cmi } in
+  let pers_sig = { Persistent_signature.filename; cmi; visibility = Visible } in
   let pm = val_of_pers_sig pers_sig in
   let ps = acknowledge_pers_struct penv short_path_comps check modname pers_sig pm in
   (ps, pm)
 
-let find_pers_struct penv val_of_pers_sig short_path_comps check name =
+let find_pers_struct ~allow_hidden penv val_of_pers_sig short_path_comps check name =
   let {persistent_structures; _} = penv in
   if name = "*predef*" then raise Not_found;
   match Hashtbl.find persistent_structures name with
-  | Found (ps, pm) -> (ps, pm)
-  | Missing -> raise Not_found
+  | Found (ps, pm) when allow_hidden || ps.ps_visibility = Load_path.Visible ->
+    (ps, pm)
+  | Found _ -> raise Not_found
+  | Missing { hidden_were_allowed = true } -> raise Not_found
+  | Missing { hidden_were_allowed = false }
   | exception Not_found ->
     match can_load_cmis penv with
     | Cannot_load_cmis _ -> raise Not_found
     | Can_load_cmis ->
         let psig =
-          match !Persistent_signature.load ~unit_name:name with
+          match !Persistent_signature.load ~allow_hidden ~unit_name:name with
           | Some psig -> psig
           | None ->
-            Hashtbl.add persistent_structures name Missing;
+            Hashtbl.replace persistent_structures name
+              (Missing { hidden_were_allowed = allow_hidden});
             raise Not_found
         in
         add_import penv name;
@@ -259,42 +274,46 @@ let find_pers_struct penv val_of_pers_sig short_path_comps check name =
         let ps = acknowledge_pers_struct penv short_path_comps check name psig pm in
         (ps, pm)
 
+module Style = Misc.Style
 (* Emits a warning if there is no valid cmi for name *)
-let check_pers_struct penv f1 f2 ~loc name =
+let check_pers_struct ~allow_hidden penv f1 f2 ~loc name =
   try
-    ignore (find_pers_struct penv f1 f2 false name)
+    ignore (find_pers_struct ~allow_hidden penv f1 f2 false name)
   with
   | Not_found ->
       let warn = Warnings.No_cmi_file(name, None) in
         Location.prerr_warning loc warn
   | Magic_numbers.Cmi.Error err ->
-      let msg = Format.asprintf "%a" Magic_numbers.Cmi.report_error err in
+      let msg = Format_doc.asprintf "%a" Magic_numbers.Cmi.report_error err in
       let warn = Warnings.No_cmi_file(name, Some msg) in
         Location.prerr_warning loc warn
   | Error err ->
       let msg =
         match err with
         | Illegal_renaming(name, ps_name, filename) ->
-            Format.asprintf
+            Format_doc.doc_printf
               " %a@ contains the compiled interface for @ \
-               %s when %s was expected"
-              Location.print_filename filename ps_name name
+               %a when %a was expected"
+              Location.Doc.quoted_filename filename
+              Style.inline_code ps_name
+              Style.inline_code name
         | Inconsistent_import _ -> assert false
         | Need_recursive_types name ->
-            Format.sprintf
-              "%s uses recursive types"
-              name
+            Format_doc.doc_printf
+              "%a uses recursive types"
+              Style.inline_code name
       in
+      let msg = Format_doc.(asprintf "%a" pp_doc) msg in
       let warn = Warnings.No_cmi_file(name, Some msg) in
         Location.prerr_warning loc warn
 
-let read penv f1 f2 modname filename =
-  snd (read_pers_struct penv f1 f2 true modname filename)
+let read penv f1 f2 a =
+  snd (read_pers_struct penv f1 f2 true a)
 
-let find penv f1 f2 name =
-  snd (find_pers_struct penv f1 f2 true name)
+let find ~allow_hidden penv f1 f2 name =
+  snd (find_pers_struct ~allow_hidden penv f1 f2 true name)
 
-let check penv f1 f2 ~loc name =
+let check ~allow_hidden penv f1 f2 ~loc name =
   let {persistent_structures; _} = penv in
   if not (Hashtbl.mem persistent_structures name) then begin
     (* PR#6843: record the weak dependency ([add_import]) regardless of
@@ -303,11 +322,11 @@ let check penv f1 f2 ~loc name =
     add_import penv name;
     if (Warnings.is_active (Warnings.No_cmi_file("", None))) then
       !add_delayed_check_forward
-        (fun () -> check_pers_struct penv f1 f2 ~loc name)
+        (fun () -> check_pers_struct ~allow_hidden penv f1 f2 ~loc name)
   end
 
 let crc_of_unit penv f1 f2 name =
-  let (ps, _pm) = find_pers_struct penv f1 f2 true name in
+  let (ps, _pm) = find_pers_struct ~allow_hidden:true penv f1 f2 true name in
   let crco =
     try
       List.assoc name ps.ps_crcs
@@ -347,7 +366,7 @@ let make_cmi penv modname sign alerts =
   }
 
 let save_cmi penv psig pm =
-  let { Persistent_signature.filename; cmi } = psig in
+  let { Persistent_signature.filename; cmi; visibility } = psig in
   Misc.try_finally (fun () ->
       let {
         cmi_name = modname;
@@ -366,34 +385,34 @@ let save_cmi penv psig pm =
           ps_crcs = (cmi.cmi_name, Some crc) :: imports;
           ps_filename = filename;
           ps_flags = flags;
+          ps_visibility = visibility
         } in
       save_pers_struct penv crc ps pm
     )
     ~exceptionally:(fun () -> remove_file filename)
 
-let report_error ppf =
-  let open Format in
+let report_error_doc ppf =
+  let open Format_doc in
   function
   | Illegal_renaming(modname, ps_name, filename) -> fprintf ppf
       "Wrong file naming: %a@ contains the compiled interface for@ \
-       %s when %s was expected"
-      Location.print_filename filename ps_name modname
+       %a when %a was expected"
+      Location.Doc.quoted_filename filename
+      Style.inline_code ps_name
+      Style.inline_code modname
   | Inconsistent_import(name, source1, source2) -> fprintf ppf
       "@[<hov>The files %a@ and %a@ \
-              make inconsistent assumptions@ over interface %s@]"
-      Location.print_filename source1 Location.print_filename source2 name
+              make inconsistent assumptions@ over interface %a@]"
+      Location.Doc.quoted_filename source1
+      Location.Doc.quoted_filename source2
+      Style.inline_code name
   | Need_recursive_types(import) ->
       fprintf ppf
-        "@[<hov>Invalid import of %s, which uses recursive types.@ %s@]"
-        import "The compilation flag -rectypes is required"
+        "@[<hov>Invalid import of %a, which uses recursive types.@ \
+         The compilation flag %a is required@]"
+        Style.inline_code import
+        Style.inline_code "-rectypes"
 
-let () =
-  Location.register_error_of_exn
-    (function
-      | Error err ->
-          Some (Location.error_of_printer_file report_error err)
-      | _ -> None
-    )
 
 (* helper for merlin *)
 
@@ -404,7 +423,17 @@ let with_cmis penv f x =
 
 let forall ~found ~missing t =
   Std.Hashtbl.forall t.persistent_structures (fun name -> function
-      | Missing -> missing name
+      | Missing _ -> missing name
       | Found (pers_struct, a) ->
         found name pers_struct.ps_filename pers_struct.ps_name a
     )
+
+let () =
+  Location.register_error_of_exn
+    (function
+      | Error err ->
+          Some (Location.error_of_printer_file report_error_doc err)
+      | _ -> None
+    )
+
+let report_error = Format_doc.compat report_error_doc

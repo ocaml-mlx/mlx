@@ -68,16 +68,16 @@ let rec env_from_summary sum subst =
           | Error `Functor -> assert false
           | Error `Not_found -> raise (Error (Module_not_found path'))
           end
-      | Env_functor_arg(Env_module(s, id, pres, desc), id')
+      | Env_not_aliasable(Env_module(s, id, pres, desc), id')
             when Ident.same id id' ->
           Env.add_module_declaration ~check:false
             id pres (Subst.module_declaration Keep subst desc)
-            ~arg:true (env_from_summary s subst)
-      | Env_functor_arg _ -> assert false
+            ~noalias:true (env_from_summary s subst)
+      | Env_not_aliasable _ -> assert false
       | Env_constraints(s, map) ->
           Path.Map.fold
             (fun path info ->
-              Env.add_local_type (Subst.type_path subst path)
+              Env.add_local_constraint (Subst.type_path subst path)
                 (Subst.type_declaration subst info))
             map (env_from_summary s subst)
       | Env_copy_types s ->
@@ -101,15 +101,19 @@ let env_of_only_summary env =
 
 (* Error report *)
 
-open Format
+open Format_doc
+module Style = Misc.Style
 
-let report_error ppf = function
+let report_error_doc ppf = function
   | Module_not_found p ->
-      fprintf ppf "@[Cannot find module %a@].@." Printtyp.path p
+      fprintf ppf "@[Cannot find module %a@].@."
+        (Style.as_inline_code Printtyp.Doc.path) p
 
 let () =
   Location.register_error_of_exn
     (function
-      | Error err -> Some (Location.error_of_printer_file report_error err)
+      | Error err -> Some (Location.error_of_printer_file report_error_doc err)
       | _ -> None
     )
+
+let report_error = Format_doc.compat report_error_doc
