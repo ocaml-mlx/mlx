@@ -8,7 +8,7 @@ doc: "https://url/to/documentation"
 bug-reports: "https://github.com/ocaml-mlx/mlx/issues"
 depends: [
   "ocaml" {>= "4.14.0"}
-  "ppxlib" {>= "0.34.0"}
+  "ppxlib" {>= "0.38.0"}
   "dune" {>= "3.16"}
   "menhir" {= "20230608" & with-dev-setup}
   "ocamlformat" {with-dev-setup}
