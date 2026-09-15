@@ -8,7 +8,7 @@ install-dev:
 
 .PHONY: create-switch
 create-switch:
-	opam switch create . 5.4.0 --no-install -y
+	opam switch create . 5.5.0 --no-install -y
 
 .PHONY: init
 init: create-switch install install-dev

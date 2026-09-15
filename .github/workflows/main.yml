@@ -24,6 +24,7 @@ jobs:
         ocaml-compiler:
           - "4.14"
           - "5.4"
+          - "5.5"
 
     runs-on: ${{ matrix.os }}
 
@@ -45,7 +46,7 @@ jobs:
       - run: opam exec -- dune build -p mlx,ocamlmerlin-mlx
 
         # TODO: pass --with-dev-setup to opam instead? (requires opam 2.2, I think)
-      - run: opam install menhir.20201216 menhirLib.20201216 menhirSdk.20201216 ocamlformat
+      - run: opam install menhir.20230608 menhirLib.20230608 menhirSdk.20230608 ocamlformat
 
       - run: opam exec -- dune runtest
 
