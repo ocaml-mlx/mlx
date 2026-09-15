@@ -11,6 +11,13 @@
  (libraries
   mlx_ocaml_preprocess
   mlx_kernel
+  mlx_conv
   merlin-lib.extend
   merlin-lib.kernel
   ppxlib))
+
+(library
+ (name mlx_conv)
+ (package ocamlmerlin-mlx)
+ (modules mlx_conv)
+ (libraries mlx_ocaml_parsing merlin-lib.ocaml_parsing ppxlib))
