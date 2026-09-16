@@ -372,8 +372,7 @@ Regression guards: the spaced form, the open object type `< .. >`, and a JSX ele
   MERLIN
   let _ = m () ~children:[] [@JSX]
 
-Children spread syntax (Reason-style `...expr` as the sole child) passes the
-expression directly as `~children`, without wrapping it in a list:
+Children spread syntax (`...expr` as the sole child) passes the expression directly as `~children`:
 
   $ echo 'let _ = <div> ...children </div>' | ./mlx
   BATCH
@@ -390,10 +389,7 @@ expression directly as `~children`, without wrapping it in a list:
   $ echo 'let _ = <div> ...children </div>' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
   let _ = div () ~children [@JSX]
 
-The `>...` spelling (no space between the closing `>` of the start tag and
-the `...`) also works: the lexer's generic `>`-operator rule backtracks to
-just the plain `GREATER` token whenever the operator lexeme would start with
-`>...`, letting `...` lex separately as `DOTDOTDOT`:
+The `>...` spelling (no space before the `...`) also works:
 
   $ echo 'let _ = <div>...children</div>' | ./mlx
   BATCH
@@ -410,8 +406,7 @@ just the plain `GREATER` token whenever the operator lexeme would start with
   $ echo 'let _ = <div>...children</div>' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
   let _ = div () ~children [@JSX]
 
-Mixed spacing around the spread (space before but not after the `...`, or
-vice versa) works the same way:
+Mixed spacing around the spread works the same way:
 
   $ echo 'let _ = <div>...children </div>' | ./mlx
   BATCH
@@ -425,9 +420,7 @@ vice versa) works the same way:
   MERLIN
   let _ = div () ~children [@JSX]
 
-An expression variable that isn't literally named `children` is spelled out
-explicitly as `~children:x`, confirming an operator-greedy lexer would not
-have swallowed the `x` into a bogus `>...x` operator lexeme:
+A non-`children` variable is spelled out explicitly as `~children:x`:
 
   $ echo 'let _ = <div>...x</div>' | ./mlx
   BATCH
@@ -486,8 +479,7 @@ Other operators starting with `>` (but not `>...`) are unaffected:
   let ( >>= ) a f = f a in
   (x >>= y) [@merlin.loc]
 
-Mixing a spread child with other children is a syntax error, since the
-grammar only accepts `...expr` as the sole, entire child list:
+Mixing a spread child with other children is a syntax error:
 
   $ echo 'let _ = <div> a ...b </div>' | ./mlx
   BATCH

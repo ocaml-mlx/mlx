@@ -821,10 +821,7 @@ rule token state = parse
             { return (keyword_or state op
                        (INFIXOP0 op)) }
   | ">" symbolchar_no_less * as op
-            { (* Operators starting with ">..." are reserved for JSX
-                 children spread (`<Foo> ...expr </Foo>`), so the dialect
-                 disallows them: backtrack to just after the "greater" and
-                 let "..." lex separately as DOTDOTDOT. *)
+            { (* ">..." is reserved for JSX children spread: back up so "..." lexes separately as DOTDOTDOT. *)
               if String.length op >= 4
                  && op.[1] = '.' && op.[2] = '.' && op.[3] = '.'
               then begin
