@@ -704,13 +704,13 @@ rule token = parse
   | ">"  { GREATER }
   | "/>" { SLASHGREATER }
   | "}"  { RBRACE }
-  | ">}"
-      { (* Gives back ">" so "}" lexes separately as RBRACE; `{< ... >}` still parses since the grammar now closes it with GREATER RBRACE. *)
+  | ">" (blank | newline)* "}"
+      { (* Keep the closer distinct from infix ">", but leave "}" for the enclosing record, object override, or indexing expression. *)
         lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + 1;
         let lex_start_p = lexbuf.lex_start_p in
         lexbuf.lex_curr_p <-
           { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
-        GREATER
+        GREATERRBRACE
       }
   | ">|]"
       { (* Gives back ">" so "|]" lexes separately as BARRBRACKET, closing a JSX element inside an array literal. *)
