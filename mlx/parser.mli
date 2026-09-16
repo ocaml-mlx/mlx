@@ -109,6 +109,7 @@ type token =
   | EFFECT
   | DOWNTO
   | DOTOP of (string)
+  | DOTDOTDOT
   | DOTDOT
   | DOT
   | DONE

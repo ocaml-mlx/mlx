@@ -371,3 +371,140 @@ Regression guards: the spaced form, the open object type `< .. >`, and a JSX ele
   let _ = m () ~children:[] [@JSX]
   MERLIN
   let _ = m () ~children:[] [@JSX]
+
+Children spread syntax (Reason-style `...expr` as the sole child) passes the
+expression directly as `~children`, without wrapping it in a list:
+
+  $ echo 'let _ = <div> ...children </div>' | ./mlx
+  BATCH
+  let _ = div () ~children [@JSX]
+  MERLIN
+  let _ = div () ~children [@JSX]
+
+  $ echo 'let _ = <Foo> ...(List.map f xs) </Foo>' | ./mlx
+  BATCH
+  let _ = Foo.createElement () ~children:(List.map f xs) [@JSX]
+  MERLIN
+  let _ = Foo.createElement () ~children:(List.map f xs) [@JSX]
+
+  $ echo 'let _ = <div> ...children </div>' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ = div () ~children [@JSX]
+
+The `>...` spelling (no space between the closing `>` of the start tag and
+the `...`) also works: the lexer's generic `>`-operator rule backtracks to
+just the plain `GREATER` token whenever the operator lexeme would start with
+`>...`, letting `...` lex separately as `DOTDOTDOT`:
+
+  $ echo 'let _ = <div>...children</div>' | ./mlx
+  BATCH
+  let _ = div () ~children [@JSX]
+  MERLIN
+  let _ = div () ~children [@JSX]
+
+  $ echo 'let _ = <Foo>...(List.map f xs)</Foo>' | ./mlx
+  BATCH
+  let _ = Foo.createElement () ~children:(List.map f xs) [@JSX]
+  MERLIN
+  let _ = Foo.createElement () ~children:(List.map f xs) [@JSX]
+
+  $ echo 'let _ = <div>...children</div>' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ = div () ~children [@JSX]
+
+Mixed spacing around the spread (space before but not after the `...`, or
+vice versa) works the same way:
+
+  $ echo 'let _ = <div>...children </div>' | ./mlx
+  BATCH
+  let _ = div () ~children [@JSX]
+  MERLIN
+  let _ = div () ~children [@JSX]
+
+  $ echo 'let _ = <div> ...children</div>' | ./mlx
+  BATCH
+  let _ = div () ~children [@JSX]
+  MERLIN
+  let _ = div () ~children [@JSX]
+
+An expression variable that isn't literally named `children` is spelled out
+explicitly as `~children:x`, confirming an operator-greedy lexer would not
+have swallowed the `x` into a bogus `>...x` operator lexeme:
+
+  $ echo 'let _ = <div>...x</div>' | ./mlx
+  BATCH
+  let _ = div () ~children:x [@JSX]
+  MERLIN
+  let _ = div () ~children:x [@JSX]
+
+Because `>...` is reserved for the spread, infix operators whose lexeme
+starts with `>...` are rejected by the dialect:
+
+  $ echo 'let (>...) a b = a' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 6-9:
+  Error: Syntax error: ) expected
+  File "*stdin*", line 1, characters 4-5:
+    This ( might be unmatched
+  
+  MERLIN
+  File "*stdin*", line 1, characters 6-9
+  Error: Syntax error after unclosed (, expecting `)'
+  
+
+
+
+  $ echo 'let _ = 1 >... 2' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 11-14:
+  Error: Syntax error
+  
+  MERLIN
+  File "*stdin*", line 1, characters 11-14
+  Error: Syntax error, expecting fun_expr
+  
+
+
+
+Other operators starting with `>` (but not `>...`) are unaffected:
+
+  $ echo 'let (>.) a b = a' | ./mlx
+  BATCH
+  let ( >. ) a b = a
+  MERLIN
+  let ( >. ) a b = a
+
+  $ echo 'let _ = x >. y' | ./mlx
+  BATCH
+  let _ = x >. y
+  MERLIN
+  let _ = x >. y
+
+  $ echo 'let (>>=) a f = f a in x >>= y' | ./mlx
+  BATCH
+  let ( >>= ) a f = f a in
+  x >>= y
+  MERLIN
+  let ( >>= ) a f = f a in
+  (x >>= y) [@merlin.loc]
+
+Mixing a spread child with other children is a syntax error, since the
+grammar only accepts `...expr` as the sole, entire child list:
+
+  $ echo 'let _ = <div> a ...b </div>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 16-19:
+  Error: Syntax error
+  
+  MERLIN
+  File "*stdin*", line 1, characters 16-19
+  Error: Syntax error, expecting `JSX_LIDENT_E'
+  
+
+  $ echo 'let _ = <div> ...a b </div>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 19-20:
+  Error: Syntax error
+  
+  MERLIN
+  File "*stdin*", line 2, characters 0-0
+  Error: Syntax error, expecting fun_expr
+  
