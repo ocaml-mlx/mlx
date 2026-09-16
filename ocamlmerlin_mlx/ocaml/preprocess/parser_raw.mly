@@ -845,6 +845,8 @@ let merloc startpos ?endpos x =
 %token FUNCTOR [@symbol "functor"]
 %token GREATER [@symbol ">"]
 %token SLASHGREATER [@symbol "/>"]
+%token GREATER_BEFORE_RBRACE [@symbol "> (before })"]
+(* Kept for the vendored Merlin error explainer; the lexer does not emit it. *)
 %token GREATERRBRACE [@symbol ">}"]
 %token GREATERRBRACKET [@symbol ">]"]
 %token IF [@symbol "if"]
@@ -2722,19 +2724,19 @@ let_pattern [@recovery default_pattern ()]:
       { Pexp_apply($1, [Nolabel,$2]) }
   | op(BANG {"!"}) simple_expr
       { Pexp_apply($1, [Nolabel,$2]) }
-  | LBRACELESS object_expr_content GREATERRBRACE RBRACE
+  | LBRACELESS object_expr_content GREATER_BEFORE_RBRACE RBRACE
       { Pexp_override $2 }
   (*
   | LBRACELESS object_expr_content error
       { unclosed "{<" $loc($1) ">}" $loc($3) }
   *)
-  | LBRACELESS GREATERRBRACE RBRACE
+  | LBRACELESS GREATER_BEFORE_RBRACE RBRACE
       { Pexp_override [] }
   | simple_expr DOT mkrhs(label_longident)
       { Pexp_field($1, $3) }
   | od=open_dot_declaration DOT LPAREN seq_expr RPAREN
       { Pexp_struct_item(Str.open_ od, $4) }
-  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATERRBRACE RBRACE
+  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATER_BEFORE_RBRACE RBRACE
       { (* TODO: review the location of Pexp_override *)
         Pexp_struct_item(Str.open_ od, mkexp ~loc:$sloc (Pexp_override $4)) }
   (*
@@ -2825,10 +2827,10 @@ let_pattern [@recovery default_pattern ()]:
       { unclosed "(" $loc($3) ")" $loc($8) }
   *)
 ;
-(* GREATERRBRACE is a closing ">" before "}"; the lexer leaves the brace for its enclosing production. *)
+(* GREATER_BEFORE_RBRACE consumes only ">"; the brace belongs to the enclosing production. *)
 %inline closing_greater:
   | GREATER { () }
-  | GREATERRBRACE { () }
+  | GREATER_BEFORE_RBRACE { () }
 ;
 jsx_element:
     tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop) SLASHGREATER {

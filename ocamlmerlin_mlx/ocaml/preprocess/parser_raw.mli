@@ -90,6 +90,7 @@ type token =
   | IF
   | HASHOP of (string)
   | HASH
+  | GREATER_BEFORE_RBRACE
   | GREATERRBRACKET
   | GREATERRBRACE
   | GREATER
@@ -272,6 +273,7 @@ module MenhirInterpreter : sig
     | T_IF : unit terminal
     | T_HASHOP : (string) terminal
     | T_HASH : unit terminal
+    | T_GREATER_BEFORE_RBRACE : unit terminal
     | T_GREATERRBRACKET : unit terminal
     | T_GREATERRBRACE : unit terminal
     | T_GREATER : unit terminal

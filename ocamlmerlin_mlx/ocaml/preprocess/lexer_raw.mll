@@ -787,7 +787,7 @@ rule token state = parse
         let lex_start_p = lexbuf.lex_start_p in
         lexbuf.lex_curr_p <-
           { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
-        return GREATERRBRACE
+        return GREATER_BEFORE_RBRACE
       }
   | ">|]"
       { (* Gives back ">" so "|]" lexes separately as BARRBRACKET, closing a JSX element inside an array literal. *)

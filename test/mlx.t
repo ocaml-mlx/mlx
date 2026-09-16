@@ -233,7 +233,7 @@ A JSX element closing directly before "}" inside a record/braced expression must
   $ echo 'let _ = {x = <div>a</div>}' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
   let _ = { x = div () ~children:[ a ] [@JSX] }
 
-Object override still works, both spaced and unspaced, with a distinct GREATERRBRACE followed by RBRACE:
+Object override still works, both spaced and unspaced, with a distinct GREATER_BEFORE_RBRACE followed by RBRACE:
 
   $ echo 'let _ = object val x = 1 method m = {< x = 2 >} end' | ./mlx
   BATCH

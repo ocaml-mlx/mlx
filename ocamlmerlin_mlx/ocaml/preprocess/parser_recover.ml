@@ -106,6 +106,7 @@ module Default = struct
     | MenhirInterpreter.T MenhirInterpreter.T_IF -> ()
     | MenhirInterpreter.T MenhirInterpreter.T_HASHOP -> ""
     | MenhirInterpreter.T MenhirInterpreter.T_HASH -> ()
+    | MenhirInterpreter.T MenhirInterpreter.T_GREATER_BEFORE_RBRACE -> ()
     | MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACKET -> ()
     | MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACE -> ()
     | MenhirInterpreter.T MenhirInterpreter.T_GREATER -> ()
@@ -472,6 +473,7 @@ let can_pop (type a) : a terminal -> bool = function
   | T_IN -> true
   | T_IF -> true
   | T_HASH -> true
+  | T_GREATER_BEFORE_RBRACE -> true
   | T_GREATERRBRACKET -> true
   | T_GREATERRBRACE -> true
   | T_GREATER -> true
@@ -1514,7 +1516,7 @@ let recover =
   let r997 = S (T T_LIDENT) :: r609 in
   let r998 = [R 815] in
   let r999 = S (T T_RBRACE) :: r998 in
-  let r1000 = S (T T_GREATERRBRACE) :: r999 in
+  let r1000 = S (T T_GREATER_BEFORE_RBRACE) :: r999 in
   let r1001 = [R 822] in
   let r1002 = S (T T_RBRACE) :: r1001 in
   let r1003 = [R 644] in
@@ -2546,8 +2548,8 @@ let recover =
   | 378 -> One (S (T T_INT) :: r332)
   | 962 -> One (S (T T_IN) :: r771)
   | 1890 -> One (S (T T_IN) :: r1367)
-  | 738 -> One (S (T T_GREATERRBRACE) :: r607)
-  | 1417 -> One (S (T T_GREATERRBRACE) :: r1010)
+  | 738 -> One (S (T T_GREATER_BEFORE_RBRACE) :: r607)
+  | 1417 -> One (S (T T_GREATER_BEFORE_RBRACE) :: r1010)
   | 199 -> One (S (T T_GREATER) :: r207)
   | 261 -> One (S (T T_GREATER) :: r285)
   | 2058 -> One (S (T T_GREATER) :: r1414)
