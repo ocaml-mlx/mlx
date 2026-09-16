@@ -345,3 +345,56 @@ Signature conversion:
   
     val x : t option
   end
+
+Object types written without a space after "<" (e.g. `<m : int>`) used to
+fail with "expecting JSX_LIDENT_E", because the lexer fuses "<" with a
+following lowercase identifier into a single JSX_LIDENT token (the same
+token used for JSX element tags), and the type grammar only accepted a
+plain "<" there. The grammar now also accepts JSX_LIDENT as the fused "<"
+plus first method name in an object type:
+
+  $ echo 'let f (x : <m : int>) = x#m' | ./mlx
+  BATCH
+  let f (x : < m : int >) = x#m
+  MERLIN
+  let f (x : < m : int >) = x#m
+
+  $ echo 'let f (x : <m : int; n : float>) = x#m' | ./mlx
+  BATCH
+  let f (x : < m : int ; n : float >) = x#m
+  MERLIN
+  let f (x : < m : int ; n : float >) = x#m
+
+  $ echo "let f (x : <m : 'a. 'a -> 'a>) = x" | ./mlx
+  BATCH
+  let f (x : < m : 'a. 'a -> 'a >) = x
+  MERLIN
+  let f (x : < m : 'a. 'a -> 'a >) = x
+
+  $ echo 'let f (x : <m : int>) = x#m' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let f (x : < m : int >) = x#m
+
+  $ printf 'val f : <m : int> -> unit\n' | ./mlx_merlin.exe -intf | ocamlformat - --intf --enable-outside-detected-project
+  val f : < m : int > -> unit
+
+Regression guards: the spaced form must keep working, as must the open
+object type `< .. >`, and an expression-level JSX element whose tag could
+also be read as a method name must still be parsed as an element:
+
+  $ echo 'let f (x : < m : int >) = x#m' | ./mlx
+  BATCH
+  let f (x : < m : int >) = x#m
+  MERLIN
+  let f (x : < m : int >) = x#m
+
+  $ echo 'let f (x : < .. >) = x' | ./mlx
+  BATCH
+  let f (x : < .. >) = x
+  MERLIN
+  let f (x : < .. >) = x
+
+  $ echo 'let _ = <m />' | ./mlx
+  BATCH
+  let _ = m () ~children:[] [@JSX]
+  MERLIN
+  let _ = m () ~children:[] [@JSX]

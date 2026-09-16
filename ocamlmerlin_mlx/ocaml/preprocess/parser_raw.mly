@@ -4051,6 +4051,13 @@ object_type:
         { let (f, c) = meth_list in Ptyp_object (f, c) }
     | LESS GREATER
         { Ptyp_object ([], Closed) }
+    | meth_list = meth_list_jsx GREATER
+        (* [<lident ...>] : the lexer fuses "<" with the first method name
+           into a single JSX_LIDENT token (as it does for JSX element tags),
+           so an unspaced object type such as [<m : int>] would otherwise
+           fail to parse. This mirrors [meth_list] above for the case where
+           the first field's label is glued to the opening ["<"]. *)
+        { let (f, c) = meth_list in Ptyp_object (f, c) }
   )
   { $1 }
 ;
@@ -4165,6 +4172,19 @@ meth_list:
   | DOTDOT
       { [], Open }
 ;
+(* Like [meth_list], but for the case where the opening ["<"] of the
+   object type is fused with the first method's name into a single
+   JSX_LIDENT token (see [object_type] above). Only the first field needs
+   a dedicated production: once its label has been consumed, the rest of
+   the method list is unambiguous and reuses [meth_list] as-is. *)
+meth_list_jsx:
+    head = field_semi_jsx tail = meth_list
+      { let (f, c) = tail in (head :: f, c) }
+  | head = field_semi_jsx
+      { [head], Closed }
+  | head = field_jsx
+      { [head], Closed }
+;
 %inline field:
   mkrhs(label) COLON poly_type_no_attr attributes
     { let info = symbol_info $endpos in
@@ -4181,6 +4201,29 @@ meth_list:
       in
       let attrs = add_info_attrs info ($4 @ $6) in
       Of.tag ~loc:(make_loc $sloc) ~attrs $1 $3 }
+;
+
+(* [name] here is a JSX_LIDENT, i.e. the method's label without the leading
+   ["<"] (the lexer strips it, see the JSX_LIDENT token rule). We keep its
+   own token location for the label, matching how JSX_LIDENT is located
+   elsewhere in this grammar (see [jsx_longident]) rather than trying to
+   shift the start position past the fused ["<"]. *)
+%inline field_jsx:
+  name = JSX_LIDENT COLON poly_type_no_attr attributes
+    { let info = symbol_info $endpos in
+      let attrs = add_info_attrs info $4 in
+      Of.tag ~loc:(make_loc $sloc) ~attrs (mkrhs name $loc(name)) $3 }
+;
+
+%inline field_semi_jsx:
+  name = JSX_LIDENT COLON poly_type_no_attr attributes SEMI attributes
+    { let info =
+        match rhs_info $endpos($4) with
+        | Some _ as info_before_semi -> info_before_semi
+        | None -> symbol_info $endpos
+      in
+      let attrs = add_info_attrs info ($4 @ $6) in
+      Of.tag ~loc:(make_loc $sloc) ~attrs (mkrhs name $loc(name)) $3 }
 ;
 
 %inline inherit_field:
