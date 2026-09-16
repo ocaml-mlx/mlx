@@ -159,6 +159,63 @@ We have a lexer hack to parse [<element and [<Element as JSX:
   MERLIN
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
 
+The `>`-operator rule must give back the ">" when a JSX element closes
+directly before "|]" inside an array literal (`[|<div>...</div>|]`), so that
+"|]" still lexes as BARRBRACKET instead of being swallowed into an `>|`
+operator token:
+
+  $ echo 'let _ = [|<div>aa</div>|]' | ./mlx
+  BATCH
+  let _ = [| (div () ~children:[ aa ] [@JSX]) |]
+  MERLIN
+  let _ = [| (div () ~children:[ aa ] [@JSX]) |]
+
+  $ echo 'let _ = [|<div>aa</div>; <div>bb</div>|]' | ./mlx
+  BATCH
+  let _ = [| (div () ~children:[ aa ] [@JSX]); (div () ~children:[ bb ] [@JSX]) |]
+  MERLIN
+  let _ = [| (div () ~children:[ aa ] [@JSX]); (div () ~children:[ bb ] [@JSX]) |]
+
+  $ echo 'let _ = [<div>aa</div>]' | ./mlx
+  BATCH
+  let _ = [ (div () ~children:[ aa ] [@JSX]) ]
+  MERLIN
+  let _ = [ (div () ~children:[ aa ] [@JSX]) ]
+
+  $ echo 'let _ = [|<div>aa</div>|]' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ = [| (div () ~children:[ aa ] [@JSX]) |]
+
+Operator sanity: only the exact sequence ">|]" is special-cased, so ">|"
+still lexes as an ordinary operator everywhere else, including right before
+a closing "|]" that isn't immediately preceded by ">":
+
+  $ echo 'let (>|) a b = a
+  > let _ = 1>|2' | ./mlx
+  BATCH
+  let ( >| ) a b = a
+  let _ = 1 >| 2
+  MERLIN
+  let ( >| ) a b = a
+  let _ = 1 >| 2
+
+  $ echo 'let (>|) a b = a
+  > let _ = [|1>|2|]' | ./mlx
+  BATCH
+  let ( >| ) a b = a
+  let _ = [| 1 >| 2 |]
+  MERLIN
+  let ( >| ) a b = a
+  let _ = [| 1 >| 2 |]
+
+  $ echo 'let (>|=) a b = a in 1 >|= 2' | ./mlx
+  BATCH
+  let ( >|= ) a b = a in
+  1 >|= 2
+  MERLIN
+  let ( >|= ) a b = a in
+  (1 >|= 2) [@merlin.loc]
+
+
 Conversion to the host merlin's AST — exercises the Obj.magic + ppxlib
 migration bridge (Mlx_conv) that the reader uses to hand its parsetree to
 merlin; a shape mismatch here segfaults or garbles the output. Constants are

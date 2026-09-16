@@ -704,6 +704,18 @@ rule token = parse
   | "/>" { SLASHGREATER }
   | "}"  { RBRACE }
   | ">}" { GREATERRBRACE }
+  | ">|]"
+      { (* `>|]` closes a JSX element directly inside an array literal
+           (`[|<div/>|]`): give the ">" back to close the tag and let "|]"
+           lex separately as BARRBRACKET. An operator like ">|" can never be
+           legally followed by "]" without parentheses, so nothing legal is
+           stolen from the operator grammar. *)
+        lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + 1;
+        let lex_start_p = lexbuf.lex_start_p in
+        lexbuf.lex_curr_p <-
+          { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
+        GREATER
+      }
   | "[@" { LBRACKETAT }
   | "[@@"  { LBRACKETATAT }
   | "[@@@" { LBRACKETATATAT }
