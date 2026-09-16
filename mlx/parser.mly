@@ -2615,17 +2615,17 @@ simple_expr:
       { Pexp_apply($1, [Nolabel,$2]) }
   | op(BANG {"!"}) simple_expr
       { Pexp_apply($1, [Nolabel,$2]) }
-  | LBRACELESS object_expr_content GREATER_BEFORE_RBRACE RBRACE
+  | LBRACELESS object_expr_content override_close
       { Pexp_override $2 }
   | LBRACELESS object_expr_content error
       { unclosed "{<" $loc($1) ">}" $loc($3) }
-  | LBRACELESS GREATER_BEFORE_RBRACE RBRACE
+  | LBRACELESS override_close
       { Pexp_override [] }
   | simple_expr DOT mkrhs(label_longident)
       { Pexp_field($1, $3) }
   | od=open_dot_declaration DOT LPAREN seq_expr RPAREN
       { Pexp_struct_item(Str.open_ od, $4) }
-  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATER_BEFORE_RBRACE RBRACE
+  | od=open_dot_declaration DOT LBRACELESS object_expr_content override_close
       { (* TODO: review the location of Pexp_override *)
         Pexp_struct_item(Str.open_ od, mkexp ~loc:$sloc (Pexp_override $4)) }
   | mod_longident DOT LBRACELESS object_expr_content error
@@ -2694,6 +2694,9 @@ simple_expr:
   | mod_longident DOT
     LPAREN MODULE ext_attributes module_expr COLON error
       { unclosed "(" $loc($3) ")" $loc($8) }
+;
+%inline override_close:
+  GREATER_BEFORE_RBRACE RBRACE { () }
 ;
 (* GREATER_BEFORE_RBRACE consumes only ">"; the brace belongs to the enclosing production. *)
 %inline closing_greater:
