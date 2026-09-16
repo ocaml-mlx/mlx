@@ -159,10 +159,7 @@ We have a lexer hack to parse [<element and [<Element as JSX:
   MERLIN
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
 
-The `>`-operator rule must give back the ">" when a JSX element closes
-directly before "|]" inside an array literal (`[|<div>...</div>|]`), so that
-"|]" still lexes as BARRBRACKET instead of being swallowed into an `>|`
-operator token:
+A JSX element closing directly before "|]" inside an array literal must give back the ">" so "|]" still lexes as BARRBRACKET:
 
   $ echo 'let _ = [|<div>aa</div>|]' | ./mlx
   BATCH
@@ -185,9 +182,7 @@ operator token:
   $ echo 'let _ = [|<div>aa</div>|]' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
   let _ = [| (div () ~children:[ aa ] [@JSX]) |]
 
-Operator sanity: only the exact sequence ">|]" is special-cased, so ">|"
-still lexes as an ordinary operator everywhere else, including right before
-a closing "|]" that isn't immediately preceded by ">":
+Operator sanity: only the exact sequence ">|]" is special-cased, so ">|" still lexes as an ordinary operator everywhere else:
 
   $ echo 'let (>|) a b = a
   > let _ = 1>|2' | ./mlx
@@ -215,10 +210,7 @@ a closing "|]" that isn't immediately preceded by ">":
   let ( >|= ) a b = a in
   (1 >|= 2) [@merlin.loc]
 
-The `>`-operator rule must also give back the ">" when a JSX element closes
-directly before "}" inside a record/braced expression (`{x = <div>...</div>}`),
-so that "}" still lexes as RBRACE instead of being swallowed into the
-GREATERRBRACE object-override closer:
+A JSX element closing directly before "}" inside a record/braced expression must likewise give back the ">" so "}" still lexes as RBRACE:
 
   $ echo 'let _ = {x = <div>a</div>}' | ./mlx
   BATCH
@@ -241,9 +233,7 @@ GREATERRBRACE object-override closer:
   $ echo 'let _ = {x = <div>a</div>}' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
   let _ = { x = div () ~children:[ a ] [@JSX] }
 
-Object override still works, both spaced and unspaced, since the grammar now
-closes `{< ... >}` with GREATER RBRACE instead of the single GREATERRBRACE
-token:
+Object override still works, both spaced and unspaced, since the grammar now closes `{< ... >}` with GREATER RBRACE instead of GREATERRBRACE:
 
   $ echo 'let _ = object val x = 1 method m = {< x = 2 >} end' | ./mlx
   BATCH
@@ -273,11 +263,7 @@ token:
       method m = {<x = 2>}
     end
 
-Because the grammar now closes the override with two separate tokens
-(GREATER RBRACE) instead of one, `{< x = 2 > }` (with a space before the
-closing brace) is now newly accepted as well; that was rejected in stock
-OCaml, where ">}" only ever lexed as one token. This is a harmless
-relaxation of the grammar, pinned here:
+Harmless relaxation pinned here: with GREATER RBRACE as two tokens, `{< x = 2 > }` (space before the brace) is now accepted, unlike stock OCaml:
 
   $ echo 'let _ = object val x = 1 method m = {< x = 2 > } end' | ./mlx
   BATCH
@@ -293,13 +279,7 @@ relaxation of the grammar, pinned here:
       method m = {<x = 2>}
     end
 
-Known regression: splitting ">}" into GREATER RBRACE means the final GREATER
-of a `>}` sequence is grammatically indistinguishable from an infix ">"
-comparison, so when an override field's value itself ends in an unparenthesized
-"> expr" immediately before the closing brace, the parser now greedily shifts
-that GREATER as a continuing comparison instead of reducing to close the
-override, and fails where stock OCaml (and our own GREATERRBRACE token before
-this change) would accept it. This requires parentheses as a workaround:
+Known regression: an override field value ending in an unparenthesized "> expr" before the closing brace now fails, since the final GREATER is indistinguishable from a continuing comparison; parenthesize as a workaround:
 
   $ echo 'let _ = object val x = true method m = {< x = (1 > 2) >} end' | ./mlx
   BATCH
@@ -346,12 +326,7 @@ Signature conversion:
     val x : t option
   end
 
-Object types written without a space after "<" (e.g. `<m : int>`) used to
-fail with "expecting JSX_LIDENT_E", because the lexer fuses "<" with a
-following lowercase identifier into a single JSX_LIDENT token (the same
-token used for JSX element tags), and the type grammar only accepted a
-plain "<" there. The grammar now also accepts JSX_LIDENT as the fused "<"
-plus first method name in an object type:
+Object types written without a space after "<" (e.g. `<m : int>`) used to fail because the lexer fuses "<" with the following identifier into JSX_LIDENT; the grammar now accepts that too:
 
   $ echo 'let f (x : <m : int>) = x#m' | ./mlx
   BATCH
@@ -377,9 +352,7 @@ plus first method name in an object type:
   $ printf 'val f : <m : int> -> unit\n' | ./mlx_merlin.exe -intf | ocamlformat - --intf --enable-outside-detected-project
   val f : < m : int > -> unit
 
-Regression guards: the spaced form must keep working, as must the open
-object type `< .. >`, and an expression-level JSX element whose tag could
-also be read as a method name must still be parsed as an element:
+Regression guards: the spaced form, the open object type `< .. >`, and a JSX element whose tag looks like a method name must all still work:
 
   $ echo 'let f (x : < m : int >) = x#m' | ./mlx
   BATCH
