@@ -2721,19 +2721,19 @@ let_pattern [@recovery default_pattern ()]:
       { Pexp_apply($1, [Nolabel,$2]) }
   | op(BANG {"!"}) simple_expr
       { Pexp_apply($1, [Nolabel,$2]) }
-  | LBRACELESS object_expr_content GREATERRBRACE
+  | LBRACELESS object_expr_content GREATER RBRACE
       { Pexp_override $2 }
   (*
   | LBRACELESS object_expr_content error
       { unclosed "{<" $loc($1) ">}" $loc($3) }
   *)
-  | LBRACELESS GREATERRBRACE
+  | LBRACELESS GREATER RBRACE
       { Pexp_override [] }
   | simple_expr DOT mkrhs(label_longident)
       { Pexp_field($1, $3) }
   | od=open_dot_declaration DOT LPAREN seq_expr RPAREN
       { Pexp_struct_item(Str.open_ od, $4) }
-  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATERRBRACE
+  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATER RBRACE
       { (* TODO: review the location of Pexp_override *)
         Pexp_struct_item(Str.open_ od, mkexp ~loc:$sloc (Pexp_override $4)) }
   (*

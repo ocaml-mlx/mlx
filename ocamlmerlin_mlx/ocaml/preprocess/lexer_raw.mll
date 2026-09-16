@@ -780,7 +780,18 @@ rule token state = parse
   | ">"  { return GREATER }
   | "/>" { return SLASHGREATER }
   | "}"  { return RBRACE }
-  | ">}" { return GREATERRBRACE }
+  | ">}"
+      { (* `>}` closes a JSX element directly inside a record/braced
+           expression (`{x = <div/>}`): give the ">" back to close the tag
+           and let "}" lex separately as RBRACE. Object override
+           (`{< ... >}`) still parses because the grammar now closes it
+           with GREATER RBRACE instead of the single GREATERRBRACE token. *)
+        lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + 1;
+        let lex_start_p = lexbuf.lex_start_p in
+        lexbuf.lex_curr_p <-
+          { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
+        return GREATER
+      }
   | ">|]"
       { (* `>|]` closes a JSX element directly inside an array literal
            (`[|<div/>|]`): give the ">" back to close the tag and let "|]"

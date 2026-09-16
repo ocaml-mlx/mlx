@@ -215,6 +215,105 @@ a closing "|]" that isn't immediately preceded by ">":
   let ( >|= ) a b = a in
   (1 >|= 2) [@merlin.loc]
 
+The `>`-operator rule must also give back the ">" when a JSX element closes
+directly before "}" inside a record/braced expression (`{x = <div>...</div>}`),
+so that "}" still lexes as RBRACE instead of being swallowed into the
+GREATERRBRACE object-override closer:
+
+  $ echo 'let _ = {x = <div>a</div>}' | ./mlx
+  BATCH
+  let _ = { x = div () ~children:[ a ] [@JSX] }
+  MERLIN
+  let _ = { x = div () ~children:[ a ] [@JSX] }
+
+  $ echo 'let _ = {x = <div>a</div>; y = 1}' | ./mlx
+  BATCH
+  let _ = { x = div () ~children:[ a ] [@JSX]; y = 1 }
+  MERLIN
+  let _ = { x = div () ~children:[ a ] [@JSX]; y = 1 }
+
+  $ echo 'let r = {r with x = <div>a</div>}' | ./mlx
+  BATCH
+  let r = { r with x = div () ~children:[ a ] [@JSX] }
+  MERLIN
+  let r = { r with x = div () ~children:[ a ] [@JSX] }
+
+  $ echo 'let _ = {x = <div>a</div>}' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ = { x = div () ~children:[ a ] [@JSX] }
+
+Object override still works, both spaced and unspaced, since the grammar now
+closes `{< ... >}` with GREATER RBRACE instead of the single GREATERRBRACE
+token:
+
+  $ echo 'let _ = object val x = 1 method m = {< x = 2 >} end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+
+  $ echo 'let _ = object val x = 1 method m = {<x = 2>} end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+
+Because the grammar now closes the override with two separate tokens
+(GREATER RBRACE) instead of one, `{< x = 2 > }` (with a space before the
+closing brace) is now newly accepted as well; that was rejected in stock
+OCaml, where ">}" only ever lexed as one token. This is a harmless
+relaxation of the grammar, pinned here:
+
+  $ echo 'let _ = object val x = 1 method m = {< x = 2 > } end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+
+Known regression: splitting ">}" into GREATER RBRACE means the final GREATER
+of a `>}` sequence is grammatically indistinguishable from an infix ">"
+comparison, so when an override field's value itself ends in an unparenthesized
+"> expr" immediately before the closing brace, the parser now greedily shifts
+that GREATER as a continuing comparison instead of reducing to close the
+override, and fails where stock OCaml (and our own GREATERRBRACE token before
+this change) would accept it. This requires parentheses as a workaround:
+
+  $ echo 'let _ = object val x = true method m = {< x = (1 > 2) >} end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = true
+      method m = {<x = 1 > 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = true
+      method m = {<x = 1 > 2>}
+    end
 
 Conversion to the host merlin's AST — exercises the Obj.magic + ppxlib
 migration bridge (Mlx_conv) that the reader uses to hand its parsetree to
