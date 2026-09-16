@@ -284,6 +284,7 @@ let print_symbol = function
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_mk_longident_mod_ext_longident_UIDENT_) -> "mk_longident_mod_ext_longident_UIDENT_"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_mk_longident_mod_ext_longident_LIDENT_) -> "mk_longident_mod_ext_longident_LIDENT_"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_method_) -> "method_"
+  | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_meth_list_jsx) -> "meth_list_jsx"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_meth_list) -> "meth_list"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_match_case) -> "match_case"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_local_structure_item) -> "local_structure_item"
@@ -650,6 +651,7 @@ let print_value (type a) : a MenhirInterpreter.symbol -> a -> string = function
   | MenhirInterpreter.N MenhirInterpreter.N_mk_longident_mod_ext_longident_UIDENT_ -> (fun _ -> "mk_longident_mod_ext_longident_UIDENT_")
   | MenhirInterpreter.N MenhirInterpreter.N_mk_longident_mod_ext_longident_LIDENT_ -> (fun _ -> "mk_longident_mod_ext_longident_LIDENT_")
   | MenhirInterpreter.N MenhirInterpreter.N_method_ -> (fun _ -> "method_")
+  | MenhirInterpreter.N MenhirInterpreter.N_meth_list_jsx -> (fun _ -> "meth_list_jsx")
   | MenhirInterpreter.N MenhirInterpreter.N_meth_list -> (fun _ -> "meth_list")
   | MenhirInterpreter.N MenhirInterpreter.N_match_case -> (fun _ -> "match_case")
   | MenhirInterpreter.N MenhirInterpreter.N_local_structure_item -> (fun _ -> "local_structure_item")

@@ -780,7 +780,22 @@ rule token state = parse
   | ">"  { return GREATER }
   | "/>" { return SLASHGREATER }
   | "}"  { return RBRACE }
-  | ">}" { return GREATERRBRACE }
+  | ">}"
+      { (* Gives back ">" so "}" lexes separately as RBRACE; `{< ... >}` still parses since the grammar now closes it with GREATER RBRACE. *)
+        lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + 1;
+        let lex_start_p = lexbuf.lex_start_p in
+        lexbuf.lex_curr_p <-
+          { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
+        return GREATER
+      }
+  | ">|]"
+      { (* Gives back ">" so "|]" lexes separately as BARRBRACKET, closing a JSX element inside an array literal. *)
+        lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + 1;
+        let lex_start_p = lexbuf.lex_start_p in
+        lexbuf.lex_curr_p <-
+          { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
+        return GREATER
+      }
   | "[@" { return LBRACKETAT }
   | "[@@"  { return LBRACKETATAT }
   | "[@@@" { return LBRACKETATATAT }

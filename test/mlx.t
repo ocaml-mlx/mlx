@@ -159,6 +159,142 @@ We have a lexer hack to parse [<element and [<Element as JSX:
   MERLIN
   let _ = [ (M.element () ~children:[ 1 ] [@JSX]) ]
 
+A JSX element closing directly before "|]" inside an array literal must give back the ">" so "|]" still lexes as BARRBRACKET:
+
+  $ echo 'let _ = [|<div>aa</div>|]' | ./mlx
+  BATCH
+  let _ = [| (div () ~children:[ aa ] [@JSX]) |]
+  MERLIN
+  let _ = [| (div () ~children:[ aa ] [@JSX]) |]
+
+  $ echo 'let _ = [|<div>aa</div>; <div>bb</div>|]' | ./mlx
+  BATCH
+  let _ = [| (div () ~children:[ aa ] [@JSX]); (div () ~children:[ bb ] [@JSX]) |]
+  MERLIN
+  let _ = [| (div () ~children:[ aa ] [@JSX]); (div () ~children:[ bb ] [@JSX]) |]
+
+  $ echo 'let _ = [<div>aa</div>]' | ./mlx
+  BATCH
+  let _ = [ (div () ~children:[ aa ] [@JSX]) ]
+  MERLIN
+  let _ = [ (div () ~children:[ aa ] [@JSX]) ]
+
+  $ echo 'let _ = [|<div>aa</div>|]' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ = [| (div () ~children:[ aa ] [@JSX]) |]
+
+Operator sanity: only the exact sequence ">|]" is special-cased, so ">|" still lexes as an ordinary operator everywhere else:
+
+  $ echo 'let (>|) a b = a
+  > let _ = 1>|2' | ./mlx
+  BATCH
+  let ( >| ) a b = a
+  let _ = 1 >| 2
+  MERLIN
+  let ( >| ) a b = a
+  let _ = 1 >| 2
+
+  $ echo 'let (>|) a b = a
+  > let _ = [|1>|2|]' | ./mlx
+  BATCH
+  let ( >| ) a b = a
+  let _ = [| 1 >| 2 |]
+  MERLIN
+  let ( >| ) a b = a
+  let _ = [| 1 >| 2 |]
+
+  $ echo 'let (>|=) a b = a in 1 >|= 2' | ./mlx
+  BATCH
+  let ( >|= ) a b = a in
+  1 >|= 2
+  MERLIN
+  let ( >|= ) a b = a in
+  (1 >|= 2) [@merlin.loc]
+
+A JSX element closing directly before "}" inside a record/braced expression must likewise give back the ">" so "}" still lexes as RBRACE:
+
+  $ echo 'let _ = {x = <div>a</div>}' | ./mlx
+  BATCH
+  let _ = { x = div () ~children:[ a ] [@JSX] }
+  MERLIN
+  let _ = { x = div () ~children:[ a ] [@JSX] }
+
+  $ echo 'let _ = {x = <div>a</div>; y = 1}' | ./mlx
+  BATCH
+  let _ = { x = div () ~children:[ a ] [@JSX]; y = 1 }
+  MERLIN
+  let _ = { x = div () ~children:[ a ] [@JSX]; y = 1 }
+
+  $ echo 'let r = {r with x = <div>a</div>}' | ./mlx
+  BATCH
+  let r = { r with x = div () ~children:[ a ] [@JSX] }
+  MERLIN
+  let r = { r with x = div () ~children:[ a ] [@JSX] }
+
+  $ echo 'let _ = {x = <div>a</div>}' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let _ = { x = div () ~children:[ a ] [@JSX] }
+
+Object override still works, both spaced and unspaced, since the grammar now closes `{< ... >}` with GREATER RBRACE instead of GREATERRBRACE:
+
+  $ echo 'let _ = object val x = 1 method m = {< x = 2 >} end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+
+  $ echo 'let _ = object val x = 1 method m = {<x = 2>} end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+
+Harmless relaxation pinned here: with GREATER RBRACE as two tokens, `{< x = 2 > }` (space before the brace) is now accepted, unlike stock OCaml:
+
+  $ echo 'let _ = object val x = 1 method m = {< x = 2 > } end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = 1
+      method m = {<x = 2>}
+    end
+
+Known regression: an override field value ending in an unparenthesized "> expr" before the closing brace now fails, since the final GREATER is indistinguishable from a continuing comparison; parenthesize as a workaround:
+
+  $ echo 'let _ = object val x = true method m = {< x = (1 > 2) >} end' | ./mlx
+  BATCH
+  let _ =
+    object
+      val x = true
+      method m = {<x = 1 > 2>}
+    end
+  MERLIN
+  let _ =
+    object
+      val x = true
+      method m = {<x = 1 > 2>}
+    end
+
 Conversion to the host merlin's AST — exercises the Obj.magic + ppxlib
 migration bridge (Mlx_conv) that the reader uses to hand its parsetree to
 merlin; a shape mismatch here segfaults or garbles the output. Constants are
@@ -189,3 +325,49 @@ Signature conversion:
   
     val x : t option
   end
+
+Object types written without a space after "<" (e.g. `<m : int>`) used to fail because the lexer fuses "<" with the following identifier into JSX_LIDENT; the grammar now accepts that too:
+
+  $ echo 'let f (x : <m : int>) = x#m' | ./mlx
+  BATCH
+  let f (x : < m : int >) = x#m
+  MERLIN
+  let f (x : < m : int >) = x#m
+
+  $ echo 'let f (x : <m : int; n : float>) = x#m' | ./mlx
+  BATCH
+  let f (x : < m : int ; n : float >) = x#m
+  MERLIN
+  let f (x : < m : int ; n : float >) = x#m
+
+  $ echo "let f (x : <m : 'a. 'a -> 'a>) = x" | ./mlx
+  BATCH
+  let f (x : < m : 'a. 'a -> 'a >) = x
+  MERLIN
+  let f (x : < m : 'a. 'a -> 'a >) = x
+
+  $ echo 'let f (x : <m : int>) = x#m' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
+  let f (x : < m : int >) = x#m
+
+  $ printf 'val f : <m : int> -> unit\n' | ./mlx_merlin.exe -intf | ocamlformat - --intf --enable-outside-detected-project
+  val f : < m : int > -> unit
+
+Regression guards: the spaced form, the open object type `< .. >`, and a JSX element whose tag looks like a method name must all still work:
+
+  $ echo 'let f (x : < m : int >) = x#m' | ./mlx
+  BATCH
+  let f (x : < m : int >) = x#m
+  MERLIN
+  let f (x : < m : int >) = x#m
+
+  $ echo 'let f (x : < .. >) = x' | ./mlx
+  BATCH
+  let f (x : < .. >) = x
+  MERLIN
+  let f (x : < .. >) = x
+
+  $ echo 'let _ = <m />' | ./mlx
+  BATCH
+  let _ = m () ~children:[] [@JSX]
+  MERLIN
+  let _ = m () ~children:[] [@JSX]

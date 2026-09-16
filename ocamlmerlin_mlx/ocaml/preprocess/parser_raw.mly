@@ -2721,19 +2721,19 @@ let_pattern [@recovery default_pattern ()]:
       { Pexp_apply($1, [Nolabel,$2]) }
   | op(BANG {"!"}) simple_expr
       { Pexp_apply($1, [Nolabel,$2]) }
-  | LBRACELESS object_expr_content GREATERRBRACE
+  | LBRACELESS object_expr_content GREATER RBRACE
       { Pexp_override $2 }
   (*
   | LBRACELESS object_expr_content error
       { unclosed "{<" $loc($1) ">}" $loc($3) }
   *)
-  | LBRACELESS GREATERRBRACE
+  | LBRACELESS GREATER RBRACE
       { Pexp_override [] }
   | simple_expr DOT mkrhs(label_longident)
       { Pexp_field($1, $3) }
   | od=open_dot_declaration DOT LPAREN seq_expr RPAREN
       { Pexp_struct_item(Str.open_ od, $4) }
-  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATERRBRACE
+  | od=open_dot_declaration DOT LBRACELESS object_expr_content GREATER RBRACE
       { (* TODO: review the location of Pexp_override *)
         Pexp_struct_item(Str.open_ od, mkexp ~loc:$sloc (Pexp_override $4)) }
   (*
@@ -4051,6 +4051,9 @@ object_type:
         { let (f, c) = meth_list in Ptyp_object (f, c) }
     | LESS GREATER
         { Ptyp_object ([], Closed) }
+    | meth_list = meth_list_jsx GREATER
+        (* Handles an unspaced object type like [<m : int>], where the lexer fuses "<" with the first method name into JSX_LIDENT. *)
+        { let (f, c) = meth_list in Ptyp_object (f, c) }
   )
   { $1 }
 ;
@@ -4165,6 +4168,15 @@ meth_list:
   | DOTDOT
       { [], Open }
 ;
+(* Like [meth_list], but for a first field whose label is fused with the opening ["<"] into JSX_LIDENT (see [object_type] above). *)
+meth_list_jsx:
+    head = field_semi_jsx tail = meth_list
+      { let (f, c) = tail in (head :: f, c) }
+  | head = field_semi_jsx
+      { [head], Closed }
+  | head = field_jsx
+      { [head], Closed }
+;
 %inline field:
   mkrhs(label) COLON poly_type_no_attr attributes
     { let info = symbol_info $endpos in
@@ -4181,6 +4193,25 @@ meth_list:
       in
       let attrs = add_info_attrs info ($4 @ $6) in
       Of.tag ~loc:(make_loc $sloc) ~attrs $1 $3 }
+;
+
+(* [name] is a JSX_LIDENT: the method's label with the fused leading ["<"] already stripped by the lexer. *)
+%inline field_jsx:
+  name = JSX_LIDENT COLON poly_type_no_attr attributes
+    { let info = symbol_info $endpos in
+      let attrs = add_info_attrs info $4 in
+      Of.tag ~loc:(make_loc $sloc) ~attrs (mkrhs name $loc(name)) $3 }
+;
+
+%inline field_semi_jsx:
+  name = JSX_LIDENT COLON poly_type_no_attr attributes SEMI attributes
+    { let info =
+        match rhs_info $endpos($4) with
+        | Some _ as info_before_semi -> info_before_semi
+        | None -> symbol_info $endpos
+      in
+      let attrs = add_info_attrs info ($4 @ $6) in
+      Of.tag ~loc:(make_loc $sloc) ~attrs (mkrhs name $loc(name)) $3 }
 ;
 
 %inline inherit_field:
