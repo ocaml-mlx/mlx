@@ -109,6 +109,7 @@ type token =
   | EFFECT
   | DOWNTO
   | DOTOP of (string)
+  | DOTDOTDOT
   | DOTDOT
   | DOT
   | DONE
@@ -290,6 +291,7 @@ module MenhirInterpreter : sig
     | T_EFFECT : unit terminal
     | T_DOWNTO : unit terminal
     | T_DOTOP : (string) terminal
+    | T_DOTDOTDOT : unit terminal
     | T_DOTDOT : unit terminal
     | T_DOT : unit terminal
     | T_DONE : unit terminal

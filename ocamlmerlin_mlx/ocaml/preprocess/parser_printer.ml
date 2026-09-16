@@ -126,6 +126,7 @@ let print_symbol = function
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_EFFECT) -> "effect"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_DOWNTO) -> "downto"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_DOTOP) -> "DOTOP"
+  | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_DOTDOTDOT) -> "..."
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_DOTDOT) -> ".."
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_DOT) -> "."
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_DONE) -> "done"
@@ -493,6 +494,7 @@ let print_value (type a) : a MenhirInterpreter.symbol -> a -> string = function
   | MenhirInterpreter.T MenhirInterpreter.T_EFFECT -> (fun _ -> "effect")
   | MenhirInterpreter.T MenhirInterpreter.T_DOWNTO -> (fun _ -> "downto")
   | MenhirInterpreter.T MenhirInterpreter.T_DOTOP -> (fun _ -> "DOTOP")
+  | MenhirInterpreter.T MenhirInterpreter.T_DOTDOTDOT -> (fun _ -> "...")
   | MenhirInterpreter.T MenhirInterpreter.T_DOTDOT -> (fun _ -> "..")
   | MenhirInterpreter.T MenhirInterpreter.T_DOT -> (fun _ -> ".")
   | MenhirInterpreter.T MenhirInterpreter.T_DONE -> (fun _ -> "done")
@@ -859,6 +861,7 @@ let print_token = function
   | EFFECT -> print_value (MenhirInterpreter.T MenhirInterpreter.T_EFFECT) ()
   | DOWNTO -> print_value (MenhirInterpreter.T MenhirInterpreter.T_DOWNTO) ()
   | DOTOP v -> print_value (MenhirInterpreter.T MenhirInterpreter.T_DOTOP) v
+  | DOTDOTDOT -> print_value (MenhirInterpreter.T MenhirInterpreter.T_DOTDOTDOT) ()
   | DOTDOT -> print_value (MenhirInterpreter.T MenhirInterpreter.T_DOTDOT) ()
   | DOT -> print_value (MenhirInterpreter.T MenhirInterpreter.T_DOT) ()
   | DONE -> print_value (MenhirInterpreter.T MenhirInterpreter.T_DONE) ()
@@ -996,6 +999,7 @@ let token_of_terminal (type a) (t : a MenhirInterpreter.terminal) (v : a) : toke
   | MenhirInterpreter.T_EFFECT -> EFFECT
   | MenhirInterpreter.T_DOWNTO -> DOWNTO
   | MenhirInterpreter.T_DOTOP -> DOTOP v
+  | MenhirInterpreter.T_DOTDOTDOT -> DOTDOTDOT
   | MenhirInterpreter.T_DOTDOT -> DOTDOT
   | MenhirInterpreter.T_DOT -> DOT
   | MenhirInterpreter.T_DONE -> DONE

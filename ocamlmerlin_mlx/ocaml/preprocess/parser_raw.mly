@@ -828,6 +828,7 @@ let merloc startpos ?endpos x =
 %token DONE [@symbol "done"]
 %token DOT [@symbol "."]
 %token DOTDOT [@symbol ".."]
+%token DOTDOTDOT [@symbol "..."]
 %token DOWNTO [@symbol "downto"]
 %token EFFECT [@symbol "effect"]
 %token ELSE [@symbol "else"]
@@ -2839,7 +2840,13 @@ jsx_element:
         mkexp ~loc children
       in
       let _ = end_tag_ in
-      Jsx_helper.make_jsx_element () 
+      Jsx_helper.make_jsx_element ()
+        ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:(Some (end_tag, $loc(end_tag_))) ~props ~children
+    }
+  | tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop)
+    GREATER DOTDOTDOT children=simple_expr end_tag=jsx_longident(JSX_UIDENT_E, JSX_LIDENT_E) end_tag_=GREATER {
+      let _ = end_tag_ in
+      Jsx_helper.make_jsx_element ()
         ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:(Some (end_tag, $loc(end_tag_))) ~props ~children
     }
 ;

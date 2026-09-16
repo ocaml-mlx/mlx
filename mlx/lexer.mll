@@ -679,6 +679,7 @@ rule token = parse
   | "->" { MINUSGREATER }
   | "."  { DOT }
   | ".." { DOTDOT }
+  | "..." { DOTDOTDOT }
   | "." (dotsymbolchar symbolchar* as op) { DOTOP op }
   | ":"  { COLON }
   | "::" { COLONCOLON }
@@ -741,7 +742,18 @@ rule token = parse
   | '=' symbolchar_no_prefix * as op
             { INFIXOP0 op }
   | ">" symbolchar_no_less * as op
-            { INFIXOP0 op }
+            { (* ">..." is reserved for JSX children spread: back up so "..." lexes separately as DOTDOTDOT. *)
+              if String.length op >= 4
+                 && op.[1] = '.' && op.[2] = '.' && op.[3] = '.'
+              then begin
+                lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + 1;
+                let lex_start_p = lexbuf.lex_start_p in
+                lexbuf.lex_curr_p <-
+                  { lex_start_p with pos_cnum = lex_start_p.pos_cnum + 1 };
+                GREATER
+              end else
+                INFIXOP0 op
+            }
   | ['@' '^'] symbolchar * as op
             { INFIXOP1 op }
   | ['+' '-'] symbolchar * as op
