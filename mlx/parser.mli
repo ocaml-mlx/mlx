@@ -90,8 +90,8 @@ type token =
   | IF
   | HASHOP of (string)
   | HASH
+  | GREATER_BEFORE_RBRACE
   | GREATERRBRACKET
-  | GREATERRBRACE
   | GREATER
   | FUNCTOR
   | FUNCTION

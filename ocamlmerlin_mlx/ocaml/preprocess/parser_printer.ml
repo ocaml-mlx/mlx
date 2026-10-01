@@ -107,6 +107,7 @@ let print_symbol = function
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_IF) -> "if"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_HASHOP) -> "#<op>"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_HASH) -> "#"
+  | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_GREATER_BEFORE_RBRACE) -> "> (before })"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACKET) -> ">]"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACE) -> ">}"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_GREATER) -> ">"
@@ -475,6 +476,7 @@ let print_value (type a) : a MenhirInterpreter.symbol -> a -> string = function
   | MenhirInterpreter.T MenhirInterpreter.T_IF -> (fun _ -> "if")
   | MenhirInterpreter.T MenhirInterpreter.T_HASHOP -> (Printf.sprintf "HASHOP(%S)")
   | MenhirInterpreter.T MenhirInterpreter.T_HASH -> (fun _ -> "#")
+  | MenhirInterpreter.T MenhirInterpreter.T_GREATER_BEFORE_RBRACE -> (fun _ -> "> (before })")
   | MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACKET -> (fun _ -> ">]")
   | MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACE -> (fun _ -> ">}")
   | MenhirInterpreter.T MenhirInterpreter.T_GREATER -> (fun _ -> ">")
@@ -842,6 +844,7 @@ let print_token = function
   | IF -> print_value (MenhirInterpreter.T MenhirInterpreter.T_IF) ()
   | HASHOP v -> print_value (MenhirInterpreter.T MenhirInterpreter.T_HASHOP) v
   | HASH -> print_value (MenhirInterpreter.T MenhirInterpreter.T_HASH) ()
+  | GREATER_BEFORE_RBRACE -> print_value (MenhirInterpreter.T MenhirInterpreter.T_GREATER_BEFORE_RBRACE) ()
   | GREATERRBRACKET -> print_value (MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACKET) ()
   | GREATERRBRACE -> print_value (MenhirInterpreter.T MenhirInterpreter.T_GREATERRBRACE) ()
   | GREATER -> print_value (MenhirInterpreter.T MenhirInterpreter.T_GREATER) ()
@@ -980,6 +983,7 @@ let token_of_terminal (type a) (t : a MenhirInterpreter.terminal) (v : a) : toke
   | MenhirInterpreter.T_IF -> IF
   | MenhirInterpreter.T_HASHOP -> HASHOP v
   | MenhirInterpreter.T_HASH -> HASH
+  | MenhirInterpreter.T_GREATER_BEFORE_RBRACE -> GREATER_BEFORE_RBRACE
   | MenhirInterpreter.T_GREATERRBRACKET -> GREATERRBRACKET
   | MenhirInterpreter.T_GREATERRBRACE -> GREATERRBRACE
   | MenhirInterpreter.T_GREATER -> GREATER

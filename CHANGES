@@ -1,4 +1,6 @@
 # Unreleased
+- Restore unparenthesized expressions in object overrides while keeping JSX
+  closing tags valid directly before record and indexing braces.
 
 # 0.11
 - Support for OCaml 5.4 [#22](https://github.com/ocaml-mlx/mlx/pull/22)

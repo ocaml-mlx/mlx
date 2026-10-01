@@ -233,7 +233,7 @@ A JSX element closing directly before "}" inside a record/braced expression must
   $ echo 'let _ = {x = <div>a</div>}' | ./mlx_merlin.exe -conv | ocamlformat - --impl --enable-outside-detected-project
   let _ = { x = div () ~children:[ a ] [@JSX] }
 
-Object override still works, both spaced and unspaced, since the grammar now closes `{< ... >}` with GREATER RBRACE instead of GREATERRBRACE:
+Object override still works, both spaced and unspaced, with a distinct GREATER_BEFORE_RBRACE followed by RBRACE:
 
   $ echo 'let _ = object val x = 1 method m = {< x = 2 >} end' | ./mlx
   BATCH
@@ -263,7 +263,7 @@ Object override still works, both spaced and unspaced, since the grammar now clo
       method m = {<x = 2>}
     end
 
-Harmless relaxation pinned here: with GREATER RBRACE as two tokens, `{< x = 2 > }` (space before the brace) is now accepted, unlike stock OCaml:
+Whitespace before the final brace remains accepted:
 
   $ echo 'let _ = object val x = 1 method m = {< x = 2 > } end' | ./mlx
   BATCH
@@ -279,9 +279,9 @@ Harmless relaxation pinned here: with GREATER RBRACE as two tokens, `{< x = 2 > 
       method m = {<x = 2>}
     end
 
-Known regression: an override field value ending in an unparenthesized "> expr" before the closing brace now fails, since the final GREATER is indistinguishable from a continuing comparison; parenthesize as a workaround:
+An override comparison no longer needs parentheses to distinguish it from the closer:
 
-  $ echo 'let _ = object val x = true method m = {< x = (1 > 2) >} end' | ./mlx
+  $ echo 'let _ = object val x = true method m = {< x = 1 > 2 >} end' | ./mlx
   BATCH
   let _ =
     object
