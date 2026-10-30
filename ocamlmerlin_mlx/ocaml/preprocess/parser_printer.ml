@@ -74,8 +74,10 @@ let print_symbol = function
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LIDENT) -> "LIDENT"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LETOP) -> "LETOP"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LET) -> "let"
+  | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LESSSLASHGREATER) -> "</>"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LESSSLASH) -> "</"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LESSMINUS) -> "<-"
+  | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LESSGREATER) -> "<>"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LESS) -> "<"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LBRACKETPERCENTPERCENT) -> "[%%"
   | MenhirInterpreter.X (MenhirInterpreter.T MenhirInterpreter.T_LBRACKETPERCENT) -> "[%"
@@ -326,6 +328,7 @@ let print_symbol = function
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_jsx_prop) -> "jsx_prop"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_) -> "jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_jsx_longident_JSX_UIDENT_JSX_LIDENT_) -> "jsx_longident_JSX_UIDENT_JSX_LIDENT_"
+  | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_jsx_fragment) -> "jsx_fragment"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_jsx_element) -> "jsx_element"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_item_extension) -> "item_extension"
   | MenhirInterpreter.X (MenhirInterpreter.N MenhirInterpreter.N_interface) -> "interface"
@@ -443,8 +446,10 @@ let print_value (type a) : a MenhirInterpreter.symbol -> a -> string = function
   | MenhirInterpreter.T MenhirInterpreter.T_LIDENT -> (Printf.sprintf "LIDENT(%S)")
   | MenhirInterpreter.T MenhirInterpreter.T_LETOP -> (fun _ -> "LETOP")
   | MenhirInterpreter.T MenhirInterpreter.T_LET -> (fun _ -> "let")
+  | MenhirInterpreter.T MenhirInterpreter.T_LESSSLASHGREATER -> (fun _ -> "</>")
   | MenhirInterpreter.T MenhirInterpreter.T_LESSSLASH -> (fun _ -> "</")
   | MenhirInterpreter.T MenhirInterpreter.T_LESSMINUS -> (fun _ -> "<-")
+  | MenhirInterpreter.T MenhirInterpreter.T_LESSGREATER -> (fun _ -> "<>")
   | MenhirInterpreter.T MenhirInterpreter.T_LESS -> (fun _ -> "<")
   | MenhirInterpreter.T MenhirInterpreter.T_LBRACKETPERCENTPERCENT -> (fun _ -> "[%%")
   | MenhirInterpreter.T MenhirInterpreter.T_LBRACKETPERCENT -> (fun _ -> "[%")
@@ -695,6 +700,7 @@ let print_value (type a) : a MenhirInterpreter.symbol -> a -> string = function
   | MenhirInterpreter.N MenhirInterpreter.N_jsx_prop -> (fun _ -> "jsx_prop")
   | MenhirInterpreter.N MenhirInterpreter.N_jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_ -> (fun _ -> "jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_")
   | MenhirInterpreter.N MenhirInterpreter.N_jsx_longident_JSX_UIDENT_JSX_LIDENT_ -> (fun _ -> "jsx_longident_JSX_UIDENT_JSX_LIDENT_")
+  | MenhirInterpreter.N MenhirInterpreter.N_jsx_fragment -> (fun _ -> "jsx_fragment")
   | MenhirInterpreter.N MenhirInterpreter.N_jsx_element -> (fun _ -> "jsx_element")
   | MenhirInterpreter.N MenhirInterpreter.N_item_extension -> (fun _ -> "item_extension")
   | MenhirInterpreter.N MenhirInterpreter.N_interface -> (fun _ -> "interface")
@@ -811,8 +817,10 @@ let print_token = function
   | LIDENT v -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LIDENT) v
   | LETOP v -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LETOP) v
   | LET -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LET) ()
+  | LESSSLASHGREATER -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LESSSLASHGREATER) ()
   | LESSSLASH -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LESSSLASH) ()
   | LESSMINUS -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LESSMINUS) ()
+  | LESSGREATER -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LESSGREATER) ()
   | LESS -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LESS) ()
   | LBRACKETPERCENTPERCENT -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LBRACKETPERCENTPERCENT) ()
   | LBRACKETPERCENT -> print_value (MenhirInterpreter.T MenhirInterpreter.T_LBRACKETPERCENT) ()
@@ -950,8 +958,10 @@ let token_of_terminal (type a) (t : a MenhirInterpreter.terminal) (v : a) : toke
   | MenhirInterpreter.T_LIDENT -> LIDENT v
   | MenhirInterpreter.T_LETOP -> LETOP v
   | MenhirInterpreter.T_LET -> LET
+  | MenhirInterpreter.T_LESSSLASHGREATER -> LESSSLASHGREATER
   | MenhirInterpreter.T_LESSSLASH -> LESSSLASH
   | MenhirInterpreter.T_LESSMINUS -> LESSMINUS
+  | MenhirInterpreter.T_LESSGREATER -> LESSGREATER
   | MenhirInterpreter.T_LESS -> LESS
   | MenhirInterpreter.T_LBRACKETPERCENTPERCENT -> LBRACKETPERCENTPERCENT
   | MenhirInterpreter.T_LBRACKETPERCENT -> LBRACKETPERCENT

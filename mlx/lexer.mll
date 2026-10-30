@@ -689,6 +689,8 @@ rule token = parse
   | ";;" { SEMISEMI }
   | "<"  { LESS }
   | "</" { LESSSLASH }
+  | "<>" { LESSGREATER }
+  | "</>" { LESSSLASHGREATER }
   | "<-" { LESSMINUS }
   | "="  { EQUAL }
   | "["  { LBRACKET }
@@ -738,7 +740,22 @@ rule token = parse
   | ['~' '?'] symbolchar_or_hash + as op
             { PREFIXOP op }
   | ['<' '|' '&' '$'] symbolchar * as op
-            { INFIXOP0 op }
+            { let n = String.length op in
+              let keep k tok =
+                lexbuf.Lexing.lex_curr_pos <- lexbuf.Lexing.lex_start_pos + k;
+                let lex_start_p = lexbuf.lex_start_p in
+                lexbuf.lex_curr_p <-
+                  { lex_start_p with pos_cnum = lex_start_p.pos_cnum + k };
+                tok
+              in
+              let starts_child i =
+                i < n && (op.[i] = '<' || (op.[i] = '.' && i + 2 < n && op.[i+1] = '.' && op.[i+2] = '.'))
+              in
+              if n > 2 && op.[0] = '<' && op.[1] = '>' && starts_child 2 then keep 2 LESSGREATER
+              else if n > 3 && op.[0] = '<' && op.[1] = '/' && op.[2] = '>' && starts_child 3
+              then keep 3 LESSSLASHGREATER
+              else INFIXOP0 op
+            }
   | '=' symbolchar_no_prefix * as op
             { INFIXOP0 op }
   | ">" symbolchar_no_less * as op
@@ -985,13 +1002,13 @@ and skip_hash_bang = parse
   let token_with_comments lexbuf =
     match token_with_comments lexbuf with
     | LBRACKETLESS ->
-      (* Check if the next character (if any) could start an identifier.
-         UIDENT starts with A-Z, LIDENT starts with a-z or _ *)
+      (* Check if the next character (if any) could start an identifier or a fragment.
+         UIDENT starts with A-Z, LIDENT starts with a-z or _, a fragment with > *)
       let should_split =
         lexbuf.Lexing.lex_curr_pos < lexbuf.Lexing.lex_buffer_len &&
         begin
           let next = Bytes.get lexbuf.Lexing.lex_buffer lexbuf.Lexing.lex_curr_pos in
-          next >= 'A' && next <= 'Z' || next >= 'a' && next <= 'z' || next = '_'
+          next >= 'A' && next <= 'Z' || next >= 'a' && next <= 'z' || next = '_' || next = '>'
         end
       in
       if should_split then begin

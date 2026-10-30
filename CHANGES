@@ -1,4 +1,10 @@
 # Unreleased
+- Add JSX fragments: `<></>`, `<>a b</>` and `<>...xs</>`. A fragment lowers to
+  a list expression with the `[@JSX]` attribute, and `<>...xs</>` lowers to `xs`
+  with `[@JSX]`. A fragment used as a function argument needs parentheses:
+  `f (<>a</>)`.
+- `</>` is reserved for fragments and is a syntax error as an operator name,
+  for example `let (</>) a b = a`. `<>` is still the inequality operator.
 - Restore unparenthesized expressions in object overrides while keeping JSX
   closing tags valid directly before record and indexing braces.
 

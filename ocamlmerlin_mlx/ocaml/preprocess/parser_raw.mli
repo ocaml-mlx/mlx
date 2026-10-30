@@ -57,8 +57,10 @@ type token =
   | LIDENT of (string)
   | LETOP of (string)
   | LET
+  | LESSSLASHGREATER
   | LESSSLASH
   | LESSMINUS
+  | LESSGREATER
   | LESS
   | LBRACKETPERCENTPERCENT
   | LBRACKETPERCENT
@@ -240,8 +242,10 @@ module MenhirInterpreter : sig
     | T_LIDENT : (string) terminal
     | T_LETOP : (string) terminal
     | T_LET : unit terminal
+    | T_LESSSLASHGREATER : unit terminal
     | T_LESSSLASH : unit terminal
     | T_LESSMINUS : unit terminal
+    | T_LESSGREATER : unit terminal
     | T_LESS : unit terminal
     | T_LBRACKETPERCENTPERCENT : unit terminal
     | T_LBRACKETPERCENT : unit terminal
@@ -510,6 +514,7 @@ module MenhirInterpreter : sig
   | `Prop_punned of string ]) nonterminal
     | N_jsx_longident_JSX_UIDENT_E_JSX_LIDENT_E_ : ([> `Module | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
     | N_jsx_longident_JSX_UIDENT_JSX_LIDENT_ : ([ `Module | `Value ] * (Lexing.position * Lexing.position) * Longident.t) nonterminal
+    | N_jsx_fragment : (Parsetree.expression) nonterminal
     | N_jsx_element : (Parsetree.expression_desc) nonterminal
     | N_item_extension : (Parsetree.extension) nonterminal
     | N_interface : (Parsetree.signature) nonterminal
