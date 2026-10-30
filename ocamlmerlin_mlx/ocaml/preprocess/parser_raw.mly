@@ -994,7 +994,7 @@ The precedences must be listed from low to high.
 %right    OR BARBAR                     /* expr (e || e || e) */
 %right    AMPERSAND AMPERAMPER          /* expr (e && e && e) */
 %nonassoc below_EQUAL
-%left     INFIXOP0 EQUAL LESS GREATER LESSGREATER   /* expr (e OP e OP e) */
+%left     INFIXOP0 EQUAL LESS GREATER LESSGREATER LESSSLASHGREATER   /* expr (e OP e OP e) */
 %right    INFIXOP1                      /* expr (e OP e OP e) */
 %nonassoc below_LBRACKETAT
 %nonassoc LBRACKETAT
@@ -4306,7 +4306,6 @@ operator:
   | HASHOP                                      { $1 }
   | BANG                                        { "!" }
   | infix_operator                              { $1 }
-  | LESSSLASHGREATER { not_expecting $loc "operator \"</>\" (reserved for JSX fragments)"; "</>" }
 ;
 %inline infix_operator:
   | op = INFIXOP0 { op }
@@ -4324,6 +4323,7 @@ operator:
   | EQUAL          {"="}
   | LESS           {"<"}
   | LESSGREATER    {"<>"}
+  | LESSSLASHGREATER {"</>"}
   | GREATER        {">"}
   | OR            {"or"}
   | BARBAR        {"||"}

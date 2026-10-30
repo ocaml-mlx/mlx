@@ -636,8 +636,8 @@ The fragment delimiters are checked, so mismatched or missing closers are syntax
   Error: Syntax error
   
   MERLIN
-  File "*stdin*", line 1, characters 14-17
-  Error: Syntax error, expecting `JSX_LIDENT_E'
+  File "*stdin*", line 2, characters 0-0
+  Error: Syntax error, expecting fun_expr
   
   $ echo 'let _ = <>a' | ./mlx
   BATCH
@@ -663,8 +663,8 @@ The fragment delimiters are checked, so mismatched or missing closers are syntax
   Error: Syntax error
   
   MERLIN
-  File "*stdin*", line 1, characters 16-19
-  Error: Syntax error
+  File "*stdin*", line 2, characters 0-0
+  Error: Syntax error, expecting fun_expr
   
   $ echo 'let _ = <>...a ...b</>' | ./mlx
   BATCH
@@ -672,22 +672,22 @@ The fragment delimiters are checked, so mismatched or missing closers are syntax
   Error: Syntax error
   
   MERLIN
-  File "*stdin*", line 1, characters 19-22
-  Error: Syntax error
+  File "*stdin*", line 2, characters 0-0
+  Error: Syntax error, expecting fun_expr
   
   $ echo 'let _ = <>a</></>' | ./mlx
   BATCH
-  File "*stdin*", line 1, characters 14-17:
+  File "*stdin*", line 2, characters 0-0:
   Error: Syntax error
   
   MERLIN
-  File "*stdin*", line 1, characters 14-17
-  Error: Syntax error
+  File "*stdin*", line 2, characters 0-0
+  Error: Syntax error, expecting fun_expr
   
 
 `<>` is still the structural inequality operator. Operators that start with
-`<>` and continue with `<` or `...` are reserved for fragments, and `</>` is
-reserved as a closing delimiter and cannot be used as an operator:
+`<>` and continue with `<` or `...` are reserved for fragments. `</>` is a
+normal operator too, even though it also closes a fragment:
 
   $ echo 'let _ = a <> b' | ./mlx
   BATCH
@@ -779,59 +779,68 @@ reserved as a closing delimiter and cannot be used as an operator:
   let _ = a <>- b
   MERLIN
   let _ = a <>- b
-  $ echo 'let _ = a </> b' | ./mlx
-  BATCH
-  File "*stdin*", line 1, characters 10-13:
-  Error: Syntax error
-  
-  MERLIN
-  File "*stdin*", line 1, characters 10-13
-  Error: Syntax error
-  
   $ echo 'let (</>) a b = a' | ./mlx
   BATCH
-  File "*stdin*", line 1, characters 5-8:
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
+  let ( </> ) a b = a
   MERLIN
-  File "*stdin*", line 1, characters 5-8
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
+  let ( </> ) a b = a
+  $ echo 'let _ = a </> b' | ./mlx
+  BATCH
+  let _ = a </> b
+  MERLIN
+  let _ = a </> b
+  $ echo 'let _ = a</>b' | ./mlx
+  BATCH
+  let _ = a </> b
+  MERLIN
+  let _ = a </> b
   $ echo 'let _ = ( </> ) a b' | ./mlx
   BATCH
-  File "*stdin*", line 1, characters 10-13:
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
+  let _ = a </> b
   MERLIN
-  File "*stdin*", line 1, characters 10-13
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
-  $ echo 'module type S = sig val (</>) : int -> int -> int end' | ./mlx
-  BATCH
-  File "*stdin*", line 1, characters 25-28:
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
-  MERLIN
-  File "*stdin*", line 1, characters 25-28
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
-  $ echo 'external (</>) : int -> int -> int = "x"' | ./mlx
-  BATCH
-  File "*stdin*", line 1, characters 10-13:
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
-  MERLIN
-  File "*stdin*", line 1, characters 10-13
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
-  
+  let _ = a </> b
   $ echo 'let _ = M.(</>)' | ./mlx
   BATCH
-  File "*stdin*", line 1, characters 11-14:
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
+  let _ = M.( </> )
+  MERLIN
+  let _ = M.( </> )
+  $ echo 'module type S = sig val (</>) : int -> int -> int end' | ./mlx
+  BATCH
+  module type S = sig
+    val ( </> ) : int -> int -> int
+  end
+  MERLIN
+  module type S = sig
+    val ( </> ) : int -> int -> int
+  end
+  $ echo 'external (</>) : int -> int -> int = "x"' | ./mlx
+  BATCH
+  external ( </> ) : int -> int -> int = "x"
+  MERLIN
+  external ( </> ) : int -> int -> int = "x"
+  $ echo 'let _ = <>(a </> b)</>' | ./mlx
+  BATCH
+  let _ = [ a </> b ] [@JSX]
+  MERLIN
+  let _ = [ a </> b ] [@JSX]
+  $ echo 'let _ = a </> <>b</>' | ./mlx
+  BATCH
+  let _ = a </> [ b ] [@JSX]
+  MERLIN
+  let _ = a </> [ b ] [@JSX]
+  $ echo 'let _ = <>a</> </> <>b</>' | ./mlx
+  BATCH
+  let _ = [ a ] [@JSX] </> [ b ] [@JSX]
+  MERLIN
+  let _ = [ a ] [@JSX] </> [ b ] [@JSX]
+  $ echo 'let _ = <>a </> b</>' | ./mlx
+  BATCH
+  File "*stdin*", line 2, characters 0-0:
+  Error: Syntax error
   
   MERLIN
-  File "*stdin*", line 1, characters 11-14
-  Error: Syntax error: operator "</>" (reserved for JSX fragments) not expected.
+  File "*stdin*", line 2, characters 0-0
+  Error: Syntax error, expecting fun_expr
   
   $ echo 'let _ = (<>-) a b' | ./mlx
   BATCH
