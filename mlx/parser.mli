@@ -57,8 +57,10 @@ type token =
   | LIDENT of (string)
   | LETOP of (string)
   | LET
+  | LESSSLASHGREATER
   | LESSSLASH
   | LESSMINUS
+  | LESSGREATER
   | LESS
   | LBRACKETPERCENTPERCENT
   | LBRACKETPERCENT

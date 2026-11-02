@@ -20,6 +20,11 @@ let mkjsxexp ~loc:loc' e =
   let pexp_attributes = [ Attr.mk ~loc { txt = "JSX"; loc } (PStr []) ] in
   { e with pexp_attributes }
 
+let mkjsxspread ~loc e =
+  let loc = make_loc loc in
+  let attr = Attr.mk ~loc { txt = "JSX"; loc } (PStr []) in
+  { e with pexp_attributes = e.pexp_attributes @ [ attr ] }
+
 let rec equal_longindent a b =
   match a, b with
   | Longident.Lident a, Longident.Lident b -> String.equal a b
