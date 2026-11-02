@@ -1,15 +1,29 @@
-# Unreleased
+# 0.12
 - Add JSX fragments: `<></>`, `<>a b</>` and `<>...xs</>`. A fragment lowers to
   a list expression with the `[@JSX]` attribute, and `<>...xs</>` lowers to `xs`
   with `[@JSX]`. A fragment used as a function argument needs parentheses:
   `f (<>a</>)`.
 - `</>` stays a valid operator, like `<>`, for example `let (</>) a b = a`.
   Inside a fragment, parenthesize it: `<>(a </> b)</>`.
-- Breaking: operators that start with `<>` followed by `<` or `...`, or `</>`
-  followed by `<` (for example `<><`, `<><=`), are now split and no longer
-  parse as one operator.
+- Breaking: operators that start with `<>` followed by `<` or `...`, `</>`
+  followed by `<`, or `>...` (for example `<><`, `<><=`, `>...`) are now split
+  and no longer parse as one operator.
+- Add JSX children spread: `<Foo> ...expr </Foo>` passes `expr` directly as
+  `~children:expr`. The spread must be the only child.
+  [#45](https://github.com/ocaml-mlx/mlx/pull/45)
+- Fix JSX elements closed directly before `|]` and `}`, such as
+  `[|<div>a</div>|]`. [#46](https://github.com/ocaml-mlx/mlx/pull/46)
 - Restore unparenthesized expressions in object overrides while keeping JSX
   closing tags valid directly before record and indexing braces.
+  [#47](https://github.com/ocaml-mlx/mlx/pull/47)
+- Accept quoted strings with an empty delimiter, `{|...|}`.
+  [#37](https://github.com/ocaml-mlx/mlx/issues/37)
+- Fix duplicate `children` labels when a JSX element sets `children`
+  explicitly. [#36](https://github.com/ocaml-mlx/mlx/pull/36)
+- Support OCaml 5.5: the vendored OCaml parser is 5.5.0 and ocamlmerlin-mlx
+  uses merlin 5.8.1-505. mlx still builds with OCaml 4.14 and later.
+- Add Emacs mlx-mode to the editor support list.
+  [#33](https://github.com/ocaml-mlx/mlx/pull/33)
 
 # 0.11
 - Support for OCaml 5.4 [#22](https://github.com/ocaml-mlx/mlx/pull/22)
