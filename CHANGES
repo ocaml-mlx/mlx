@@ -5,6 +5,9 @@
   `f (<>a</>)`.
 - `</>` stays a valid operator, like `<>`, for example `let (</>) a b = a`.
   Inside a fragment, parenthesize it: `<>(a </> b)</>`.
+- Breaking: operators that start with `<>` followed by `<` or `...`, or `</>`
+  followed by `<` (for example `<><`, `<><=`), are now split and no longer
+  parse as one operator.
 - Restore unparenthesized expressions in object overrides while keeping JSX
   closing tags valid directly before record and indexing braces.
 
