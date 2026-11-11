@@ -33,7 +33,8 @@ let rec equal_longindent a b =
   | Lapply _, _ | _, Lapply _ -> assert false
   | _ -> false
 
-let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
+let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children
+    ~nested_children () =
   let () =
     match end_tag with
     | None -> ()
@@ -94,6 +95,17 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children () =
         | Labelled "children" | Optional "children" -> true
         | _ -> false)
       props
+  in
+  let () =
+    match has_children, nested_children with
+    | true, Some loc ->
+        raise
+          Syntaxerr.(
+            Error
+              (Not_expecting
+                 ( make_loc loc,
+                   "nested children (the children prop is already set)" )))
+    | _ -> ()
   in
   let props =
     if has_children then props else (Labelled "children", children) :: props

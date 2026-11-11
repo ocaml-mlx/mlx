@@ -41,11 +41,43 @@
   MERLIN
   let render children = Component.createElement () ~children [@JSX]
 
+An explicit `children` prop and nested children on one element is an error, because only one of them can be passed:
+
   $ echo 'let render children nested = <Component children>nested</Component>' | ./mlx
   BATCH
-  let render children nested = Component.createElement () ~children [@JSX]
+  File "*stdin*", line 1, characters 49-55:
+  Error: Syntax error: nested children (the children prop is already set) not expected.
+  
   MERLIN
-  let render children nested = Component.createElement () ~children [@JSX]
+  File "*stdin*", line 1, characters 49-55
+  Error: Syntax error: nested children (the children prop is already set) not expected.
+  
+  $ echo 'let _ = <div ?children>a b</div>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 23-26:
+  Error: Syntax error: nested children (the children prop is already set) not expected.
+  
+  MERLIN
+  File "*stdin*", line 1, characters 23-26
+  Error: Syntax error: nested children (the children prop is already set) not expected.
+  
+  $ echo 'let _ = <div children=x>...xs</div>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 27-29:
+  Error: Syntax error: nested children (the children prop is already set) not expected.
+  
+  MERLIN
+  File "*stdin*", line 1, characters 27-29
+  Error: Syntax error: nested children (the children prop is already set) not expected.
+  
+
+An explicit `children` prop with an empty body is accepted:
+
+  $ echo 'let render children = <Component children></Component>' | ./mlx
+  BATCH
+  let render children = Component.createElement () ~children [@JSX]
+  MERLIN
+  let render children = Component.createElement () ~children [@JSX]
 
   $ echo 'let _ = <Hello.ok attr with_value=1 />' | ./mlx
   BATCH
