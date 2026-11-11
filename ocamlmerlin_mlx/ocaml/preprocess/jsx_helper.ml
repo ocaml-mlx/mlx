@@ -59,6 +59,36 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children
                      make_loc end_loc,
                      sprintf "</%s>" tag )))
   in
+  let () =
+    let children_prop =
+      List.find_map
+        (function
+          | loc, (`Prop_punned "children" | `Prop ("children", _)) ->
+              Some (loc, "children")
+          | loc, (`Prop_opt_punned "children" | `Prop_opt ("children", _)) ->
+              Some (loc, "?children")
+          | _ -> None)
+        props
+    in
+    match children_prop, nested_children with
+    | Some (prop_loc, prop), Some nested_loc ->
+        let _, _, tag = tag in
+        let tag = Longident.flatten tag |> String.concat "." in
+        raise
+          (Location.Error
+             (Location.errorf ~loc:(make_loc nested_loc)
+                ~sub:
+                  [
+                    Location.msg ~loc:(make_loc prop_loc)
+                      "The %a prop is set here." Misc.Style.inline_code prop;
+                  ]
+                "The element %a has nested children, but its %a prop is \
+                 already set.@ Pass the children either as the prop or \
+                 between the tags, not both."
+                Misc.Style.inline_code (sprintf "<%s>" tag)
+                Misc.Style.inline_code prop))
+    | _ -> ()
+  in
   let tag =
     match tag with
     | `Value, loc, txt ->
@@ -95,17 +125,6 @@ let make_jsx_element ~raise ~loc:_ ~tag ~end_tag ~props ~children
         | Labelled "children" | Optional "children" -> true
         | _ -> false)
       props
-  in
-  let () =
-    match has_children, nested_children with
-    | true, Some loc ->
-        raise
-          Syntaxerr.(
-            Error
-              (Not_expecting
-                 ( make_loc loc,
-                   "nested children (the children prop is already set)" )))
-    | _ -> ()
   in
   let props =
     if has_children then props else (Labelled "children", children) :: props

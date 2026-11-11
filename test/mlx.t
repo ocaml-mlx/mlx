@@ -46,29 +46,44 @@ An explicit `children` prop and nested children on one element is an error, beca
   $ echo 'let render children nested = <Component children>nested</Component>' | ./mlx
   BATCH
   File "*stdin*", line 1, characters 49-55:
-  Error: Syntax error: nested children (the children prop is already set) not expected.
+  Error: The element <Component> has nested children, but its children prop is already set.
+  Pass the children either as the prop or between the tags, not both.
+  File "*stdin*", line 1, characters 40-48:
+    The children prop is set here.
   
   MERLIN
   File "*stdin*", line 1, characters 49-55
-  Error: Syntax error: nested children (the children prop is already set) not expected.
+  Error: The element <Component> has nested children, but its children prop is already set.
+         Pass the children either as the prop or between the tags, not both.
+    The children prop is set here.
   
   $ echo 'let _ = <div ?children>a b</div>' | ./mlx
   BATCH
   File "*stdin*", line 1, characters 23-26:
-  Error: Syntax error: nested children (the children prop is already set) not expected.
+  Error: The element <div> has nested children, but its ?children prop is already set.
+  Pass the children either as the prop or between the tags, not both.
+  File "*stdin*", line 1, characters 14-22:
+    The ?children prop is set here.
   
   MERLIN
   File "*stdin*", line 1, characters 23-26
-  Error: Syntax error: nested children (the children prop is already set) not expected.
+  Error: The element <div> has nested children, but its ?children prop is already set.
+         Pass the children either as the prop or between the tags, not both.
+    The ?children prop is set here.
   
   $ echo 'let _ = <div children=x>...xs</div>' | ./mlx
   BATCH
   File "*stdin*", line 1, characters 27-29:
-  Error: Syntax error: nested children (the children prop is already set) not expected.
+  Error: The element <div> has nested children, but its children prop is already set.
+  Pass the children either as the prop or between the tags, not both.
+  File "*stdin*", line 1, characters 13-21:
+    The children prop is set here.
   
   MERLIN
   File "*stdin*", line 1, characters 27-29
-  Error: Syntax error: nested children (the children prop is already set) not expected.
+  Error: The element <div> has nested children, but its children prop is already set.
+         Pass the children either as the prop or between the tags, not both.
+    The children prop is set here.
   
 
 An explicit `children` prop with an empty body is accepted:
