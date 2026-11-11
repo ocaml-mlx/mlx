@@ -2844,23 +2844,27 @@ jsx_element:
         let children, loc = mktailexp $loc(tag) [] in
         mkexp ~loc children
       in
-      Jsx_helper.make_jsx_element () ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:None ~props ~children
+      Jsx_helper.make_jsx_element () ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:None ~props ~children ~nested_children:None
     }
   | tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop) 
     GREATER children=llist(simple_expr) end_tag=jsx_longident(JSX_UIDENT_E, JSX_LIDENT_E) end_tag_=closing_greater {
+      let nested_children =
+        match children with [] -> None | _ -> Some $loc(children)
+      in
       let children = 
         let children, loc = mktailexp $loc(children) children in
         mkexp ~loc children
       in
       let _ = end_tag_ in
       Jsx_helper.make_jsx_element ()
-        ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:(Some (end_tag, $loc(end_tag_))) ~props ~children
+        ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:(Some (end_tag, $loc(end_tag_))) ~props ~children ~nested_children
     }
   | tag=jsx_longident(JSX_UIDENT, JSX_LIDENT) props=llist(jsx_prop)
     GREATER DOTDOTDOT children=simple_expr end_tag=jsx_longident(JSX_UIDENT_E, JSX_LIDENT_E) end_tag_=closing_greater {
+      let nested_children = Some $loc(children) in
       let _ = end_tag_ in
       Jsx_helper.make_jsx_element ()
-        ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:(Some (end_tag, $loc(end_tag_))) ~props ~children
+        ~raise:raise_error ~loc:$loc(tag) ~tag ~end_tag:(Some (end_tag, $loc(end_tag_))) ~props ~children ~nested_children
     }
 ;
 jsx_fragment:

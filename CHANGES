@@ -1,3 +1,9 @@
+# Unreleased
+- Breaking: an element that sets the `children` prop and also has nested
+  children is now a syntax error, for example `<Foo children>a</Foo>` and
+  `<Foo children=x>...xs</Foo>`. Before, mlx dropped the nested children
+  silently. `<Foo children />` and `<Foo children></Foo>` are still valid.
+
 # 0.12
 - Add JSX fragments: `<></>`, `<>a b</>` and `<>...xs</>`. A fragment lowers to
   a list expression with the `[@JSX]` attribute, and `<>...xs</>` lowers to `xs`

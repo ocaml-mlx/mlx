@@ -41,11 +41,58 @@
   MERLIN
   let render children = Component.createElement () ~children [@JSX]
 
+An explicit `children` prop and nested children on one element is an error, because only one of them can be passed:
+
   $ echo 'let render children nested = <Component children>nested</Component>' | ./mlx
   BATCH
-  let render children nested = Component.createElement () ~children [@JSX]
+  File "*stdin*", line 1, characters 49-55:
+  Error: The element <Component> has nested children, but its children prop is already set.
+  Pass the children either as the prop or between the tags, not both.
+  File "*stdin*", line 1, characters 40-48:
+    The children prop is set here.
+  
   MERLIN
-  let render children nested = Component.createElement () ~children [@JSX]
+  File "*stdin*", line 1, characters 49-55
+  Error: The element <Component> has nested children, but its children prop is already set.
+         Pass the children either as the prop or between the tags, not both.
+    The children prop is set here.
+  
+  $ echo 'let _ = <div ?children>a b</div>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 23-26:
+  Error: The element <div> has nested children, but its ?children prop is already set.
+  Pass the children either as the prop or between the tags, not both.
+  File "*stdin*", line 1, characters 14-22:
+    The ?children prop is set here.
+  
+  MERLIN
+  File "*stdin*", line 1, characters 23-26
+  Error: The element <div> has nested children, but its ?children prop is already set.
+         Pass the children either as the prop or between the tags, not both.
+    The ?children prop is set here.
+  
+  $ echo 'let _ = <div children=x>...xs</div>' | ./mlx
+  BATCH
+  File "*stdin*", line 1, characters 27-29:
+  Error: The element <div> has nested children, but its children prop is already set.
+  Pass the children either as the prop or between the tags, not both.
+  File "*stdin*", line 1, characters 13-21:
+    The children prop is set here.
+  
+  MERLIN
+  File "*stdin*", line 1, characters 27-29
+  Error: The element <div> has nested children, but its children prop is already set.
+         Pass the children either as the prop or between the tags, not both.
+    The children prop is set here.
+  
+
+An explicit `children` prop with an empty body is accepted:
+
+  $ echo 'let render children = <Component children></Component>' | ./mlx
+  BATCH
+  let render children = Component.createElement () ~children [@JSX]
+  MERLIN
+  let render children = Component.createElement () ~children [@JSX]
 
   $ echo 'let _ = <Hello.ok attr with_value=1 />' | ./mlx
   BATCH
